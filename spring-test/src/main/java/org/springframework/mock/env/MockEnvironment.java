@@ -28,6 +28,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * @author Sam Brannen
  * @since 3.2
  * @see org.springframework.mock.env.MockPropertySource
+ * gitTest
  */
 public class MockEnvironment extends AbstractEnvironment {
 
