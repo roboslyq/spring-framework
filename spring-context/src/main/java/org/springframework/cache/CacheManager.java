@@ -24,6 +24,7 @@ import java.util.Collection;
  *
  * @author Costin Leau
  * @since 3.1
+ * Spring的中央缓存管理器SPI，允许通过些接口检索对应的Cache。
  */
 public interface CacheManager {
 
@@ -31,12 +32,14 @@ public interface CacheManager {
 	 * Return the cache associated with the given name.
 	 * @param name the cache identifier (must not be {@code null})
 	 * @return the associated cache, or {@code null} if none found
+	 * 返回和name相关联的缓存，入参为缓存名称。返回值为关联的缓存Cache，若没有找到则返回null。
 	 */
 	Cache getCache(String name);
 
 	/**
 	 * Return a collection of the cache names known by this manager.
 	 * @return the names of all caches known by the cache manager
+	 * 返回当前管理器所管理的的有缓存的名称集合
 	 */
 	Collection<String> getCacheNames();
 

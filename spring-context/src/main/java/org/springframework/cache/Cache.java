@@ -24,7 +24,8 @@ import java.util.concurrent.Callable;
  * <b>Note:</b> Due to the generic use of caching, it is recommended that
  * implementations allow storage of <tt>null</tt> values (for example to
  * cache methods that return {@code null}).
- *
+ * 定义缓存Cache通用操作的接口
+ * 实现者允许存储Null值（缓存返回null的方法的示例）
  * @author Costin Leau
  * @author Juergen Hoeller
  * @author Stephane Nicoll
@@ -34,6 +35,7 @@ public interface Cache {
 
 	/**
 	 * Return the cache name.
+	 * 获取缓存名称，必须定义，CacheManager中通过此标识来检索到当前缓存
 	 */
 	String getName();
 
