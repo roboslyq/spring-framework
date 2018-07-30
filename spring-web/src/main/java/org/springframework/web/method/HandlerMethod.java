@@ -49,26 +49,28 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Juergen Hoeller
  * @author Sam Brannen
  * @since 3.1
+ * 
+ * roboslyq-2018/07/31  由全局属性可知，一个Controller中的一个方法就是一个HandlerMethod
  */
 public class HandlerMethod {
 
 	/** Logger that is available to subclasses */
 	protected final Log logger = LogFactory.getLog(getClass());
-
+	//roboslyq-2018/07/31  具体的Controller Bean
 	private final Object bean;
-
+	//Bean工厂
 	private final BeanFactory beanFactory;
-
+	//Bean类型
 	private final Class<?> beanType;
-
+	//Bean方法
 	private final Method method;
-
+	//
 	private final Method bridgedMethod;
-
+	//Bean方法参数
 	private final MethodParameter[] parameters;
-
+	//Http状态
 	private HttpStatus responseStatus;
-
+	
 	private String responseStatusReason;
 
 	private HandlerMethod resolvedFromHandlerMethod;

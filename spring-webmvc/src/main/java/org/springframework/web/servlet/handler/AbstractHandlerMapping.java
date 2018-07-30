@@ -63,6 +63,7 @@ import org.springframework.web.util.UrlPathHelper;
  * @see org.springframework.util.AntPathMatcher
  * @see #setInterceptors
  * @see org.springframework.web.servlet.HandlerInterceptor
+ * roboslyq-2018/07/30 实现Ordered接口，证明handlerMapping有序，即一个dispathcerServlet支持多个handlerMapping。
  */
 public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport implements HandlerMapping, Ordered {
 
@@ -73,7 +74,9 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	private PathMatcher pathMatcher = new AntPathMatcher();
 
 	private final List<Object> interceptors = new ArrayList<Object>();
-
+	/**
+	 * roboslyq-2018/07/30  一个handlerMapping支持多个HandlerInterceptor
+	 */
 	private final List<HandlerInterceptor> adaptedInterceptors = new ArrayList<HandlerInterceptor>();
 
 	private final UrlBasedCorsConfigurationSource globalCorsConfigSource = new UrlBasedCorsConfigurationSource();
@@ -346,11 +349,18 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	 * @param request current HTTP request
 	 * @return the corresponding handler instance, or the default handler
 	 * @see #getHandlerInternal
+	 * 
+	 * 获取对应的handler
 	 */
 	@Override
 	public final HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+		/**
+		 * roboslyq-2018/07/31  获取内部Handler，因为有不同的HandlerMapping，所以此处获取的Handler也可能有多种情况，故返回的是Object。
+		 * 常见的是RequestMappingHandlerMapping实现中返回的HandlerMethod。
+		 */
 		Object handler = getHandlerInternal(request);
 		if (handler == null) {
+			//roboslyq-2018/07/31  如果handler为空，返回默认handler
 			handler = getDefaultHandler();
 		}
 		if (handler == null) {
@@ -361,8 +371,13 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 			String handlerName = (String) handler;
 			handler = getApplicationContext().getBean(handlerName);
 		}
-
+		/**
+		 * roboslyq-2018/07/30 将handler包装为HandlerExecutionChain。添加pre,post,及complete拦截器(interceptors)
+		 */
 		HandlerExecutionChain executionChain = getHandlerExecutionChain(handler, request);
+		/**
+		 * roboslyq-2018/07/30 跨域处理
+		 */
 		if (CorsUtils.isCorsRequest(request)) {
 			CorsConfiguration globalConfig = this.globalCorsConfigSource.getCorsConfiguration(request);
 			CorsConfiguration handlerConfig = getCorsConfiguration(handler, request);
@@ -413,16 +428,21 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	protected HandlerExecutionChain getHandlerExecutionChain(Object handler, HttpServletRequest request) {
 		HandlerExecutionChain chain = (handler instanceof HandlerExecutionChain ?
 				(HandlerExecutionChain) handler : new HandlerExecutionChain(handler));
-
+		/** 
+		 * roboslyq 2018/07/30  根据请求路径URL获取对应的URI，比如http://www.baidu.com/abc/test 得到的结果是abc/test 
+		 * */
 		String lookupPath = this.urlPathHelper.getLookupPathForRequest(request);
 		for (HandlerInterceptor interceptor : this.adaptedInterceptors) {
+			/**
+			 * roboslyq 2018/07/30  如果是需要匹配的Interceptor则进行正则匹配，否则默认添加。
+			 */
 			if (interceptor instanceof MappedInterceptor) {
 				MappedInterceptor mappedInterceptor = (MappedInterceptor) interceptor;
 				if (mappedInterceptor.matches(lookupPath, this.pathMatcher)) {
 					chain.addInterceptor(mappedInterceptor.getInterceptor());
 				}
 			}
-			else {
+			else {//默认
 				chain.addInterceptor(interceptor);
 			}
 		}

@@ -94,7 +94,10 @@ public class HandlerExecutionChain {
 			CollectionUtils.mergeArrayIntoCollection(interceptors, initInterceptorList());
 		}
 	}
-
+	/**
+	 * roboslyq-2018/07/30 interceptors为临时存储节点
+	 * @return
+	 */
 	private List<HandlerInterceptor> initInterceptorList() {
 		if (this.interceptorList == null) {
 			this.interceptorList = new ArrayList<HandlerInterceptor>();
@@ -124,12 +127,15 @@ public class HandlerExecutionChain {
 	 * @return {@code true} if the execution chain should proceed with the
 	 * next interceptor or the handler itself. Else, DispatcherServlet assumes
 	 * that this interceptor has already dealt with the response itself.
+	 * roboslyq-2018/07/30 执行具体的prehandle, 即前置拦截器
 	 */
 	boolean applyPreHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		HandlerInterceptor[] interceptors = getInterceptors();
 		if (!ObjectUtils.isEmpty(interceptors)) {
+			// roboslyq-2018/07/30 使用数组，说明interceptor存在顺序性
 			for (int i = 0; i < interceptors.length; i++) {
 				HandlerInterceptor interceptor = interceptors[i];
+				// roboslyq-2018/07/30 如果前置拦截器执行失败，那个直接执行完成拦截器
 				if (!interceptor.preHandle(request, response, this.handler)) {
 					triggerAfterCompletion(request, response, null);
 					return false;

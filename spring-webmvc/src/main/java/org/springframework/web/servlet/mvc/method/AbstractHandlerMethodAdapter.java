@@ -62,6 +62,7 @@ public abstract class AbstractHandlerMethodAdapter extends WebContentGenerator i
 	 * This implementation expects the handler to be an {@link HandlerMethod}.
 	 * @param handler the handler instance to check
 	 * @return whether or not this adapter can adapt the given handler
+	 * roboslyq-2018/07/31 是一个handler是HandlerMethod，
 	 */
 	@Override
 	public final boolean supports(Object handler) {

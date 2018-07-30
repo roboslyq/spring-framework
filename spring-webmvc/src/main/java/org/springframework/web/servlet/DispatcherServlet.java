@@ -155,13 +155,14 @@ import org.springframework.web.util.WebUtils;
  */
 @SuppressWarnings("serial")
 public class DispatcherServlet extends FrameworkServlet {
-
+	//固定特殊bean的id
+	/** roboslyq 2018/07/30 用于文件上传解析  */
 	/** Well-known name for the MultipartResolver object in the bean factory for this namespace. */
 	public static final String MULTIPART_RESOLVER_BEAN_NAME = "multipartResolver";
-
+	/** roboslyq 2018/07/30 用于区域解析  */
 	/** Well-known name for the LocaleResolver object in the bean factory for this namespace. */
 	public static final String LOCALE_RESOLVER_BEAN_NAME = "localeResolver";
-
+	/** roboslyq 2018/07/30 用于主题解析*  */
 	/** Well-known name for the ThemeResolver object in the bean factory for this namespace. */
 	public static final String THEME_RESOLVER_BEAN_NAME = "themeResolver";
 
@@ -170,6 +171,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Only used when "detectAllHandlerMappings" is turned off.
 	 * @see #setDetectAllHandlerMappings
 	 */
+	/** roboslyq 2018/07/30  处理器映射  */
 	public static final String HANDLER_MAPPING_BEAN_NAME = "handlerMapping";
 
 	/**
@@ -177,6 +179,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Only used when "detectAllHandlerAdapters" is turned off.
 	 * @see #setDetectAllHandlerAdapters
 	 */
+	/** roboslyq 2018/07/30 处理器适配器   */
 	public static final String HANDLER_ADAPTER_BEAN_NAME = "handlerAdapter";
 
 	/**
@@ -184,11 +187,13 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Only used when "detectAllHandlerExceptionResolvers" is turned off.
 	 * @see #setDetectAllHandlerExceptionResolvers
 	 */
+	/** roboslyq 2018/07/30 用于异常解析  */
 	public static final String HANDLER_EXCEPTION_RESOLVER_BEAN_NAME = "handlerExceptionResolver";
 
 	/**
 	 * Well-known name for the RequestToViewNameTranslator object in the bean factory for this namespace.
 	 */
+	/** roboslyq 2018/07/30 获取逻辑视图名称  */
 	public static final String REQUEST_TO_VIEW_NAME_TRANSLATOR_BEAN_NAME = "viewNameTranslator";
 
 	/**
@@ -196,11 +201,13 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Only used when "detectAllViewResolvers" is turned off.
 	 * @see #setDetectAllViewResolvers
 	 */
+	/** roboslyq 2018/07/30 用于视图解析  */
 	public static final String VIEW_RESOLVER_BEAN_NAME = "viewResolver";
 
 	/**
 	 * Well-known name for the FlashMapManager object in the bean factory for this namespace.
 	 */
+	/** roboslyq 2018/07/30 FLASH属性，用于解决多次提交问题  */
 	public static final String FLASH_MAP_MANAGER_BEAN_NAME = "flashMapManager";
 
 	/**
@@ -315,6 +322,11 @@ public class DispatcherServlet extends FrameworkServlet {
 	private ThemeResolver themeResolver;
 
 	/** List of HandlerMappings used by this servlet */
+	/**
+	 * roboslyq 2018/07/30 默认有两种实现：
+	 * (1)RequestMappingHandlerMapping:即常见的Controller中的RequestMapping匹配，占mapping场景中的99%
+	 * (2)SimpleUrlHandlerMapping:
+	 */
 	private List<HandlerMapping> handlerMappings;
 
 	/** List of HandlerAdapters used by this servlet */
@@ -474,6 +486,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 	/**
 	 * This implementation calls {@link #initStrategies}.
+	 * roboslyq 2018/07/30 初始化，由父类调起
 	 */
 	@Override
 	protected void onRefresh(ApplicationContext context) {
@@ -488,7 +501,13 @@ public class DispatcherServlet extends FrameworkServlet {
 		initMultipartResolver(context);
 		initLocaleResolver(context);
 		initThemeResolver(context);
+		/**
+		 *roboslyq 2018/07/30 初始化HandlerMapping
+		 */
 		initHandlerMappings(context);
+		/**
+		 *roboslyq 2018/07/30 初始化HandlerAdapters
+		 */
 		initHandlerAdapters(context);
 		initHandlerExceptionResolvers(context);
 		initRequestToViewNameTranslator(context);
@@ -566,17 +585,22 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Initialize the HandlerMappings used by this class.
 	 * <p>If no HandlerMapping beans are defined in the BeanFactory for this namespace,
 	 * we default to BeanNameUrlHandlerMapping.
+	 * 
 	 */
+	/** roboslyq 2018/07/30  initHandlerMappings */
 	private void initHandlerMappings(ApplicationContext context) {
 		this.handlerMappings = null;
-
+		/** roboslyq 2018/07/30  探测发现所有的HandlerMappings，否则使用系统默认的HandlerMapping*/
 		if (this.detectAllHandlerMappings) {
 			// Find all HandlerMappings in the ApplicationContext, including ancestor contexts.
 			Map<String, HandlerMapping> matchingBeans =
+					/** roboslyq 2018/07/30  返回给定类 HandlerMapping.class的所有类型及其子类 */
 					BeanFactoryUtils.beansOfTypeIncludingAncestors(context, HandlerMapping.class, true, false);
 			if (!matchingBeans.isEmpty()) {
+				/** roboslyq 2018/07/30  为什么要转ArrayList呢？文件后面排序，即表明,handlerMapping的有序性 */
 				this.handlerMappings = new ArrayList<HandlerMapping>(matchingBeans.values());
 				// We keep HandlerMappings in sorted order.
+				//roboslyq 2018/07/30 通过注解方式来排序
 				AnnotationAwareOrderComparator.sort(this.handlerMappings);
 			}
 		}
@@ -592,6 +616,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		// Ensure we have at least one HandlerMapping, by registering
 		// a default HandlerMapping if no other mappings are found.
+		
 		if (this.handlerMappings == null) {
 			this.handlerMappings = getDefaultStrategies(context, HandlerMapping.class);
 			if (logger.isDebugEnabled()) {
@@ -920,6 +945,8 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * @param request current HTTP request
 	 * @param response current HTTP response
 	 * @throws Exception in case of any kind of processing failure
+	 * 
+	 * roboslyq-2018/07/30 请求入口
 	 */
 	protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		HttpServletRequest processedRequest = request;
@@ -937,6 +964,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				multipartRequestParsed = (processedRequest != request);
 
 				// Determine handler for the current request.
+				//roboslyq-2018/07/30  决定为当前request选择一个handler
 				mappedHandler = getHandler(processedRequest);
 				if (mappedHandler == null || mappedHandler.getHandler() == null) {
 					noHandlerFound(processedRequest, response);
@@ -944,6 +972,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 
 				// Determine handler adapter for the current request.
+				//roboslyq-2018/07/30  决定为当前handler选择一个HandlerAdapter
 				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
 
 				// Process last-modified header, if supported by the handler.
@@ -958,12 +987,17 @@ public class DispatcherServlet extends FrameworkServlet {
 						return;
 					}
 				}
-
+				/**
+				 * roboslyq-2018/07/31  执行PreHandle（interceptors）
+				 */
 				if (!mappedHandler.applyPreHandle(processedRequest, response)) {
 					return;
 				}
 
 				// Actually invoke the handler.
+				/**
+				 * roboslyq-2018/07/31  执行具体controller中的方法（interceptors）
+				 */
 				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 
 				if (asyncManager.isConcurrentHandlingStarted()) {
@@ -971,6 +1005,9 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 
 				applyDefaultViewName(processedRequest, mv);
+				/**
+				 * roboslyq-2018/07/31  执行具体后置处理器
+				 */
 				mappedHandler.applyPostHandle(processedRequest, response, mv);
 			}
 			catch (Exception ex) {
@@ -984,9 +1021,15 @@ public class DispatcherServlet extends FrameworkServlet {
 			processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);
 		}
 		catch (Exception ex) {
+			/**
+			 * roboslyq-2018/07/31  执行具体异常处理器
+			 */
 			triggerAfterCompletion(processedRequest, response, mappedHandler, ex);
 		}
 		catch (Throwable err) {
+			/**
+			 * roboslyq-2018/07/31  执行具体异常处理器
+			 */
 			triggerAfterCompletion(processedRequest, response, mappedHandler,
 					new NestedServletException("Handler processing failed", err));
 		}
@@ -1152,11 +1195,19 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * @return the HandlerExecutionChain, or {@code null} if no handler could be found
 	 */
 	protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+		/**
+		 * RequestMappingHandlerMapping或者SimpleUrlHandlerMapping
+		 */
 		for (HandlerMapping hm : this.handlerMappings) {
 			if (logger.isTraceEnabled()) {
 				logger.trace(
 						"Testing handler map [" + hm + "] in DispatcherServlet with name '" + getServletName() + "'");
 			}
+			/**
+			 * roboslyq-2018/07/30 获取handler
+			 * 1、顺序匹配
+			 * 2、请求路径匹配
+			 */
 			HandlerExecutionChain handler = hm.getHandler(request);
 			if (handler != null) {
 				return handler;
@@ -1191,10 +1242,12 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * @throws ServletException if no HandlerAdapter can be found for the handler. This is a fatal error.
 	 */
 	protected HandlerAdapter getHandlerAdapter(Object handler) throws ServletException {
+		//循环遍历所有handlerAdapters。
 		for (HandlerAdapter ha : this.handlerAdapters) {
 			if (logger.isTraceEnabled()) {
 				logger.trace("Testing handler adapter [" + ha + "]");
 			}
+			
 			if (ha.supports(handler)) {
 				return ha;
 			}

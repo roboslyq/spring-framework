@@ -267,11 +267,15 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	/**
 	 * Create the HandlerMethod instance.
 	 * @param handler either a bean name or an actual handler instance
+	 * 		  roboslyq-2018/07/31  handler可以是String类型的bean名称或者具体的handler实例
 	 * @param method the target method
 	 * @return the created HandlerMethod
 	 */
 	protected HandlerMethod createHandlerMethod(Object handler, Method method) {
 		HandlerMethod handlerMethod;
+		/**
+		 * roboslyq-2018/07/31  如果是String类型
+		 */
 		if (handler instanceof String) {
 			String beanName = (String) handler;
 			handlerMethod = new HandlerMethod(beanName,
@@ -302,15 +306,22 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 	/**
 	 * Look up a handler method for the given request.
+	 * roboslyq-2018/07/31 获取内部Handler
 	 */
 	@Override
 	protected HandlerMethod getHandlerInternal(HttpServletRequest request) throws Exception {
+		/**
+		 * roboslyq-2018/07/31  将URL转换为URI
+		 */
 		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
 		if (logger.isDebugEnabled()) {
 			logger.debug("Looking up handler method for path " + lookupPath);
 		}
 		this.mappingRegistry.acquireReadLock();
 		try {
+			/**
+			 * roboslyq-2018/07/31  查找Handler
+			 */
 			HandlerMethod handlerMethod = lookupHandlerMethod(lookupPath, request);
 			if (logger.isDebugEnabled()) {
 				if (handlerMethod != null) {
@@ -335,6 +346,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * @return the best-matching handler method, or {@code null} if no match
 	 * @see #handleMatch(Object, String, HttpServletRequest)
 	 * @see #handleNoMatch(Set, String, HttpServletRequest)
+	 * 
+	 * roboslyq-2018/07/31  查找Handler
+	 * 
 	 */
 	protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletRequest request) throws Exception {
 		List<Match> matches = new ArrayList<Match>();
@@ -471,6 +485,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * to perform lookups and providing concurrent access.
 	 *
 	 * <p>Package-private for testing purposes.
+	 * roboslyq-2018/07/31  URL与handlerMethods映射注册器。
 	 */
 	class MappingRegistry {
 
@@ -532,10 +547,16 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		public void releaseReadLock() {
 			this.readWriteLock.readLock().unlock();
 		}
-
+		/**
+		 * roboslyq-2018/07/31  单个注册方法
+		 * @param mapping
+		 * @param handler 具体的@Controller对象
+		 * @param method Controller中具体的方法
+		 */
 		public void register(T mapping, Object handler, Method method) {
 			this.readWriteLock.writeLock().lock();
 			try {
+				//roboslyq-2018/07/31 将controller中的方法包装为HandlerMethod
 				HandlerMethod handlerMethod = createHandlerMethod(handler, method);
 				assertUniqueMethodMapping(handlerMethod, mapping);
 

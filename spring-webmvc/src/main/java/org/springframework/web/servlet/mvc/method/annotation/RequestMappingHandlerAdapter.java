@@ -112,6 +112,7 @@ import org.springframework.web.util.WebUtils;
  * @since 3.1
  * @see HandlerMethodArgumentResolver
  * @see HandlerMethodReturnValueHandler
+ * roboslyq-2018/07/31 此类实现了InitializingBean,故初始化入口方法为afterpropertiesSet
  */
 public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		implements BeanFactoryAware, InitializingBean {
@@ -508,6 +509,9 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 
 
 	@Override
+	/**
+	 * 初始化入口方法
+	 */
 	public void afterPropertiesSet() {
 		// Do this first, it may add ResponseBody advice beans
 		initControllerAdviceCache();
@@ -713,6 +717,9 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	}
 
 	@Override
+	/**
+	 * roboslyq-2018/07/31  执行Controller中的方法，返回ModelAndView封装
+	 */
 	protected ModelAndView handleInternal(HttpServletRequest request,
 			HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {
 
@@ -730,6 +737,9 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 			}
 			else {
 				// No HttpSession available -> no mutex necessary
+				/**
+				 * roboslyq-2018/07/31  调用具体方法controller中的方法
+				 */
 				mav = invokeHandlerMethod(request, response, handlerMethod);
 			}
 		}
@@ -737,7 +747,9 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 			// No synchronization on session demanded at all...
 			mav = invokeHandlerMethod(request, response, handlerMethod);
 		}
-
+		/**
+		 * roboslyq-2018/07/31  响应缓存是否可用
+		 */
 		if (!response.containsHeader(HEADER_CACHE_CONTROL)) {
 			if (getSessionAttributesHandler(handlerMethod).hasSessionAttributes()) {
 				applyCacheSeconds(response, this.cacheSecondsForSessionAttributeHandlers);
@@ -786,6 +798,9 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	 * @since 4.2
 	 * @see #createInvocableHandlerMethod(HandlerMethod)
 	 */
+	/**
+	 * roboslyq-2018/07/31  通过反射执行controller中的方法
+	 */
 	protected ModelAndView invokeHandlerMethod(HttpServletRequest request,
 			HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {
 
@@ -793,8 +808,11 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		try {
 			WebDataBinderFactory binderFactory = getDataBinderFactory(handlerMethod);
 			ModelFactory modelFactory = getModelFactory(handlerMethod, binderFactory);
-
+			/**
+			 * roboslyq-2018/07/31  根据handlerMethod创建ServletInvocableHandlerMethod
+			 */
 			ServletInvocableHandlerMethod invocableMethod = createInvocableHandlerMethod(handlerMethod);
+			
 			invocableMethod.setHandlerMethodArgumentResolvers(this.argumentResolvers);
 			invocableMethod.setHandlerMethodReturnValueHandlers(this.returnValueHandlers);
 			invocableMethod.setDataBinderFactory(binderFactory);
@@ -823,12 +841,16 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 				}
 				invocableMethod = invocableMethod.wrapConcurrentResult(result);
 			}
-
+			/**
+			 * roboslyq-2018/07/31  
+			 * 调用ServletInvocableHandlerMethod的invokeAndHandle方法，其实最终是通过反射机制调用Controller中的方法
+			 * mavContainer--》invocableMethod--》handlerMethod--》Bean
+			 */
 			invocableMethod.invokeAndHandle(webRequest, mavContainer);
 			if (asyncManager.isConcurrentHandlingStarted()) {
 				return null;
 			}
-
+			
 			return getModelAndView(mavContainer, modelFactory, webRequest);
 		}
 		finally {

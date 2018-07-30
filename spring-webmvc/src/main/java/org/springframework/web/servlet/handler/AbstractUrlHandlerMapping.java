@@ -56,7 +56,9 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 	private boolean useTrailingSlashMatch = false;
 
 	private boolean lazyInitHandlers = false;
-
+	/**
+	 * 
+	 */
 	private final Map<String, Object> handlerMap = new LinkedHashMap<String, Object>();
 
 

@@ -800,6 +800,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * <p>The default implementation calls {@link #onRefresh},
 	 * triggering a refresh of this servlet's context-dependent state.
 	 * @param event the incoming ApplicationContext event
+	 * roboslyq--2018/07/30 --DispathcerServlet初始化入口
 	 */
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		this.refreshEventReceived = true;
@@ -1113,6 +1114,8 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	/**
 	 * ApplicationListener endpoint that receives events from this servlet's WebApplicationContext
 	 * only, delegating to {@code onApplicationEvent} on the FrameworkServlet instance.
+	 * roboslyq--2018/07/30 --实现ApplicationListener接口，事件为ContextRefreshedEvent,当Context进行refresh之后
+	 * 进入此方法进行初始化。
 	 */
 	private class ContextRefreshListener implements ApplicationListener<ContextRefreshedEvent> {
 
