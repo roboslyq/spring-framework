@@ -1105,8 +1105,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	//---------------------------------------------------------------------
 
 	@Override
+	/**
+	 * roboslyq-->获取Bean入口
+	 */
 	public Object getBean(String name) throws BeansException {
+		//断言Bean工厂是否活着
 		assertBeanFactoryActive();
+		//核心实现
 		return getBeanFactory().getBean(name);
 	}
 

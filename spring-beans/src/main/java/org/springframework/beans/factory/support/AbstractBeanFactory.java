@@ -195,6 +195,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	//---------------------------------------------------------------------
 
 	@Override
+	/**
+	 * roboslyq-获取Bean
+	 */
 	public Object getBean(String name) throws BeansException {
 		return doGetBean(name, null, null, false);
 	}
@@ -238,11 +241,14 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	@SuppressWarnings("unchecked")
 	protected <T> T doGetBean(final String name, @Nullable final Class<T> requiredType,
 			@Nullable final Object[] args, boolean typeCheckOnly) throws BeansException {
-
+		/**
+		 * roboslyq-->转换Bean名称,将别名转换成真正的Bean名称
+		 */
 		final String beanName = transformedBeanName(name);
 		Object bean;
 
 		// Eagerly check singleton cache for manually registered singletons.
+		// roboslyq --> 从缓存中获取单例Bean
 		Object sharedInstance = getSingleton(beanName);
 		if (sharedInstance != null && args == null) {
 			if (logger.isDebugEnabled()) {
@@ -314,6 +320,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				if (mbd.isSingleton()) {
 					sharedInstance = getSingleton(beanName, () -> {
 						try {
+							/**
+							 * roboslyq-->创建Bean入口
+							 */
 							return createBean(beanName, mbd, args);
 						}
 						catch (BeansException ex) {

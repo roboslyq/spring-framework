@@ -88,6 +88,9 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 		}
 		else {
 			// Must generate CGLIB subclass.
+			/**
+			 * roboslyq-->使用Cglib创建具体Bean实例
+			 */
 			return instantiateWithMethodInjection(bd, beanName, owner);
 		}
 	}
