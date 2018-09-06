@@ -146,10 +146,15 @@ public abstract class BeanDefinitionReaderUtils {
 			throws BeanDefinitionStoreException {
 
 		// Register bean definition under primary name.
+		//获取注册Bean的名称
 		String beanName = definitionHolder.getBeanName();
+		/**
+		 * roboslyq-->注册Bean到IOC容器中
+		 */
 		registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());
 
 		// Register aliases for bean name, if any.
+		//给Bean的name注册别名，后续可以通过别名获取name，然后通过name获取Bean
 		String[] aliases = definitionHolder.getAliases();
 		if (aliases != null) {
 			for (String alias : aliases) {

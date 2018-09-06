@@ -119,17 +119,25 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * This implementation performs an actual refresh of this context's underlying
 	 * bean factory, shutting down the previous bean factory (if any) and
 	 * initializing a fresh bean factory for the next phase of the context's lifecycle.
+	 * roboslyq--容器启动时刷新工厂。如果已经存在则先销毁关闭，然后重新创建新工厂。并且实现BeanDefinition的装载
 	 */
 	@Override
 	protected final void refreshBeanFactory() throws BeansException {
+		/**
+		 * roboslyq-->Bean工厂是否存在
+		 */
 		if (hasBeanFactory()) {
-			destroyBeans();
-			closeBeanFactory();
+			destroyBeans();//销毁
+			closeBeanFactory();//关闭
 		}
 		try {
+			//roboslyq-->创建Bean工厂
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
 			beanFactory.setSerializationId(getId());
 			customizeBeanFactory(beanFactory);
+			/**
+			 * 	roboslyq-->装载BeanDefinition
+			 */
 			loadBeanDefinitions(beanFactory);
 			synchronized (this.beanFactoryMonitor) {
 				this.beanFactory = beanFactory;
@@ -171,6 +179,9 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	}
 
 	@Override
+	/**
+	 * roboslyq--获取干活的Bean工厂
+	 */
 	public final ConfigurableListableBeanFactory getBeanFactory() {
 		synchronized (this.beanFactoryMonitor) {
 			if (this.beanFactory == null) {

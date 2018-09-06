@@ -408,13 +408,20 @@ public class BeanDefinitionParserDelegate {
 	/**
 	 * Parses the supplied {@code <bean>} element. May return {@code null}
 	 * if there were errors during parse. Errors are reported to the
+	 * 解析<bean>标签元素，如果有异常则返回null
 	 * {@link org.springframework.beans.factory.parsing.ProblemReporter}.
 	 */
 	@Nullable
 	public BeanDefinitionHolder parseBeanDefinitionElement(Element ele, @Nullable BeanDefinition containingBean) {
+		/**
+		 * roboslyq-->bean中的id元素
+		 */
 		String id = ele.getAttribute(ID_ATTRIBUTE);
+		/**
+		 * roboslyq-->bean中的Name元素
+		 */
 		String nameAttr = ele.getAttribute(NAME_ATTRIBUTE);
-
+		//多别名处理
 		List<String> aliases = new ArrayList<>();
 		if (StringUtils.hasLength(nameAttr)) {
 			String[] nameArr = StringUtils.tokenizeToStringArray(nameAttr, MULTI_VALUE_ATTRIBUTE_DELIMITERS);
@@ -433,7 +440,9 @@ public class BeanDefinitionParserDelegate {
 		if (containingBean == null) {
 			checkNameUniqueness(beanName, aliases, ele);
 		}
-
+		/**
+		 * roboslyq-->将Element元素转换成BeanDefinition
+		 */
 		AbstractBeanDefinition beanDefinition = parseBeanDefinitionElement(ele, beanName, containingBean);
 		if (beanDefinition != null) {
 			if (!StringUtils.hasText(beanName)) {
@@ -513,16 +522,20 @@ public class BeanDefinitionParserDelegate {
 
 		try {
 			AbstractBeanDefinition bd = createBeanDefinition(className, parent);
-
+			//解析属性
 			parseBeanDefinitionAttributes(ele, beanName, containingBean, bd);
+			//解析Desc
 			bd.setDescription(DomUtils.getChildElementValueByTagName(ele, DESCRIPTION_ELEMENT));
-
+			//解析元数据
 			parseMetaElements(ele, bd);
+			//解析
 			parseLookupOverrideSubElements(ele, bd.getMethodOverrides());
 			parseReplacedMethodSubElements(ele, bd.getMethodOverrides());
-
+			//解析构造函数
 			parseConstructorArgElements(ele, bd);
+			//解析property属性
 			parsePropertyElements(ele, bd);
+			//解析qualifier
 			parseQualifierElements(ele, bd);
 
 			bd.setResource(this.readerContext.getResource());

@@ -92,6 +92,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 * @throws BeansException if context creation failed
 	 */
 	public ClassPathXmlApplicationContext(String... configLocations) throws BeansException {
+		//parent为空
 		this(configLocations, true, null);
 	}
 
@@ -105,7 +106,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 */
 	public ClassPathXmlApplicationContext(String[] configLocations, @Nullable ApplicationContext parent)
 			throws BeansException {
-
+		//roboslyq-20180905 设置refresh为true
 		this(configLocations, true, parent);
 	}
 
@@ -126,21 +127,37 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	/**
 	 * Create a new ClassPathXmlApplicationContext with the given parent,
 	 * loading the definitions from the given XML files.
+	 * 创建一个ClassPathXmlApplicationContext类并且从指定的XML文件中加载Bean定义
 	 * @param configLocations array of resource locations
+	 *                        配置文件数组信息
 	 * @param refresh whether to automatically refresh the context,
 	 * loading all bean definitions and creating all singletons.
 	 * Alternatively, call refresh manually after further configuring the context.
+	 *                配置IOC容器是否为自启动，启动时以单例模式加载所有的Bean定义，默认true。或者
+	 *                在进一步配置好上下文后手动启动IOC容器。
 	 * @param parent the parent context
+	 *               父容器，Spring容器有父子继承关系
 	 * @throws BeansException if context creation failed
-	 * @see #refresh()
+	 * 				容器创建会抛出异常，并且优雅的执行destroyBeans()和cancelRefresh(ex)操作
+	 * @see #refresh() 启动容器
+	 * roboslyq-20180905
+	 *  SpringFramework框架分析的入口类
 	 */
 	public ClassPathXmlApplicationContext(
 			String[] configLocations, boolean refresh, @Nullable ApplicationContext parent)
 			throws BeansException {
-
+		/**
+		 * roboslyq--初始化了resourcePatternResolver
+		 */
 		super(parent);
+		/**
+		 * roboslyq--设置父类AbstractRefreshableApplicationContext资源位置，后续解析时会使用此值
+		 */
 		setConfigLocations(configLocations);
 		if (refresh) {
+			/**
+			 *roboslyq--启动容器
+			 */
 			refresh();
 		}
 	}

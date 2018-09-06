@@ -92,9 +92,13 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 */
 	@Override
 	public void registerBeanDefinitions(Document doc, XmlReaderContext readerContext) {
+
 		this.readerContext = readerContext;
 		logger.debug("Loading bean definitions");
 		Element root = doc.getDocumentElement();
+		/**
+		 * roboslyq --> BeanDefinition注册到IOC中
+		 */
 		doRegisterBeanDefinitions(root);
 	}
 
@@ -146,9 +150,17 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 				}
 			}
 		}
-
+		/**
+		 * 解析前处理
+		 */
 		preProcessXml(root);
+		/**
+		 * 解析BeanDefinition
+		 */
 		parseBeanDefinitions(root, this.delegate);
+		/**
+		 * 解析后处理
+		 */
 		postProcessXml(root);
 
 		this.delegate = parent;
@@ -166,18 +178,25 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * Parse the elements at the root level in the document:
 	 * "import", "alias", "bean".
 	 * @param root the DOM root element of the document
+	 *            将使用Spring的Bean规则从Document的根元素开始进行Bean定义的Document对象
 	 */
 	protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate) {
+		/**
+		 * roboslyq--Bean定义 的Document对象，使用了Spring默认命名空间
+		 */
 		if (delegate.isDefaultNamespace(root)) {
 			NodeList nl = root.getChildNodes();
 			for (int i = 0; i < nl.getLength(); i++) {
 				Node node = nl.item(i);
+				//艾勇Document的Dom根节点
 				if (node instanceof Element) {
 					Element ele = (Element) node;
 					if (delegate.isDefaultNamespace(ele)) {
+						//使用了SPring的命名空间，则使用Spring的规则解析元素节点
 						parseDefaultElement(ele, delegate);
 					}
 					else {
+						//使用用户自定义的规则解析元素节点
 						delegate.parseCustomElement(ele);
 					}
 				}
@@ -188,18 +207,28 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		}
 	}
 
+	/**
+	 * 解析BeanDefinition
+	 * @param ele
+	 * @param delegate
+	 */
 	private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
+		//roboslyq-->import标签处理
 		if (delegate.nodeNameEquals(ele, IMPORT_ELEMENT)) {
 			importBeanDefinitionResource(ele);
 		}
+		//roboslyq-->alias标签处理
 		else if (delegate.nodeNameEquals(ele, ALIAS_ELEMENT)) {
 			processAliasRegistration(ele);
 		}
+		//roboslyq-->bean标签处理--->bean加载的核心类
 		else if (delegate.nodeNameEquals(ele, BEAN_ELEMENT)) {
 			processBeanDefinition(ele, delegate);
 		}
+		//roboslyq-->beans标签，递归处理
 		else if (delegate.nodeNameEquals(ele, NESTED_BEANS_ELEMENT)) {
 			// recurse
+			//递归解析Bean配置文件
 			doRegisterBeanDefinitions(ele);
 		}
 	}
@@ -305,11 +334,19 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * and registering it with the registry.
 	 */
 	protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
+		/**
+		 * roboslyq--> bean解析的核心流程，得到一个BeanDefinition。
+		 * 即加载流程
+		 */
 		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
 		if (bdHolder != null) {
 			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
 			try {
 				// Register the final decorated instance.
+				/**
+				 * roboslyq-->调用BeanDefinitionReaderUtils将BeanDefinition注册到IOC容器中
+				 * 即完成注册流程
+				 */
 				BeanDefinitionReaderUtils.registerBeanDefinition(bdHolder, getReaderContext().getRegistry());
 			}
 			catch (BeanDefinitionStoreException ex) {

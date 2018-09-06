@@ -297,6 +297,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @param resource the resource descriptor for the XML file
 	 * @return the number of bean definitions found
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
+	 * roboslyq-->加载Bean定义
 	 */
 	@Override
 	public int loadBeanDefinitions(Resource resource) throws BeanDefinitionStoreException {
@@ -332,6 +333,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 				if (encodedResource.getEncoding() != null) {
 					inputSource.setEncoding(encodedResource.getEncoding());
 				}
+				/**
+				 * roboslyq--实现BeanDefinition加载
+				 */
 				return doLoadBeanDefinitions(inputSource, encodedResource.getResource());
 			}
 			finally {
@@ -387,7 +391,13 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	protected int doLoadBeanDefinitions(InputSource inputSource, Resource resource)
 			throws BeanDefinitionStoreException {
 		try {
+			/**
+			 * 将资源文件XML转换为document对象，解析过程由DocumentLoader实现
+			 */
 			Document doc = doLoadDocument(inputSource, resource);
+			/**
+			 * roboslyq-->注册BeanDefinition。怕里是启动对Bean定义解析的详细过程，该解析过程 会用到Spring的Bean配置规则
+			 */
 			return registerBeanDefinitions(doc, resource);
 		}
 		catch (BeanDefinitionStoreException ex) {
@@ -502,9 +512,16 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @see BeanDefinitionDocumentReader#registerBeanDefinitions
 	 */
 	public int registerBeanDefinitions(Document doc, Resource resource) throws BeanDefinitionStoreException {
+		/**
+		 * roboslyq-->得到BeanDefinitionDocumentReader来对XMl格式 的Bean配置文件进行解析，解析结果为BeanDefinition
+		 */
 		BeanDefinitionDocumentReader documentReader = createBeanDefinitionDocumentReader();
+		//得到容器Bean注册 数量
 		int countBefore = getRegistry().getBeanDefinitionCount();
+		//解析的入口，这里使用了委派模式，BeanDefinitionDocumentReader只是个接口
+		//具体实现过程由实现类DefaultBeanDefinitionDocumentReader完成
 		documentReader.registerBeanDefinitions(doc, createReaderContext(resource));
+		//统计Bean解析数量
 		return getRegistry().getBeanDefinitionCount() - countBefore;
 	}
 

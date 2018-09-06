@@ -516,40 +516,54 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	public void refresh() throws BeansException, IllegalStateException {
 		synchronized (this.startupShutdownMonitor) {
 			// Prepare this context for refreshing.
+			//roboslyq--启动前准备操作（在父类AbstractRefreshableApplicationContext中实现）
+			// spring上下文的刷新时间，并将active设为true，初始化一些容器启动必要的资源
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
+			// roboslyq-->使用具体的子类去获取Bean工厂类，如果有则先销毁再创建
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
+			//roboslyq-->Bean工厂准备
 			prepareBeanFactory(beanFactory);
 
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
+				//roboslyq-->在BeanFactory完成初始化后进行一些操作，即在beanFactory初始化之后提供一个修改的机会
+				//BeanFactory定义后，提供一个修改BeanFactory的入口
 				postProcessBeanFactory(beanFactory);
 
 				// Invoke factory processors registered as beans in the context.
+				//roboslyq-->在Bean未开始实例化时，对Definition定义的修改入口
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
+				//robosly-->注册用于拦截Bean创建的BeanPostProcessor
 				registerBeanPostProcessors(beanFactory);
 
 				// Initialize message source for this context.
+				//roboslyq-->初始化MessageSource
 				initMessageSource();
 
 				// Initialize event multicaster for this context.
+				// roboslyq-->初始化上下文事件广播
 				initApplicationEventMulticaster();
 
 				// Initialize other special beans in specific context subclasses.
+				//roboslyq-->核心 方法，初始化Bean
 				onRefresh();
 
 				// Check for listener beans and register them.
+				//roboslyq-->注册监听器
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.
+				//roboslyq-->完成no-lazy Bean的初始化
 				finishBeanFactoryInitialization(beanFactory);
 
 				// Last step: publish corresponding event.
+				//结束启动
 				finishRefresh();
 			}
 
@@ -618,7 +632,14 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see #getBeanFactory()
 	 */
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
+		/**
+		 * roboslyq-获取Bean工厂前期准备，在子类AbstractRefreshableApplicationContext类中有具体实现
+		 * 此时，已经实现了BeanDefinition的装载
+		 */
 		refreshBeanFactory();
+		/**
+		 * roboslyq-获取Bean工厂,在子类AbstractRefreshableApplicationContext类中有具体实现。
+		 */
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
 		if (logger.isDebugEnabled()) {
 			logger.debug("Bean factory for " + getDisplayName() + ": " + beanFactory);
@@ -1367,6 +1388,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * closed already
 	 * @see #refreshBeanFactory()
 	 * @see #closeBeanFactory()
+	 *
 	 */
 	@Override
 	public abstract ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException;
