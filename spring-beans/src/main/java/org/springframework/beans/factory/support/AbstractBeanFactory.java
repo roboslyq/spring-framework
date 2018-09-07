@@ -248,7 +248,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		Object bean;
 
 		// Eagerly check singleton cache for manually registered singletons.
-		// roboslyq --> 从缓存中获取单例Bean
+		/**
+		 * roboslyq --> 从缓存中获取单例Bean，若不是lazy加载，则第一次调用getBean就已经有值。
+		 * 否则得到结果为Null
+ 		 */
 		Object sharedInstance = getSingleton(beanName);
 		if (sharedInstance != null && args == null) {
 			if (logger.isDebugEnabled()) {

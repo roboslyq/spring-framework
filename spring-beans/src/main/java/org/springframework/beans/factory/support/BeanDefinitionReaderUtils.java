@@ -149,7 +149,7 @@ public abstract class BeanDefinitionReaderUtils {
 		//获取注册Bean的名称
 		String beanName = definitionHolder.getBeanName();
 		/**
-		 * roboslyq-->注册Bean到IOC容器中
+		 * roboslyq-->注册Bean到IOC容器中，DefaultListableBeanFactory中实现
 		 */
 		registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());
 

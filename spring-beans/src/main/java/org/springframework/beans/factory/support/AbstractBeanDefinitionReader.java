@@ -187,6 +187,9 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 		 * roboslyq-->循环加载所有配置的文件中的Bean配置,resources为资源文件抽象
 		 */
 		for (Resource resource : resources) {
+			/**
+			 * XmlBeanDefinitionReader中实现
+			 */
 			counter += loadBeanDefinitions(resource);
 		}
 		return counter;
@@ -213,16 +216,24 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 	 * @see #loadBeanDefinitions(org.springframework.core.io.Resource[])
 	 */
 	public int loadBeanDefinitions(String location, @Nullable Set<Resource> actualResources) throws BeanDefinitionStoreException {
+		/**
+		 * roboslyq-->org.springframework.context.support.ClassPathXmlApplicationContext@51565ec2: startup date [Fri Sep 07 11:32:52 CST 2018]; root of context hierarchy
+		 */
 		ResourceLoader resourceLoader = getResourceLoader();
 		if (resourceLoader == null) {
 			throw new BeanDefinitionStoreException(
 					"Cannot import bean definitions from location [" + location + "]: no ResourceLoader available");
 		}
-
+		//正常Bean加载会进入此处，判断加载资源的数量
 		if (resourceLoader instanceof ResourcePatternResolver) {
 			// Resource pattern matching available.
 			try {
+				//roboslyq-->获取一个路径下所有的资源文件
 				Resource[] resources = ((ResourcePatternResolver) resourceLoader).getResources(location);
+				/**
+				 * roboslyq-->加载一个路径下的所有资源，返回已经加载Bean的个数。
+				 * 核心流程
+				 */
 				int loadCount = loadBeanDefinitions(resources);
 				if (actualResources != null) {
 					for (Resource resource : resources) {
@@ -257,6 +268,9 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 	public int loadBeanDefinitions(String... locations) throws BeanDefinitionStoreException {
 		Assert.notNull(locations, "Location array must not be null");
 		int counter = 0;
+		/**
+		 * 循环加载资源配置文件（按路径来循环，一个路径下可以有很多个配置文件）
+		 */
 		for (String location : locations) {
 			counter += loadBeanDefinitions(location);
 		}

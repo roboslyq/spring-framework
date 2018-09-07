@@ -521,17 +521,21 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
-			// roboslyq-->使用具体的子类去获取Bean工厂类，如果有则先销毁再创建
+			/**
+			 * roboslyq-->使用具体的子类去获取Bean工厂类，如果有则先销毁再创建。
+			 * 并且完成Bean的定位，加载及注册整个过程，十分重要核心！！！
+ 			 */
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
-			//roboslyq-->Bean工厂准备
+			//roboslyq-->在完成Bean加载及注册之后，为了可以使用使用IOC，进行Bean工厂初始化。
 			prepareBeanFactory(beanFactory);
 
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
 				//roboslyq-->在BeanFactory完成初始化后进行一些操作，即在beanFactory初始化之后提供一个修改的机会
 				//BeanFactory定义后，提供一个修改BeanFactory的入口
+				//可以扩展，默认为空
 				postProcessBeanFactory(beanFactory);
 
 				// Invoke factory processors registered as beans in the context.
@@ -634,7 +638,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
 		/**
 		 * roboslyq-获取Bean工厂前期准备，在子类AbstractRefreshableApplicationContext类中有具体实现
-		 * 此时，已经实现了BeanDefinition的装载
+		 * 此时，已经实现了BeanDefinition的装载。
+		 * 十分重要的入口！！！
 		 */
 		refreshBeanFactory();
 		/**
@@ -861,6 +866,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
 		// Initialize conversion service for this context.
+		/**
+		 * conversionService转换服务
+		 */
 		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) &&
 				beanFactory.isTypeMatch(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class)) {
 			beanFactory.setConversionService(
@@ -887,6 +895,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.freezeConfiguration();
 
 		// Instantiate all remaining (non-lazy-init) singletons.
+		/**
+		 * roboslyq-->初始化加载非延迟Bean。在DefaultListableBeanFactory实现
+		 */
 		beanFactory.preInstantiateSingletons();
 	}
 

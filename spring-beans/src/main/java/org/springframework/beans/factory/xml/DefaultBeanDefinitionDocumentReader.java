@@ -124,6 +124,9 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * Register each bean definition within the given root {@code <beans/>} element.
 	 */
 	@SuppressWarnings("deprecation")  // for Environment.acceptsProfiles(String...)
+	/**
+	 * roboslyq-->关键的核心的注册Bean定义
+	 */
 	protected void doRegisterBeanDefinitions(Element root) {
 		// Any nested <beans> elements will cause recursion in this method. In
 		// order to propagate and preserve <beans> default-* attributes correctly,
@@ -131,10 +134,15 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		// the new (child) delegate with a reference to the parent for fallback purposes,
 		// then ultimately reset this.delegate back to its original (parent) reference.
 		// this behavior emulates a stack of delegates without actually necessitating one.
+		//delegate默认为空
 		BeanDefinitionParserDelegate parent = this.delegate;
+		/**
+		 * BeanDefinitionParseDelegate
+		 */
 		this.delegate = createDelegate(getReaderContext(), root, parent);
-
+		//此处正常情况为true
 		if (this.delegate.isDefaultNamespace(root)) {
+			//profile处理
 			String profileSpec = root.getAttribute(PROFILE_ATTRIBUTE);
 			if (StringUtils.hasText(profileSpec)) {
 				String[] specifiedProfiles = StringUtils.tokenizeToStringArray(
@@ -151,7 +159,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			}
 		}
 		/**
-		 * 解析前处理
+		 * 解析前处理。需要扩展，默认为空实现不做处理
 		 */
 		preProcessXml(root);
 		/**
@@ -159,7 +167,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		 */
 		parseBeanDefinitions(root, this.delegate);
 		/**
-		 * 解析后处理
+		 * 解析后处理，需要扩展，默认为空实现不做处理
 		 */
 		postProcessXml(root);
 
@@ -191,12 +199,12 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 				//艾勇Document的Dom根节点
 				if (node instanceof Element) {
 					Element ele = (Element) node;
+					//使用了SPring的命名空间，则使用Spring的规则解析元素节点
 					if (delegate.isDefaultNamespace(ele)) {
-						//使用了SPring的命名空间，则使用Spring的规则解析元素节点
 						parseDefaultElement(ele, delegate);
 					}
+					//使用用户自定义的规则解析元素节点
 					else {
-						//使用用户自定义的规则解析元素节点
 						delegate.parseCustomElement(ele);
 					}
 				}
@@ -221,7 +229,9 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		else if (delegate.nodeNameEquals(ele, ALIAS_ELEMENT)) {
 			processAliasRegistration(ele);
 		}
-		//roboslyq-->bean标签处理--->bean加载的核心类
+		/**
+		 * roboslyq-->bean标签处理--->bean加载的核心类
+		 */
 		else if (delegate.nodeNameEquals(ele, BEAN_ELEMENT)) {
 			processBeanDefinition(ele, delegate);
 		}

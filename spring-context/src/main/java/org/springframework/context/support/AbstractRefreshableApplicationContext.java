@@ -124,19 +124,21 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	@Override
 	protected final void refreshBeanFactory() throws BeansException {
 		/**
-		 * roboslyq-->Bean工厂是否存在
+		 * roboslyq-->Bean工厂是否存在。正常一般情况为false
 		 */
 		if (hasBeanFactory()) {
 			destroyBeans();//销毁
 			closeBeanFactory();//关闭
 		}
 		try {
-			//roboslyq-->创建Bean工厂
+			//roboslyq-->创建Bean工厂,直接new 一个 DefaultListableBeanFactory类进行干活
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
+			//设置Bean工厂序列化ID
 			beanFactory.setSerializationId(getId());
+			//可对Bean工厂进行定制
 			customizeBeanFactory(beanFactory);
 			/**
-			 * 	roboslyq-->装载BeanDefinition
+			 * 	roboslyq-->装载BeanDefinition。核心入口。在AbstractXmlApplicationContext中有具体实现
 			 */
 			loadBeanDefinitions(beanFactory);
 			synchronized (this.beanFactoryMonitor) {

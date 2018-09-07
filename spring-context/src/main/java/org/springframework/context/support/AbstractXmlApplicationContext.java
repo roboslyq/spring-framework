@@ -96,7 +96,7 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 		// then proceed with actually loading the bean definitions.
 		initBeanDefinitionReader(beanDefinitionReader);
 		/**
-		 * roboslyq-->加载Bean定义
+		 * roboslyq-->加载Bean定义（核心流程）
 		 */
 		loadBeanDefinitions(beanDefinitionReader);
 	}
@@ -136,6 +136,9 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 		}
 		String[] configLocations = getConfigLocations();
 		if (configLocations != null) {
+			/**
+			 * Bean加载核心流程入口
+			 */
 			reader.loadBeanDefinitions(configLocations);
 		}
 	}
