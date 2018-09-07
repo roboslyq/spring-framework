@@ -414,6 +414,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			throws BeansException {
 
 		Object result = existingBean;
+		/**
+		 * 循环调用BeanPostProcessor处理
+		 */
 		for (BeanPostProcessor beanProcessor : getBeanPostProcessors()) {
 			Object current = beanProcessor.postProcessBeforeInitialization(result, beanName);
 			if (current == null) {
@@ -585,7 +588,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			 */
 			populateBean(beanName, mbd, instanceWrapper);
 			/**
-			 * roboslyq--->初始化
+			 * roboslyq--->初始化(完成普通Bean到Aop代理Bean转换)
 			 */
 			exposedObject = initializeBean(beanName, exposedObject, mbd);
 		}
@@ -1742,9 +1745,14 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		else {
 			invokeAwareMethods(beanName, bean);
 		}
-
+		/**
+		 * roboslyq-->装饰Bean，包装成AOP
+		 */
 		Object wrappedBean = bean;
 		if (mbd == null || !mbd.isSynthetic()) {
+			/**
+			 * 需要包装则进行包装
+			 */
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
 		}
 

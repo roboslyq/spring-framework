@@ -156,6 +156,11 @@ class CglibAopProxy implements AopProxy, Serializable {
 	}
 
 	@Override
+	/**
+	 * 1、对类生成代理使用CGLIB
+	 * 2、对接口生成代理使用JDK原生的Proxy
+	 * 3、可以通过配置文件指定对接口使用CGLIB生成代理
+	 */
 	public Object getProxy(@Nullable ClassLoader classLoader) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Creating CGLIB proxy: target source is " + this.advised.getTargetSource());

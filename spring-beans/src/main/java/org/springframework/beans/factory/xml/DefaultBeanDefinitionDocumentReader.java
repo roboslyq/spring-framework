@@ -196,14 +196,19 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			NodeList nl = root.getChildNodes();
 			for (int i = 0; i < nl.getLength(); i++) {
 				Node node = nl.item(i);
-				//艾勇Document的Dom根节点
+				//解析Document的Dom根节点
 				if (node instanceof Element) {
 					Element ele = (Element) node;
-					//使用了SPring的命名空间，则使用Spring的规则解析元素节点
+					/**
+					 * 	使用了SPring的命名空间，则使用Spring的规则解析元素节点
+					 * 	一共四个:import,bean,beans,alias
+					 */
 					if (delegate.isDefaultNamespace(ele)) {
 						parseDefaultElement(ele, delegate);
 					}
-					//使用用户自定义的规则解析元素节点
+					/**
+					 * 扩展点元素解析(aop:config等),故Spring AOP入口在此处实现
+					 */
 					else {
 						delegate.parseCustomElement(ele);
 					}
@@ -211,6 +216,9 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			}
 		}
 		else {
+			/**
+			 * 使用用户自定义的规则解析元素节点
+			 */
 			delegate.parseCustomElement(root);
 		}
 	}

@@ -300,6 +300,8 @@ public abstract class AopUtils {
 	 * @param clazz the target class
 	 * @return sublist of Advisors that can apply to an object of the given class
 	 * (may be the incoming List as-is)
+	 * 目标类必须满足expression的匹配规则
+	 * 目标类中的方法必须满足expression的匹配规则，当然这里方法不是全部需要满足expression的匹配规则，有一个方法满足即可
 	 */
 	public static List<Advisor> findAdvisorsThatCanApply(List<Advisor> candidateAdvisors, Class<?> clazz) {
 		if (candidateAdvisors.isEmpty()) {

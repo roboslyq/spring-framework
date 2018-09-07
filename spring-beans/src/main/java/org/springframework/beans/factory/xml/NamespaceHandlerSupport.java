@@ -71,6 +71,9 @@ public abstract class NamespaceHandlerSupport implements NamespaceHandler {
 	@Nullable
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
 		BeanDefinitionParser parser = findParserForElement(element, parserContext);
+		/**
+		 * roboslyq-->ConfigBeanDefinitionParser
+		 */
 		return (parser != null ? parser.parse(element, parserContext) : null);
 	}
 
@@ -80,7 +83,13 @@ public abstract class NamespaceHandlerSupport implements NamespaceHandler {
 	 */
 	@Nullable
 	private BeanDefinitionParser findParserForElement(Element element, ParserContext parserContext) {
+		/**
+		 * aop:config 时，localName="config"
+		 */
 		String localName = parserContext.getDelegate().getLocalName(element);
+		/**
+		 * org.springframework.aop.config.ConfigBeanDefinitionParser
+		 */
 		BeanDefinitionParser parser = this.parsers.get(localName);
 		if (parser == null) {
 			parserContext.getReaderContext().fatal(

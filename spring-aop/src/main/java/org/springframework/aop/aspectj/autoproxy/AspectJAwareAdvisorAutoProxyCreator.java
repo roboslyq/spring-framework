@@ -42,6 +42,11 @@ import org.springframework.util.ClassUtils;
  * @author Juergen Hoeller
  * @author Ramnivas Laddad
  * @since 2.0
+ *	roboslyq-->
+ * 1、AspectJAwareAdvisorAutoProxyCreator是BeanPostProcessor接口的实现类
+ * 2、postProcessBeforeInitialization方法与postProcessAfterInitialization方法实现在父类AbstractAutoProxyCreator中
+ * 3、postProcessBeforeInitialization方法是一个空实现
+ * 4、逻辑代码在postProcessAfterInitialization方法中
  */
 @SuppressWarnings("serial")
 public class AspectJAwareAdvisorAutoProxyCreator extends AbstractAdvisorAutoProxyCreator {

@@ -284,6 +284,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	}
 
 	@Override
+	/**
+	 * roboslyq-->在每个Bean初始化之后，如果需要，调用AspectJAwareAdvisorAutoProxyCreator中的postProcessBeforeInitialization为Bean生成代理。
+	 */
 	public Object postProcessBeforeInitialization(Object bean, String beanName) {
 		return bean;
 	}
@@ -294,10 +297,16 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * @see #getAdvicesAndAdvisorsForBean
 	 */
 	@Override
+	/**
+	 * 在Bean完成初始化之后调用
+	 */
 	public Object postProcessAfterInitialization(@Nullable Object bean, String beanName) {
 		if (bean != null) {
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);
 			if (!this.earlyProxyReferences.contains(cacheKey)) {
+				/**
+				 * 如果需要包装（例如代理AOP）
+				 */
 				return wrapIfNecessary(bean, beanName, cacheKey);
 			}
 		}
@@ -334,6 +343,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * @return a proxy wrapping the bean, or the raw bean instance as-is
 	 */
 	protected Object wrapIfNecessary(Object bean, String beanName, Object cacheKey) {
+		/**
+		 * 是一些不需要生成代理的场景判断
+		 */
 		if (StringUtils.hasLength(beanName) && this.targetSourcedBeans.contains(beanName)) {
 			return bean;
 		}
@@ -346,9 +358,16 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		}
 
 		// Create proxy if we have advice.
+		/**
+		 * 获取需要生成代理的Bean对象 ，在getAdvicesAndAdvisorsForBean中实现。
+		 * 通过获取Bendifinition中的List<Advisor>来判断
+		 */
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
 		if (specificInterceptors != DO_NOT_PROXY) {
 			this.advisedBeans.put(cacheKey, Boolean.TRUE);
+			/**
+			 * 创建代理
+			 */
 			Object proxy = createProxy(
 					bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
 			this.proxyTypes.put(cacheKey, proxy.getClass());
@@ -444,10 +463,17 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		if (this.beanFactory instanceof ConfigurableListableBeanFactory) {
 			AutoProxyUtils.exposeTargetClass((ConfigurableListableBeanFactory) this.beanFactory, beanName, beanClass);
 		}
-
+		/**
+		 * new出了一个ProxyFactory，Proxy，顾名思义，代理工厂的意思，
+		 * 提供了简单的方式使用代码获取和配置AOP代理。
+		 */
 		ProxyFactory proxyFactory = new ProxyFactory();
 		proxyFactory.copyFrom(this);
-
+		/**
+		 *  判断的内容是<aop:config>这个节点中proxy-target-class=”false”
+		 *  或者proxy-target-class不配置，即不使用CGLIB生成代理。
+		 *  如果满足条件，进判断，获取当前Bean实现的所有接口，讲这些接口Class对象都添加到ProxyFactory中。
+		 */
 		if (!proxyFactory.isProxyTargetClass()) {
 			if (shouldProxyTargetClass(beanClass, beanName)) {
 				proxyFactory.setProxyTargetClass(true);
@@ -456,7 +482,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 				evaluateProxyInterfaces(beanClass, proxyFactory);
 			}
 		}
-
+		/**
+		 * 向ProxyFactory中添加一些参数
+		 */
 		Advisor[] advisors = buildAdvisors(beanName, specificInterceptors);
 		proxyFactory.addAdvisors(advisors);
 		proxyFactory.setTargetSource(targetSource);
@@ -466,7 +494,11 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		if (advisorsPreFiltered()) {
 			proxyFactory.setPreFiltered(true);
 		}
-
+		/**
+		 * proxy创建核心入口：
+		 * 1、创建AopProxy接口实现类
+		 * 2、通过AopProxy接口的实现类的getProxy方法获取<bean>对应的代理
+		 */
 		return proxyFactory.getProxy(getProxyClassLoader());
 	}
 

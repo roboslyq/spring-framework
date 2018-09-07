@@ -98,27 +98,51 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 
 	@Override
 	@Nullable
+	/**
+	 * 解析config配置
+	 */
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
+		/**
+		 * 获取一个聚合功能的组件Difinition
+		 */
 		CompositeComponentDefinition compositeDef =
 				new CompositeComponentDefinition(element.getTagName(), parserContext.extractSource(element));
-		parserContext.pushContainingComponent(compositeDef);
 
+		parserContext.pushContainingComponent(compositeDef);
+		/**
+		 * 向Spring容器注册了一个BeanName为org.springframework.aop.config.internalAutoProxyCreator的Bean定义
+		 * 可以自定义也可以使用Spring提供的（根据优先级来）
+		 * Spring默认提供的是org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator，
+		 * 这个类是AOP的核心类，
+		 * 根据配置proxy-target-class和expose-proxy，设置是否使用CGLIB进行代理以及是否暴露最终的代理。
+		 */
 		configureAutoProxyCreator(parserContext, element);
 
 		List<Element> childElts = DomUtils.getChildElements(element);
 		for (Element elt: childElts) {
 			String localName = parserContext.getDelegate().getLocalName(elt);
+			/**
+			 * roboslyq-->pointcut切点解析。返回pointcutDefinition（本质是一个Definition）
+			 */
 			if (POINTCUT.equals(localName)) {
 				parsePointcut(elt, parserContext);
 			}
+			/**
+			 * roboslyq-->advisor通知解析
+			 */
 			else if (ADVISOR.equals(localName)) {
 				parseAdvisor(elt, parserContext);
 			}
+			/**
+			 * roboslyq-->aspect切面解析
+			 */
 			else if (ASPECT.equals(localName)) {
 				parseAspect(elt, parserContext);
 			}
 		}
-
+		/**
+		 * 解析处理
+		 */
 		parserContext.popAndRegisterContainingComponent();
 		return null;
 	}
@@ -214,8 +238,24 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 			// ordering semantics right.
 			NodeList nodeList = aspectElement.getChildNodes();
 			boolean adviceFoundAlready = false;
+			/**
+			 * for循环用来处理<aop:aspect>标签下的
+			 * <aop:before>、
+			 * <aop:after>、
+			 * <aop:after-returning>、
+			 * <aop:after-throwing method=”">、
+			 * <aop:around method=”">这五个标签。
+			 */
 			for (int i = 0; i < nodeList.getLength(); i++) {
 				Node node = nodeList.item(i);
+				/**
+				 * 判断通知类型是什么：
+				 * BEFORE
+				 * AFTER
+				 * AFTER_RETURNING_ELEMENT
+				 * AFTER_THROWING_ELEMENT
+				 * AROUND
+				 */
 				if (isAdviceNode(node, parserContext)) {
 					if (!adviceFoundAlready) {
 						adviceFoundAlready = true;
@@ -227,8 +267,12 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 						}
 						beanReferences.add(new RuntimeBeanReference(aspectName));
 					}
+					/**
+					 * roboslyq-->真正解析advice方法
+					 */
 					AbstractBeanDefinition advisorDefinition = parseAdvice(
 							aspectName, i, aspectElement, (Element) node, parserContext, beanDefinitions, beanReferences);
+
 					beanDefinitions.add(advisorDefinition);
 				}
 			}
@@ -311,6 +355,10 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 	 * '{@code after-throwing}' or '{@code around}' and registers the resulting
 	 * BeanDefinition with the supplied BeanDefinitionRegistry.
 	 * @return the generated advice RootBeanDefinition
+	 *
+	 * 根据织入方式（before、after这些）创建RootBeanDefinition，名为adviceDef即advice定义
+	 * 将上一步创建的RootBeanDefinition写入一个新的RootBeanDefinition，构造一个新的对象，名为advisorDefinition，即advisor定义
+	 * 将advisorDefinition注册到DefaultListableBeanFactory中
 	 */
 	private AbstractBeanDefinition parseAdvice(
 			String aspectName, int order, Element aspectElement, Element adviceElement, ParserContext parserContext,
@@ -332,20 +380,35 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 			aspectFactoryDef.setSynthetic(true);
 
 			// register the pointcut
+			/**
+			 * roboslyq-->第一步：创建通知
+			 */
 			AbstractBeanDefinition adviceDef = createAdviceDefinition(
 					adviceElement, parserContext, aspectName, order, methodDefinition, aspectFactoryDef,
 					beanDefinitions, beanReferences);
 
 			// configure the advisor
+			/**
+			 * 配置通知-->第二步：配置通知
+			 * 将名为adviceDef的RootBeanD转换成名为advisorDefinition的RootBeanDefinition
+			 * RootBeanDefinition包装了一下，new一个新的RootBeanDefinition出来，Class类型是org.springframework.aop.aspectj.AspectJPointcutAdvisor
+			 *
+			 */
 			RootBeanDefinition advisorDefinition = new RootBeanDefinition(AspectJPointcutAdvisor.class);
 			advisorDefinition.setSource(parserContext.extractSource(adviceElement));
 			advisorDefinition.getConstructorArgumentValues().addGenericArgumentValue(adviceDef);
+			/**
+			 * 用于判断<aop:aspect>标签中有没有”order”属性的，有就设置一下，”order”属性是用来控制切入方法优先级的。
+			 */
 			if (aspectElement.hasAttribute(ORDER_PROPERTY)) {
 				advisorDefinition.getPropertyValues().add(
 						ORDER_PROPERTY, aspectElement.getAttribute(ORDER_PROPERTY));
 			}
 
 			// register the final advisor
+			/**
+			 * roboslyq-->第三步：AOP Bean定义加载——将BeanDefinition注册到DefaultListableBeanFactory中
+			 */
 			parserContext.getReaderContext().registerWithGeneratedName(advisorDefinition);
 
 			return advisorDefinition;
@@ -365,7 +428,14 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 			Element adviceElement, ParserContext parserContext, String aspectName, int order,
 			RootBeanDefinition methodDef, RootBeanDefinition aspectFactoryDef,
 			List<BeanDefinition> beanDefinitions, List<BeanReference> beanReferences) {
-
+		/**
+		 * getAdviceClass()获取对应通知类型的实现类
+		 * before对应AspectJMethodBeforeAdvice
+		 * After对应AspectJAfterAdvice
+		 * after-returning对应AspectJAfterReturningAdvice
+		 * after-throwing对应AspectJAfterThrowingAdvice
+		 * around对应AspectJAroundAdvice
+		 */
 		RootBeanDefinition adviceDefinition = new RootBeanDefinition(getAdviceClass(adviceElement, parserContext));
 		adviceDefinition.setSource(parserContext.extractSource(adviceElement));
 
@@ -406,6 +476,7 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 
 	/**
 	 * Gets the advice implementation class corresponding to the supplied {@link Element}.
+	 * 此处包装了通知的具体实现类
 	 */
 	private Class<?> getAdviceClass(Element adviceElement, ParserContext parserContext) {
 		String elementName = parserContext.getDelegate().getLocalName(adviceElement);
