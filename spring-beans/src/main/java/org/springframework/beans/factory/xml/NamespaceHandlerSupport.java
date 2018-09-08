@@ -70,6 +70,9 @@ public abstract class NamespaceHandlerSupport implements NamespaceHandler {
 	@Override
 	@Nullable
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
+		/**
+		 * ConfigBeanDefinitionParser
+		 */
 		BeanDefinitionParser parser = findParserForElement(element, parserContext);
 		/**
 		 * roboslyq-->ConfigBeanDefinitionParser

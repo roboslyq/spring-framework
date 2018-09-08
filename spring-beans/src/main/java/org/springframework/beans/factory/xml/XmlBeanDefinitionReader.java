@@ -513,7 +513,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 */
 	public int registerBeanDefinitions(Document doc, Resource resource) throws BeanDefinitionStoreException {
 		/**
-		 * roboslyq-->得到BeanDefinitionDocumentReader来对XMl格式 的Bean配置文件进行解析，解析结果为BeanDefinition
+		 * roboslyq-->得到BeanDefinitionDocumentReader来对XMl格式 的Bean配置文件进行解析
+		 * ，解析结果为BeanDefinition
 		 */
 		BeanDefinitionDocumentReader documentReader = createBeanDefinitionDocumentReader();
 		//得到容器Bean注册 数量

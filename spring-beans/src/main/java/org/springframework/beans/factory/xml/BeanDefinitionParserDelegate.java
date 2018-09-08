@@ -1370,20 +1370,20 @@ public class BeanDefinitionParserDelegate {
 	 * 扩展标签解析（非Spring默认标签）
 	 */
 	public BeanDefinition parseCustomElement(Element ele, @Nullable BeanDefinition containingBd) {
-		//获取namespaceUri路径
+		/**
+		 * 获取namespaceUri路径
+		 */
 		String namespaceUri = getNamespaceURI(ele);
 		if (namespaceUri == null) {
 			return null;
 		}
 		/**
-		 * roboslyq-->获取springScheule扩展点的nameSpaceHanler
-		 * 例如AOP扩展点为AopNamespaceHandler。具体相关实现类如下：
+		 * roboslyq-->获取springScheule扩展点的nameSpaceHanler：例如AOP扩展点为AopNamespaceHandler。具体相关实现类如下：
 		 * config–>ConfigBeanDefinitionParser
 		 * aspectj-autoproxy–>AspectJAutoProxyBeanDefinitionParser
 		 * scoped-proxy–>ScopedProxyBeanDefinitionDecorator
 		 * spring-configured–>SpringConfiguredBeanDefinitionParser
 		 */
-
 		NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);
 		if (handler == null) {
 			error("Unable to locate Spring NamespaceHandler for XML schema namespace [" + namespaceUri + "]", ele);

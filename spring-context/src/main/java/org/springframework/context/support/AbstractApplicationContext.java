@@ -555,7 +555,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				initApplicationEventMulticaster();
 
 				// Initialize other special beans in specific context subclasses.
-				//roboslyq-->核心 方法，初始化Bean
 				onRefresh();
 
 				// Check for listener beans and register them.
