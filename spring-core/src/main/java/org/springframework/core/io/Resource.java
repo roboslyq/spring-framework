@@ -53,6 +53,7 @@ public interface Resource extends InputStreamSource {
 
 	/**
 	 * Determine whether this resource actually exists in physical form.
+	 * 判断当前资源是否存在（物理形式）
 	 * <p>This method performs a definitive existence check, whereas the
 	 * existence of a {@code Resource} handle only guarantees a valid
 	 * descriptor handle.

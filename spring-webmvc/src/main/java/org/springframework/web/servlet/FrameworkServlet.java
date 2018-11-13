@@ -139,6 +139,9 @@ import org.springframework.web.util.WebUtils;
  * @see #setNamespace
  */
 @SuppressWarnings("serial")
+/**
+ * 1、继承HttpServlet并且实现了ApplicatoinContextAward，故可以启动Spring容器
+ */
 public abstract class FrameworkServlet extends HttpServletBean implements ApplicationContextAware {
 
 	/**
@@ -893,8 +896,12 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * with a {@code NoBodyResponse} that just captures the content length.
 	 * @see #doService
 	 * @see #doHead
+	 *
 	 */
 	@Override
+	/**
+	 * Servlet入口方法
+	 */
 	protected final void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
@@ -906,6 +913,9 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * @see #doService
 	 */
 	@Override
+	/**
+	 * Servlet入口方法
+	 */
 	protected final void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
@@ -987,6 +997,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * Process this request, publishing an event regardless of the outcome.
 	 * <p>The actual event handling is performed by the abstract
 	 * {@link #doService} template method.
+	 * 处理doGet或doPost方法
 	 */
 	protected final void processRequest(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -1006,6 +1017,9 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		initContextHolders(request, localeContext, requestAttributes);
 
 		try {
+			/**
+			 * roboslyq-->请求的处理方法，在子类中实现
+			 */
 			doService(request, response);
 		}
 		catch (ServletException | IOException ex) {

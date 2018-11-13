@@ -496,6 +496,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	/**
 	 * Initialize the strategy objects that this servlet uses.
 	 * <p>May be overridden in subclasses in order to initialize further strategy objects.
+	 * 启动时初始化
 	 */
 	protected void initStrategies(ApplicationContext context) {
 		initMultipartResolver(context);
@@ -905,12 +906,18 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * for the actual dispatching.
 	 */
 	@Override
+	/**
+	 * doService,请求的具体方法处理
+	 */
 	protected void doService(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		logRequest(request);
 
 		// Keep a snapshot of the request attributes in case of an include,
 		// to be able to restore the original attributes after the include.
+		/**
+		 * 保存request的请求参数到snapshot中
+		 */
 		Map<String, Object> attributesSnapshot = null;
 		if (WebUtils.isIncludeRequest(request)) {
 			attributesSnapshot = new HashMap<>();
@@ -939,6 +946,9 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 
 		try {
+			/**
+			 * request处理方法
+			 */
 			doDispatch(request, response);
 		}
 		finally {
@@ -998,11 +1008,15 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * @param response current HTTP response
 	 * @throws Exception in case of any kind of processing failure
 	 */
+	/** 中央控制器,控制请求的转发 **/
+
 	protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		HttpServletRequest processedRequest = request;
 		HandlerExecutionChain mappedHandler = null;
 		boolean multipartRequestParsed = false;
-
+		/**
+		 * 异常管理器
+		 */
 		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
 
 		try {
@@ -1010,10 +1024,19 @@ public class DispatcherServlet extends FrameworkServlet {
 			Exception dispatchException = null;
 
 			try {
+				/**
+				 * 将request转换为MultipartRequest，若不是文件传输则保留原request.
+				 * 1.检查是否是文件上传的请求
+				 */
 				processedRequest = checkMultipart(request);
 				multipartRequestParsed = (processedRequest != request);
 
 				// Determine handler for the current request.
+				//获取Handler处理器（包括controller的方法及参数 ）
+				// 2.取得处理当前请求的controller,这里也称为hanlder,处理器,
+				// 	 第一个步骤的意义就在这里体现了.这里并不是直接返回controller,
+				//	 而是返回的HandlerExecutionChain请求处理器链对象,
+				//	 该对象封装了handler和interceptors.
 				mappedHandler = getHandler(processedRequest);
 				if (mappedHandler == null) {
 					noHandlerFound(processedRequest, response);
@@ -1021,6 +1044,9 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 
 				// Determine handler adapter for the current request.
+				//设置handler适配器
+				// 4.实际的处理器处理请求,返回结果视图对象
+
 				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
 
 				// Process last-modified header, if supported by the handler.
@@ -1038,6 +1064,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 
 				// Actually invoke the handler.
+				//调用handler的handler方法, 4.实际的处理器处理请求,返回结果视图对象
 				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 
 				if (asyncManager.isConcurrentHandlingStarted()) {
@@ -1045,6 +1072,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 
 				applyDefaultViewName(processedRequest, mv);
+				// 结果视图对象的处理
 				mappedHandler.applyPostHandle(processedRequest, response, mv);
 			}
 			catch (Exception ex) {
@@ -1055,6 +1083,9 @@ public class DispatcherServlet extends FrameworkServlet {
 				// making them available for @ExceptionHandler methods and other scenarios.
 				dispatchException = new NestedServletException("Handler dispatch failed", err);
 			}
+			/**
+			 * roboslyq-->视图转换
+			 */
 			processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);
 		}
 		catch (Exception ex) {
@@ -1068,6 +1099,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			if (asyncManager.isConcurrentHandlingStarted()) {
 				// Instead of postHandle and afterCompletion
 				if (mappedHandler != null) {
+					// 请求成功响应之后的方法
 					mappedHandler.applyAfterConcurrentHandlingStarted(processedRequest, response);
 				}
 			}

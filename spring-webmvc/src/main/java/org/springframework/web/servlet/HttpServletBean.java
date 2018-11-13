@@ -145,6 +145,9 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 	 * properties are missing), or if subclass initialization fails.
 	 */
 	@Override
+	/**
+	 * roboslyq-->APP容器启动时，servlet初始方法入口
+	 */
 	public final void init() throws ServletException {
 		if (logger.isTraceEnabled()) {
 			logger.trace("Initializing servlet '" + getServletName() + "'");
@@ -169,6 +172,9 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 		}
 
 		// Let subclasses do whatever initialization they like.
+		/**
+		 * 子类实现初始化
+		 */
 		initServletBean();
 
 		if (logger.isTraceEnabled()) {
