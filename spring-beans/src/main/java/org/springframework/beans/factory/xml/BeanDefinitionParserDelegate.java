@@ -410,6 +410,14 @@ public class BeanDefinitionParserDelegate {
 	 * if there were errors during parse. Errors are reported to the
 	 * 解析<bean>标签元素，如果有异常则返回null
 	 * {@link org.springframework.beans.factory.parsing.ProblemReporter}.
+	 * 解析bean中其他所有的属性，这些属性包含scope、singleton、abstract、lazy-init、autowire、
+	 * dependency-check、depends-on、autowire-candidate、
+	 * primary、init-method、destroy-method、
+	 * factory-method、factory-bean。并且解析bean下面所有的元素，
+	 * 其中包含：meta、lookup-method、replace-method、constructor-arg、
+	 * property、qualifier。解析完成这些属性和元素之后
+	 * （元素和属性很多，所以这是一个庞大的工作量），统一封装到GeneicBeanDefinition类型的实例中
+	 *
 	 */
 	@Nullable
 	public BeanDefinitionHolder parseBeanDefinitionElement(Element ele, @Nullable BeanDefinition containingBean) {
@@ -442,9 +450,18 @@ public class BeanDefinitionParserDelegate {
 		}
 		/**
 		 * roboslyq-->将Element元素转换成BeanDefinition
+		 * 解析bean的属性和元素，并分装成GeneicBeanDefinition中  (GeneicBeanDefinition是AbstractBeanDefinition实现类)
+		 * 	 * 解析bean中其他所有的属性，这些属性包含scope、singleton、abstract、lazy-init、autowire、
+		 * 	 * dependency-check、depends-on、autowire-candidate、
+		 * 	 * primary、init-method、destroy-method、
+		 * 	 * factory-method、factory-bean。并且解析bean下面所有的元素，
+		 * 	 * 其中包含：meta、lookup-method、replace-method、constructor-arg、
+		 * 	 * property、qualifier。解析完成这些属性和元素之后
+		 * 	 * （元素和属性很多，所以这是一个庞大的工作量），统一封装到GeneicBeanDefinition类型的实例中
 		 */
 		AbstractBeanDefinition beanDefinition = parseBeanDefinitionElement(ele, beanName, containingBean);
 		if (beanDefinition != null) {
+			//如果不存在beanName，则使用默认的规则创建beanName
 			if (!StringUtils.hasText(beanName)) {
 				try {
 					if (containingBean != null) {
@@ -474,6 +491,7 @@ public class BeanDefinitionParserDelegate {
 				}
 			}
 			String[] aliasesArray = StringUtils.toStringArray(aliases);
+			//roboslyq -- 将获取到的信息封装到BeanDeinitionHolder里面去。
 			return new BeanDefinitionHolder(beanDefinition, beanName, aliasesArray);
 		}
 

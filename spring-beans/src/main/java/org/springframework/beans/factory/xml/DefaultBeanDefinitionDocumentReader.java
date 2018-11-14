@@ -354,7 +354,10 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
 		/**
 		 * roboslyq--> bean解析的核心流程，得到一个BeanDefinition。
-		 * 即加载流程
+		 * 即加载流程。
+		 * 委托BeanDefinitionParserDelegate.parseBeanDefinitionElement（）完成解析回BeanDefinitionHolder类型的实例
+		 * bdHolder，经过这个方法后，bdHolder示例已经包含我们配置文件中配置的各个属性了，
+		 * 如class、name、id、alias之类的属性
 		 */
 		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
 		if (bdHolder != null) {
