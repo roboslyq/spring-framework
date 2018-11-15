@@ -374,7 +374,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 				// Register the final decorated instance.
 				/**
 				 * roboslyq-->调用BeanDefinitionReaderUtils将BeanDefinition注册到IOC容器中
-				 * 即完成注册流程 解析完成之后,需要对解析后的bdHolder 进行注册,同样注册操作委托给了BeanDefinitionUtils 的 registerBeanDefinition
+				 * 即完成注册流程
 				 */
 				BeanDefinitionReaderUtils.registerBeanDefinition(bdHolder, getReaderContext().getRegistry());
 			}

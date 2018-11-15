@@ -441,7 +441,7 @@ public class BeanDefinitionParserDelegate {
 			checkNameUniqueness(beanName, aliases, ele);
 		}
 		/**
-		 * roboslyq-->将Element元素转换成BeanDefinition，然后使用BeanDefinitionHolder进行包装
+		 * roboslyq-->将Element元素转换成BeanDefinition
 		 */
 		AbstractBeanDefinition beanDefinition = parseBeanDefinitionElement(ele, beanName, containingBean);
 		if (beanDefinition != null) {
