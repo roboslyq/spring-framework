@@ -217,7 +217,7 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 	 */
 	public int loadBeanDefinitions(String location, @Nullable Set<Resource> actualResources) throws BeanDefinitionStoreException {
 		/**
-		 * roboslyq-->org.springframework.context.support.ClassPathXmlApplicationContext@51565ec2: startup date [Fri Sep 07 11:32:52 CST 2018]; root of context hierarchy
+		 * roboslyq-->resourceLoader = org.springframework.context.support.ClassPathXmlApplicationContext
 		 */
 		ResourceLoader resourceLoader = getResourceLoader();
 		if (resourceLoader == null) {
@@ -229,6 +229,10 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 			// Resource pattern matching available.
 			try {
 				//roboslyq-->获取一个路径下所有的资源文件
+				/**
+				 *	ClassPathXmlApplicationContext中初始化 ResourcePatternResolver = PathMatchingResourcePatternResolver
+				 *  将String转换为Resources
+ 				 */
 				Resource[] resources = ((ResourcePatternResolver) resourceLoader).getResources(location);
 				/**
 				 * roboslyq-->加载一个路径下的所有资源，返回已经加载Bean的个数。

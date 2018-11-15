@@ -327,8 +327,14 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 					"Detected cyclic loading of " + encodedResource + " - check your import definitions!");
 		}
 		try {
+			/**
+			 * roboslyq -->根据Resource获取Stream对象
+			 */
 			InputStream inputStream = encodedResource.getResource().getInputStream();
 			try {
+				/**
+				 * roboslyq -->将Stream包装成SAX下的InputSource对象并设置Stream编码
+				 */
 				InputSource inputSource = new InputSource(inputStream);
 				if (encodedResource.getEncoding() != null) {
 					inputSource.setEncoding(encodedResource.getEncoding());
@@ -433,6 +439,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @throws Exception when thrown from the DocumentLoader
 	 * @see #setDocumentLoader
 	 * @see DocumentLoader#loadDocument
+	 * roboslyq-->将配置文件验证之后解析成具体Document对象
 	 */
 	protected Document doLoadDocument(InputSource inputSource, Resource resource) throws Exception {
 		return this.documentLoader.loadDocument(inputSource, getEntityResolver(), this.errorHandler,
@@ -520,10 +527,11 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		//得到容器Bean注册 数量
 		int countBefore = getRegistry().getBeanDefinitionCount();
 		/**
-		 * 	解析的入口，这里使用了委派模式，BeanDefinitionDocumentReader只是个接口
+		 * 	1、解析的入口，这里使用了委派模式，BeanDefinitionDocumentReader只是个接口
 		 * 	具体实现过程由实现类DefaultBeanDefinitionDocumentReader完成
+		 * 	2、createReaderContext(resource)中使用了public class ContextNamespaceHandler extends NamespaceHandlerSupport
+		 * 	中注册的相应BeanDefinitionParser完成解析
 		 */
-
 		documentReader.registerBeanDefinitions(doc, createReaderContext(resource));
 		//统计Bean解析数量
 		return getRegistry().getBeanDefinitionCount() - countBefore;

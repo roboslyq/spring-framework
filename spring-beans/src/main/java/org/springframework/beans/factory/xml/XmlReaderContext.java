@@ -65,6 +65,23 @@ public class XmlReaderContext extends ReaderContext {
 
 		super(resource, problemReporter, eventListener, sourceExtractor);
 		this.reader = reader;
+		/**
+		 * 获取不同的NamespaceHandler实现，例如
+		 * public class ContextNamespaceHandler extends NamespaceHandlerSupport {
+			@Override
+			public void init() {
+				registerBeanDefinitionParser("property-placeholder", new PropertyPlaceholderBeanDefinitionParser());
+				registerBeanDefinitionParser("property-override", new PropertyOverrideBeanDefinitionParser());
+				registerBeanDefinitionParser("annotation-config", new AnnotationConfigBeanDefinitionParser());
+				registerBeanDefinitionParser("component-scan", new ComponentScanBeanDefinitionParser());
+				registerBeanDefinitionParser("load-time-weaver", new LoadTimeWeaverBeanDefinitionParser());
+				registerBeanDefinitionParser("spring-configured", new SpringConfiguredBeanDefinitionParser());
+				registerBeanDefinitionParser("mbean-export", new MBeanExportBeanDefinitionParser());
+				registerBeanDefinitionParser("mbean-server", new MBeanServerBeanDefinitionParser());
+				}
+
+			}
+		 */
 		this.namespaceHandlerResolver = namespaceHandlerResolver;
 	}
 

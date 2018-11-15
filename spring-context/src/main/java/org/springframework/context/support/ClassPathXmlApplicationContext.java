@@ -60,6 +60,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 * @see #setConfigLocation
 	 * @see #setConfigLocations
 	 * @see #afterPropertiesSet()
+	 * roboslyq --> 不带任何参数的ClassPathXmlApplicationContext
 	 */
 	public ClassPathXmlApplicationContext() {
 	}
@@ -70,6 +71,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 * @see #setConfigLocation
 	 * @see #setConfigLocations
 	 * @see #afterPropertiesSet()
+	 * roboslyq --> 传入parent Context
 	 */
 	public ClassPathXmlApplicationContext(ApplicationContext parent) {
 		super(parent);
@@ -81,7 +83,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 * @param configLocation resource location
 	 * @throws BeansException if context creation failed
 	 *
-	 * roboslyq-->Bean工厂构造函数入口
+	 * roboslyq-->Bean工厂构造函数入口,传入单个资源位置
 	 *
 	 */
 	public ClassPathXmlApplicationContext(String configLocation) throws BeansException {
@@ -93,6 +95,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 * from the given XML files and automatically refreshing the context.
 	 * @param configLocations array of resource locations
 	 * @throws BeansException if context creation failed
+	 *  传入多个资源位置
 	 */
 	public ClassPathXmlApplicationContext(String... configLocations) throws BeansException {
 		//parent为空
@@ -143,18 +146,19 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 * @throws BeansException if context creation failed
 	 * 				容器创建会抛出异常，并且优雅的执行destroyBeans()和cancelRefresh(ex)操作
 	 * @see #refresh() 启动容器
-	 * roboslyq-20180905
+	 *  roboslyq-20180905
 	 *  SpringFramework框架分析的入口类
 	 */
 	public ClassPathXmlApplicationContext(
 			String[] configLocations, boolean refresh, @Nullable ApplicationContext parent)
 			throws BeansException {
 		/**
-		 * roboslyq--初始化了resourcePatternResolver
+		 * roboslyq--初始化了resourcePatternResolver = PathMatchingResourcePatternResolver
 		 */
 		super(parent);
 		/**
 		 * roboslyq--设置父类AbstractRefreshableApplicationContext资源位置，后续解析时会使用此值
+		 * 	将String形式的资源转换为String数组
 		 */
 		setConfigLocations(configLocations);
 		if (refresh) {

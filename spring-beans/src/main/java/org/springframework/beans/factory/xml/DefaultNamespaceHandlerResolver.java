@@ -111,6 +111,7 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 	 * from the configured mappings.
 	 * @param namespaceUri the relevant namespace URI
 	 * @return the located {@link NamespaceHandler}, or {@code null} if none found
+	 * roboslyq --> 根据不同的namespace找到对应的Handler
 	 */
 	@Override
 	@Nullable
@@ -149,6 +150,7 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 
 	/**
 	 * Load the specified NamespaceHandler mappings lazily.
+	 * roboslyq -->命名空间延迟加载，在第一次使用时为空，然后进行初始化。
 	 */
 	private Map<String, Object> getHandlerMappings() {
 		Map<String, Object> handlerMappings = this.handlerMappings;

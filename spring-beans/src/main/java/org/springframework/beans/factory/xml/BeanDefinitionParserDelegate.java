@@ -441,7 +441,7 @@ public class BeanDefinitionParserDelegate {
 			checkNameUniqueness(beanName, aliases, ele);
 		}
 		/**
-		 * roboslyq-->将Element元素转换成BeanDefinition
+		 * roboslyq-->将Element元素转换成BeanDefinition，然后使用BeanDefinitionHolder进行包装
 		 */
 		AbstractBeanDefinition beanDefinition = parseBeanDefinitionElement(ele, beanName, containingBean);
 		if (beanDefinition != null) {
@@ -1397,6 +1397,11 @@ public class BeanDefinitionParserDelegate {
 	}
 
 	public BeanDefinitionHolder decorateBeanDefinitionIfRequired(Element ele, BeanDefinitionHolder definitionHolder) {
+		/**
+		 * 这里将第三个函数设置为null, 那么第三个函数是做什么用的呢? 什么情况下不为空呢?
+		 * 其实这第三个参数是父类bean,当对某个嵌套配置进行分析时,这里需要传递父类beanDefinition
+		 * .分析源代码得知,这里传递的参数其实是为了使用父类的scope属性,以备子类若没有设置scope 时默认使用父类的属性,这里分析的是顶层配置,所以传null
+		 */
 		return decorateBeanDefinitionIfRequired(ele, definitionHolder, null);
 	}
 
@@ -1406,6 +1411,7 @@ public class BeanDefinitionParserDelegate {
 		BeanDefinitionHolder finalDefinition = definitionHolder;
 
 		// Decorate based on custom attributes first.
+		//遍历所有属性,看看是否有适用于修饰的属性
 		NamedNodeMap attributes = ele.getAttributes();
 		for (int i = 0; i < attributes.getLength(); i++) {
 			Node node = attributes.item(i);
@@ -1413,6 +1419,7 @@ public class BeanDefinitionParserDelegate {
 		}
 
 		// Decorate based on custom nested elements.
+		// 遍历所有属性,看看是否有适用于修饰的子元素
 		NodeList children = ele.getChildNodes();
 		for (int i = 0; i < children.getLength(); i++) {
 			Node node = children.item(i);
@@ -1425,11 +1432,14 @@ public class BeanDefinitionParserDelegate {
 
 	public BeanDefinitionHolder decorateIfRequired(
 			Node node, BeanDefinitionHolder originalDef, @Nullable BeanDefinition containingBd) {
-
+		// 获取命名空间
 		String namespaceUri = getNamespaceURI(node);
+		// 对非默认标签进行修饰(程序默认的属性或元素是直接忽略过去的,因为在之前已经处理过了)
 		if (namespaceUri != null && !isDefaultNamespace(namespaceUri)) {
+			// 根据命名空间找到对应的处理器
 			NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);
 			if (handler != null) {
+				// 进行修饰
 				BeanDefinitionHolder decorated =
 						handler.decorate(node, originalDef, new ParserContext(this.readerContext, this, containingBd));
 				if (decorated != null) {

@@ -89,6 +89,10 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * (or DTD, historically).
 	 * <p>Opens a DOM Document; then initializes the default settings
 	 * specified at the {@code <beans/>} level; then parses the contained bean definitions.
+	 *
+	 * roboslyq---->XmlReaderContext-->NamespaceHandlerResolver --->ContextNamespaceHandler--->解析具体的命名空间
+	 * 如下示例：
+	 *
 	 */
 	@Override
 	public void registerBeanDefinitions(Document doc, XmlReaderContext readerContext) {
@@ -138,6 +142,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		BeanDefinitionParserDelegate parent = this.delegate;
 		/**
 		 * BeanDefinitionParseDelegate
+		 * roboslyq -->委派模式，创建Bean解析delegate类
 		 */
 		this.delegate = createDelegate(getReaderContext(), root, parent);
 		//此处正常情况为true
@@ -207,7 +212,8 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 						parseDefaultElement(ele, delegate);
 					}
 					/**
-					 * 扩展点元素解析(aop:config等),故Spring AOP入口在此处实现
+					 * ####十分关键重点######
+					 * roboslyq -----> 扩展点元素解析(aop:config等),故Spring AOP入口在此处实现
 					 */
 					else {
 						delegate.parseCustomElement(ele);
@@ -355,15 +361,20 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		/**
 		 * roboslyq--> bean解析的核心流程，得到一个BeanDefinition。
 		 * 即加载流程
+		 *  委托BeanDefinition类的parseBeanDefinitionElement方法进行元素解析,返回Beandefinition
+		 * 类型的实例bdHolder 经过这个方法之后,  bdHolder实例已经包含了我们配置文件中的各种属性了,例如 : class,name,id,alias
 		 */
 		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
 		if (bdHolder != null) {
+			/**
+			 * roboslyq --> 当返回的bdHolder 不为空的情况下,若存在默认标签的子节点下再有自定义属性,还需要再次对自定义标签进行解析.
+			 */
 			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
 			try {
 				// Register the final decorated instance.
 				/**
 				 * roboslyq-->调用BeanDefinitionReaderUtils将BeanDefinition注册到IOC容器中
-				 * 即完成注册流程
+				 * 即完成注册流程 解析完成之后,需要对解析后的bdHolder 进行注册,同样注册操作委托给了BeanDefinitionUtils 的 registerBeanDefinition
 				 */
 				BeanDefinitionReaderUtils.registerBeanDefinition(bdHolder, getReaderContext().getRegistry());
 			}
@@ -372,6 +383,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 						bdHolder.getBeanName() + "'", ele, ex);
 			}
 			// Send registration event.
+			//最后发出响应事件,通知相关的监听器,这个bean已经加载完了.
 			getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
 		}
 	}
