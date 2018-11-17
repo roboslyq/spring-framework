@@ -83,6 +83,7 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 		// Create a new XmlBeanDefinitionReader for the given BeanFactory.
 		/**
 		 * roboslyq-->获取Reader相关实例，读取相关的配置文件
+		 * 直接new一个XmlBeanDefinitionReader,入参为BeanFactory
 		 */
 		XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
 

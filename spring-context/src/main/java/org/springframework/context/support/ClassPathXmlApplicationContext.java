@@ -50,7 +50,9 @@ import org.springframework.util.Assert;
  * @see GenericApplicationContext
  */
 public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContext {
-
+	/**
+	 * 保存配置文件资源
+	 */
 	@Nullable
 	private Resource[] configResources;
 
@@ -83,7 +85,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 * @param configLocation resource location
 	 * @throws BeansException if context creation failed
 	 *
-	 * roboslyq-->Bean工厂构造函数入口,传入单个资源位置
+	 * roboslyq-->Bean工厂构造函数入口,传入单个资源位置。并且refresh默认为true
 	 *
 	 */
 	public ClassPathXmlApplicationContext(String configLocation) throws BeansException {
@@ -163,7 +165,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 		setConfigLocations(configLocations);
 		if (refresh) {
 			/**
-			 *roboslyq--启动容器
+			 *roboslyq--启动容器,不带参数
 			 */
 			refresh();
 		}

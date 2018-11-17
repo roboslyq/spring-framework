@@ -512,38 +512,70 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		return this.applicationListeners;
 	}
 
+	/**
+	 * roboslyq -- > 容器启动类
+	 * @throws BeansException
+	 * @throws IllegalStateException
+	 */
 	@Override
 	public void refresh() throws BeansException, IllegalStateException {
 		synchronized (this.startupShutdownMonitor) {
 			// Prepare this context for refreshing.
-			//roboslyq--启动前准备操作（在父类AbstractRefreshableApplicationContext中实现）
-			// spring上下文的刷新时间，并将active设为true，初始化一些容器启动必要的资源
+			/** roboslyq--> 容器启动第一步 ---(创建BeanFactory容器前环境准备)-->
+			 *  (1)启动前准备操作（在父类AbstractRefreshableApplicationContext中实现）
+			 *  (2)记录spring容器上下文的启动(刷新)时间和标记
+			 *   (3)将容器激活状态active设为true，初始化一些容器启动必要的资源
+			 */
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
 			/**
-			 * roboslyq-->使用具体的子类去获取Bean工厂类，如果有则先销毁再创建。
-			 * 并且完成Bean的定位，加载及注册整个过程，十分重要核心！！！
+			 * roboslyq-->容器启动第二步（十分重要核心！！！） ---(创建BeanFactory，并将资源文件转换为BeanDefinition存入容器中)-->
+			 * （1）创建建Bean工厂，使用具体的子类去获取Bean工厂类，如果有则先销毁再创建。
+			 * （2）完成Bean的定位，加载及注册整个过程，最终得到BeanDefinition
+			 *  (3)英文单词解析
+			 *  	obtain:获取，获得
+			 *  	fresh:新的，新鲜的
+			 *  	BeanFactory:Bean工厂
+			 *  	obtainFreshBeanFactory:获取一个新的Bean工厂
  			 */
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
-			//roboslyq-->在完成Bean加载及注册之后，为了可以使用使用IOC，进行Bean工厂初始化。
-			prepareBeanFactory(beanFactory);
+			/**	roboslyq-->容器启动第三步 ---(BeanFactory创建后，在创建具体Bean之前设置一些环境相关参数-->
+			 * (1)容器启动第二步仅完成xml等资源文件到BeanDefinition的转换，还未开始初始化具体的SpringBean
+			 * (2)在完成Bean资源文件加载及注册之后，为了可以使用使用IOC，进行Bean工厂初始化。
+			 * (3)类装载器Classloader,PostProcessor等处理
+			 */
+			 prepareBeanFactory(beanFactory);
 
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
-				//roboslyq-->在BeanFactory完成初始化后进行一些操作，即在beanFactory初始化之后提供一个修改的机会
+				//roboslyq-->在BeanFactory完成初始化后进行一些操作，即在beanFactory初始化之后提供一个修改BeanFactory的机会
 				//BeanFactory定义后，提供一个修改BeanFactory的入口
 				//可以扩展，默认为空
+				/**	roboslyq-->容器启动第四步 ---(BeanFactory创建后，提供一个修改BeanFactory默认行为的机会)-->
+				 *	(1)模板方法
+				 *	(2)	在第二步完成Bean容器(BeanFacotory)初始化后，此时BeanFacotry均是默认参数。
+				 *		此入口提供目的是BeanDefinition装载后，可以再次修改BeanFactory的一些属性
+				 *	(3)默认是空，没有实现，可以自定义扩展
+				 */
 				postProcessBeanFactory(beanFactory);
 
 				// Invoke factory processors registered as beans in the context.
-				//roboslyq-->在Bean未开始实例化时，对Definition定义的修改入口
+				/**
+				 * roboslyq-->容器启动第五步 ---（提供一个修改BeanDefinition的入口）-->
+				 *  	在Bean未开始实例化时，对Definition定义的修改入口
+				 */
+
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
-				//robosly-->注册用于拦截Bean创建的BeanPostProcessor
+				/**
+				 * robosly-->容器启动第六步 ---（注册用于拦截Bean创建的BeanPostProcessor）-->
+				 * 	注册用于拦截Bean创建的BeanPostProcessor
+				 */
+
 				registerBeanPostProcessors(beanFactory);
 
 				// Initialize message source for this context.
@@ -562,11 +594,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.
-				//roboslyq-->完成no-lazy Bean的初始化
+				/**
+				 * roboslyq-->完成BeanFactory的初始化,将属性为no-lazy的BeanDefinition进行初始化,
+				 * 最终得到Spring中可以使用的Bean
+				 */
+
 				finishBeanFactoryInitialization(beanFactory);
 
 				// Last step: publish corresponding event.
-				//结束启动
+				//容器结束启动
 				finishRefresh();
 			}
 
@@ -634,7 +670,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see #refreshBeanFactory()
 	 * @see #getBeanFactory()
 	 */
-	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
+	protected ConfigurableListableBeanFactory 	obtainFreshBeanFactory() {
 		/**
 		 * roboslyq-获取Bean工厂前期准备，在子类AbstractRefreshableApplicationContext类中有具体实现
 		 * 此时，已经实现了BeanDefinition的装载。

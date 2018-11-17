@@ -1,0 +1,137 @@
+warning: LF will be replaced by CRLF in spring-context/src/main/java/org/springframework/context/support/AbstractApplicationContext.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in spring-context/src/main/java/org/springframework/context/support/AbstractXmlApplicationContext.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in spring-context/src/main/java/org/springframework/context/support/ClassPathXmlApplicationContext.java.
+The file will have its original line endings in your working directory.
+[1mdiff --git a/README.md b/README.md[m
+[1mindex 3e1705972a..4c2a85804d 100644[m
+[1m--- a/README.md[m
+[1m+++ b/README.md[m
+[36m@@ -3,4 +3,14 @@[m
+ 这是本人第一次撰写技术类的相关文章，仅用于记录自己的学习过程。个人理解可能会有不正确的地方，随时欢迎各位指点。[m
+ 同时也欢迎各位有兴趣的同学加我QQ（454520071），一起学习，共同进步！！！[m
+ [m
+[31m-## 第一篇 BeanFactory[m
+\ No newline at end of file[m
+[32m+[m[32m## 第一篇 SpringFrameWork基础知识[m
+[32m+[m[32m### 1、源码环境[m
+[32m+[m[32m### 2、项目结构[m
+[32m+[m
+[32m+[m[32m## 第二篇 BeanFactory体系[m
+[32m+[m
+[32m+[m[32m## 第三篇 AOP体系[m
+[32m+[m
+[32m+[m[32m## 第四篇 其它[m
+[41m+[m
+[41m+[m
+[1mdiff --git a/spring-context/src/main/java/org/springframework/context/support/AbstractApplicationContext.java b/spring-context/src/main/java/org/springframework/context/support/AbstractApplicationContext.java[m
+[1mindex 2d67dc55e6..56948460f8 100644[m
+[1m--- a/spring-context/src/main/java/org/springframework/context/support/AbstractApplicationContext.java[m
+[1m+++ b/spring-context/src/main/java/org/springframework/context/support/AbstractApplicationContext.java[m
+[36m@@ -512,38 +512,70 @@[m [mpublic abstract class AbstractApplicationContext extends DefaultResourceLoader[m
+ 		return this.applicationListeners;[m
+ 	}[m
+ [m
+[32m+[m	[32m/**[m
+[32m+[m	[32m * roboslyq -- > 容器启动类[m
+[32m+[m	[32m * @throws BeansException[m
+[32m+[m	[32m * @throws IllegalStateException[m
+[32m+[m	[32m */[m
+ 	@Override[m
+ 	public void refresh() throws BeansException, IllegalStateException {[m
+ 		synchronized (this.startupShutdownMonitor) {[m
+ 			// Prepare this context for refreshing.[m
+[31m-			//roboslyq--启动前准备操作（在父类AbstractRefreshableApplicationContext中实现）[m
+[31m-			// spring上下文的刷新时间，并将active设为true，初始化一些容器启动必要的资源[m
+[32m+[m			[32m/** roboslyq--> 容器启动第一步 ---(创建BeanFactory容器前环境准备)-->[m
+[32m+[m			[32m *  (1)启动前准备操作（在父类AbstractRefreshableApplicationContext中实现）[m
+[32m+[m			[32m *  (2)记录spring容器上下文的启动(刷新)时间和标记[m
+[32m+[m			[32m *   (3)将容器激活状态active设为true，初始化一些容器启动必要的资源[m
+[32m+[m			[32m */[m
+ 			prepareRefresh();[m
+ [m
+ 			// Tell the subclass to refresh the internal bean factory.[m
+ 			/**[m
+[31m-			 * roboslyq-->使用具体的子类去获取Bean工厂类，如果有则先销毁再创建。[m
+[31m-			 * 并且完成Bean的定位，加载及注册整个过程，十分重要核心！！！[m
+[32m+[m			[32m * roboslyq-->容器启动第二步（十分重要核心！！！） ---(创建BeanFactory，并将资源文件转换为BeanDefinition存入容器中)-->[m
+[32m+[m			[32m * （1）创建建Bean工厂，使用具体的子类去获取Bean工厂类，如果有则先销毁再创建。[m
+[32m+[m			[32m * （2）完成Bean的定位，加载及注册整个过程，最终得到BeanDefinition[m
+[32m+[m			[32m *  (3)英文单词解析[m
+[32m+[m			[32m *  	obtain:获取，获得[m
+[32m+[m			[32m *  	fresh:新的，新鲜的[m
+[32m+[m			[32m *  	BeanFactory:Bean工厂[m
+[32m+[m			[32m *  	obtainFreshBeanFactory:获取一个新的Bean工厂[m
+  			 */[m
+ 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();[m
+ [m
+ 			// Prepare the bean factory for use in this context.[m
+[31m-			//roboslyq-->在完成Bean加载及注册之后，为了可以使用使用IOC，进行Bean工厂初始化。[m
+[31m-			prepareBeanFactory(beanFactory);[m
+[32m+[m			[32m/**	roboslyq-->容器启动第三步 ---(BeanFactory创建后，在创建具体Bean之前设置一些环境相关参数-->[m
+[32m+[m			[32m * (1)容器启动第二步仅完成xml等资源文件到BeanDefinition的转换，还未开始初始化具体的SpringBean[m
+[32m+[m			[32m * (2)在完成Bean资源文件加载及注册之后，为了可以使用使用IOC，进行Bean工厂初始化。[m
+[32m+[m			[32m * (3)类装载器Classloader,PostProcessor等处理[m
+[32m+[m			[32m */[m
+[32m+[m			[32m prepareBeanFactory(beanFactory);[m
+ [m
+ 			try {[m
+ 				// Allows post-processing of the bean factory in context subclasses.[m
+[31m-				//roboslyq-->在BeanFactory完成初始化后进行一些操作，即在beanFactory初始化之后提供一个修改的机会[m
+[32m+[m				[32m//roboslyq-->在BeanFactory完成初始化后进行一些操作，即在beanFactory初始化之后提供一个修改BeanFactory的机会[m
+ 				//BeanFactory定义后，提供一个修改BeanFactory的入口[m
+ 				//可以扩展，默认为空[m
+[32m+[m				[32m/**	roboslyq-->容器启动第四步 ---(BeanFactory创建后，提供一个修改BeanFactory默认行为的机会)-->[m
+[32m+[m				[32m *	(1)模板方法[m
+[32m+[m				[32m *	(2)	在第二步完成Bean容器(BeanFacotory)初始化后，此时BeanFacotry均是默认参数。[m
+[32m+[m				[32m *		此入口提供目的是BeanDefinition装载后，可以再次修改BeanFactory的一些属性[m
+[32m+[m				[32m *	(3)默认是空，没有实现，可以自定义扩展[m
+[32m+[m				[32m */[m
+ 				postProcessBeanFactory(beanFactory);[m
+ [m
+ 				// Invoke factory processors registered as beans in the context.[m
+[31m-				//roboslyq-->在Bean未开始实例化时，对Definition定义的修改入口[m
+[32m+[m				[32m/**[m
+[32m+[m				[32m * roboslyq-->容器启动第五步 ---（提供一个修改BeanDefinition的入口）-->[m
+[32m+[m				[32m *  	在Bean未开始实例化时，对Definition定义的修改入口[m
+[32m+[m				[32m */[m
+[32m+[m
+ 				invokeBeanFactoryPostProcessors(beanFactory);[m
+ [m
+ 				// Register bean processors that intercept bean creation.[m
+[31m-				//robosly-->注册用于拦截Bean创建的BeanPostProcessor[m
+[32m+[m				[32m/**[m
+[32m+[m				[32m * robosly-->容器启动第六步 ---（注册用于拦截Bean创建的BeanPostProcessor）-->[m
+[32m+[m				[32m * 	注册用于拦截Bean创建的BeanPostProcessor[m
+[32m+[m				[32m */[m
+[32m+[m
+ 				registerBeanPostProcessors(beanFactory);[m
+ [m
+ 				// Initialize message source for this context.[m
+[36m@@ -562,11 +594,15 @@[m [mpublic abstract class AbstractApplicationContext extends DefaultResourceLoader[m
+ 				registerListeners();[m
+ [m
+ 				// Instantiate all remaining (non-lazy-init) singletons.[m
+[31m-				//roboslyq-->完成no-lazy Bean的初始化[m
+[32m+[m				[32m/**[m
+[32m+[m				[32m * roboslyq-->完成BeanFactory的初始化,将属性为no-lazy的BeanDefinition进行初始化,[m
+[32m+[m				[32m * 最终得到Spring中可以使用的Bean[m
+[32m+[m				[32m */[m
+[32m+[m
+ 				finishBeanFactoryInitialization(beanFactory);[m
+ [m
+ 				// Last step: publish corresponding event.[m
+[31m-				//结束启动[m
+[32m+[m				[32m//容器结束启动[m
+ 				finishRefresh();[m
+ 			}[m
+ [m
+[36m@@ -634,7 +670,7 @@[m [mpublic abstract class AbstractApplicationContext extends DefaultResourceLoader[m
+ 	 * @see #refreshBeanFactory()[m
+ 	 * @see #getBeanFactory()[m
+ 	 */[m
+[31m-	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {[m
+[32m+[m	[32mprotected ConfigurableListableBeanFactory 	obtainFreshBeanFactory() {[m
+ 		/**[m
+ 		 
