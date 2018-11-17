@@ -21,7 +21,7 @@ import org.springframework.lang.Nullable;
 /**
  * Interface to be implemented by bean metadata elements
  * that carry a configuration source object.
- *
+ * roboslyq --> Bean的元数据定义，可以获取一个配置文件资源对象
  * @author Juergen Hoeller
  * @since 2.0
  */
@@ -30,6 +30,7 @@ public interface BeanMetadataElement {
 	/**
 	 * Return the configuration source {@code Object} for this metadata element
 	 * (may be {@code null}).
+	 * roboslyq --> 返回配置文件
 	 */
 	@Nullable
 	Object getSource();

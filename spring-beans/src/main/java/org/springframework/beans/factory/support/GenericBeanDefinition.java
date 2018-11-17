@@ -35,6 +35,8 @@ import org.springframework.lang.Nullable;
  * @see #setParentName
  * @see RootBeanDefinition
  * @see ChildBeanDefinition
+ * roboslyq-->GenericBeanDefinition是自2.5以后新加入的bean文件配置属性定义类，
+ * 	是一站式服务类，用于替代ChildBeanDefinition类
  */
 @SuppressWarnings("serial")
 public class GenericBeanDefinition extends AbstractBeanDefinition {

@@ -49,24 +49,28 @@ import org.springframework.util.Assert;
  * @author Juergen Hoeller
  * @see GenericBeanDefinition
  * @see ChildBeanDefinition
+ *
+ * roboslyq-->在配置文件中可以定义父和子，父用RootBeanDefinition表示，
+ * 而子用ChildBeanDefiniton表示，而没有父的就使用RootBeanDefinition表
  */
 @SuppressWarnings("serial")
 public class RootBeanDefinition extends AbstractBeanDefinition {
-
+	//bean定义的持有者(修饰bean定义)
 	@Nullable
 	private BeanDefinitionHolder decoratedDefinition;
 
 	@Nullable
 	private AnnotatedElement qualifiedElement;
-
+	//默认允许缓存
 	boolean allowCaching = true;
-
+	//是否已经指定引用非重载方法的工厂方法名。
 	boolean isFactoryMethodUnique = false;
-
+	//bean指定的目标类型定义
 	@Nullable
 	volatile ResolvableType targetType;
 
 	/** Package-visible field for caching the determined Class of a given bean definition. */
+	//缓存Bean的定义类
 	@Nullable
 	volatile Class<?> resolvedTargetType;
 
@@ -78,27 +82,34 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	final Object constructorArgumentLock = new Object();
 
 	/** Package-visible field for caching the resolved constructor or factory method. */
+	//缓存已解析的构造函数或工厂方法
 	@Nullable
 	Executable resolvedConstructorOrFactoryMethod;
 
 	/** Package-visible field that marks the constructor arguments as resolved. */
+	//将构造函数参数标记为已解析。
 	boolean constructorArgumentsResolved = false;
 
 	/** Package-visible field for caching fully resolved constructor arguments. */
+	//缓存完全解析的构造函数参数
 	@Nullable
 	Object[] resolvedConstructorArguments;
 
 	/** Package-visible field for caching partly prepared constructor arguments. */
+	//缓存部分准备好的构造函数参数
 	@Nullable
 	Object[] preparedConstructorArguments;
 
 	/** Common lock for the two post-processing fields below. */
+	//后处理锁对象
 	final Object postProcessingLock = new Object();
 
 	/** Package-visible field that indicates MergedBeanDefinitionPostProcessor having been applied. */
+	//表明已应用mergedbeandefinitionpostprocessor
 	boolean postProcessed = false;
 
 	/** Package-visible field that indicates a before-instantiation post-processor having kicked in. */
+	//指示已启动的一个实例化之前的后置处理器。
 	@Nullable
 	volatile Boolean beforeInstantiationResolved;
 
@@ -120,6 +131,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	 * @see #setConstructorArgumentValues
 	 * @see #setPropertyValues
 	 */
+	//构造方法
 	public RootBeanDefinition() {
 		super();
 	}
@@ -129,6 +141,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	 * @param beanClass the class of the bean to instantiate
 	 * @see #setBeanClass
 	 */
+	//构造方法
 	public RootBeanDefinition(@Nullable Class<?> beanClass) {
 		super();
 		setBeanClass(beanClass);
@@ -143,6 +156,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	 * @since 5.0
 	 * @see #setInstanceSupplier
 	 */
+	//构造方法
 	public <T> RootBeanDefinition(@Nullable Class<T> beanClass, @Nullable Supplier<T> instanceSupplier) {
 		super();
 		setBeanClass(beanClass);
@@ -159,6 +173,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	 * @since 5.0
 	 * @see #setInstanceSupplier
 	 */
+	//构造方法
 	public <T> RootBeanDefinition(@Nullable Class<T> beanClass, String scope, @Nullable Supplier<T> instanceSupplier) {
 		super();
 		setBeanClass(beanClass);
@@ -174,6 +189,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	 * @param dependencyCheck whether to perform a dependency check for objects
 	 * (not applicable to autowiring a constructor, thus ignored there)
 	 */
+	//构造方法
 	public RootBeanDefinition(@Nullable Class<?> beanClass, int autowireMode, boolean dependencyCheck) {
 		super();
 		setBeanClass(beanClass);
@@ -190,6 +206,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	 * @param cargs the constructor argument values to apply
 	 * @param pvs the property values to apply
 	 */
+	//构造方法
 	public RootBeanDefinition(@Nullable Class<?> beanClass, @Nullable ConstructorArgumentValues cargs,
 			@Nullable MutablePropertyValues pvs) {
 
@@ -203,6 +220,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	 * <p>Takes a bean class name to avoid eager loading of the bean class.
 	 * @param beanClassName the name of the class to instantiate
 	 */
+	//构造方法
 	public RootBeanDefinition(String beanClassName) {
 		setBeanClassName(beanClassName);
 	}
@@ -215,6 +233,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	 * @param cargs the constructor argument values to apply
 	 * @param pvs the property values to apply
 	 */
+	//构造方法
 	public RootBeanDefinition(String beanClassName, ConstructorArgumentValues cargs, MutablePropertyValues pvs) {
 		super(cargs, pvs);
 		setBeanClassName(beanClassName);
@@ -225,6 +244,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	 * bean definition.
 	 * @param original the original bean definition to copy from
 	 */
+	//构造方法
 	public RootBeanDefinition(RootBeanDefinition original) {
 		super(original);
 		this.decoratedDefinition = original.decoratedDefinition;
@@ -239,17 +259,20 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	 * bean definition.
 	 * @param original the original bean definition to copy from
 	 */
+	//构造方法
 	RootBeanDefinition(BeanDefinition original) {
 		super(original);
 	}
 
 
 	@Override
+	//当前Bean就是父Bean，不含有父bean定义
 	public String getParentName() {
 		return null;
 	}
 
 	@Override
+	//当前Bean就是父Bean，所以不能包含父Bean的父Bean名称
 	public void setParentName(@Nullable String parentName) {
 		if (parentName != null) {
 			throw new IllegalArgumentException("Root bean cannot be changed into a child bean with parent reference");
@@ -259,6 +282,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	/**
 	 * Register a target definition that is being decorated by this bean definition.
 	 */
+	//设置bean定义的修饰者（对bean定义进行一层修饰，持有bean定义）
 	public void setDecoratedDefinition(@Nullable BeanDefinitionHolder decoratedDefinition) {
 		this.decoratedDefinition = decoratedDefinition;
 	}
@@ -296,6 +320,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	 * Specify a generics-containing target type of this bean definition, if known in advance.
 	 * @since 4.3.3
 	 */
+	//设置这个bean指定的目标类型定义，如果已知的提前
 	public void setTargetType(ResolvableType targetType) {
 		this.targetType = targetType;
 	}

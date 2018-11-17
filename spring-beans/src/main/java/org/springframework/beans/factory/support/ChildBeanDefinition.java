@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * roboslyq-->在配置文件中可以定义父和子，父用RootBeanDefinition表示，而子
+ * 			  用ChildBeanDefiniton表示，而没有父的就使用RootBeanDefinition表示
  */
 
 package org.springframework.beans.factory.support;
@@ -45,7 +47,9 @@ import org.springframework.util.ObjectUtils;
  */
 @SuppressWarnings("serial")
 public class ChildBeanDefinition extends AbstractBeanDefinition {
-
+	/**
+	 * 父Bean名称
+	 */
 	@Nullable
 	private String parentName;
 

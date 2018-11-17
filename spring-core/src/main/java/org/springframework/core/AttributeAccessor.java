@@ -21,6 +21,7 @@ import org.springframework.lang.Nullable;
 /**
  * Interface defining a generic contract for attaching and accessing metadata
  * to/from arbitrary objects.
+ * roboslyq-->定义用于附加和访问元数据的通用的接口，来自任意对象
  *
  * @author Rob Harrop
  * @since 2.0
@@ -35,6 +36,7 @@ public interface AttributeAccessor {
 	 * class or package names as prefix.
 	 * @param name the unique attribute key
 	 * @param value the attribute value to be attached
+	 *  roboslyq--> 设置Bean属性name=value
 	 */
 	void setAttribute(String name, @Nullable Object value);
 
@@ -43,6 +45,7 @@ public interface AttributeAccessor {
 	 * Return {@code null} if the attribute doesn't exist.
 	 * @param name the unique attribute key
 	 * @return the current value of the attribute, if any
+	 * roboslyq--> 获取Bean属性name，返回属性值value
 	 */
 	@Nullable
 	Object getAttribute(String name);
@@ -52,6 +55,7 @@ public interface AttributeAccessor {
 	 * Return {@code null} if no attribute under {@code name} is found.
 	 * @param name the unique attribute key
 	 * @return the last value of the attribute, if any
+	 * roboslyq--> 移除属性name
 	 */
 	@Nullable
 	Object removeAttribute(String name);
@@ -60,11 +64,13 @@ public interface AttributeAccessor {
 	 * Return {@code true} if the attribute identified by {@code name} exists.
 	 * Otherwise return {@code false}.
 	 * @param name the unique attribute key
+	 * roboslyq--> 是否包含属性
 	 */
 	boolean hasAttribute(String name);
 
 	/**
 	 * Return the names of all attributes.
+	 * roboslyq--> 返回所有属性
 	 */
 	String[] attributeNames();
 
