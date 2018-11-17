@@ -195,7 +195,8 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 */
 	protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate) {
 		/**
-		 * roboslyq--Bean定义 的Document对象，使用了Spring默认命名空间
+		 * roboslyq--Bean定义的Document对象,使用了Spring默认命名空间
+		 * 		root元素是否是默认空间
 		 */
 		if (delegate.isDefaultNamespace(root)) {
 			NodeList nl = root.getChildNodes();
@@ -223,7 +224,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		}
 		else {
 			/**
-			 * 使用用户自定义的规则解析元素节点
+			 * 用户自定义的命名空间，使用用户自定义的规则(NameSpaceHandler)解析元素节点
 			 */
 			delegate.parseCustomElement(root);
 		}

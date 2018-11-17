@@ -35,6 +35,9 @@ import org.springframework.lang.Nullable;
  * @author Rob Harrop
  * @author Juergen Hoeller
  * @since 2.0
+ * roboslyq --> org.springframework.beans.factory.xml.BeanDefinitionParserDelegate
+ * 	“NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);”
+ * 	“return handler.parse(ele, new ParserContext(this.readerContext, this, containingBd));”
  */
 class AspectJAutoProxyBeanDefinitionParser implements BeanDefinitionParser {
 
@@ -44,6 +47,9 @@ class AspectJAutoProxyBeanDefinitionParser implements BeanDefinitionParser {
 		//注册AspectJAnnotationAutoProxyCreator
 		AopNamespaceUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(parserContext, element);
 		extendBeanDefinition(element, parserContext);
+		/**
+		 * roboslyq --> spring框架外层未使用此返回值，所以可以直接返回空
+		 */
 		return null;
 	}
 
