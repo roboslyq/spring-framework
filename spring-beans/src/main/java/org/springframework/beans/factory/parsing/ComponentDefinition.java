@@ -73,6 +73,8 @@ import org.springframework.beans.factory.config.BeanReference;
  * @see CompositeComponentDefinition
  * @see BeanComponentDefinition
  * @see ReaderEventListener#componentRegistered(ComponentDefinition)
+ *
+ * BeanDefintion容器
  */
 public interface ComponentDefinition extends BeanMetadataElement {
 

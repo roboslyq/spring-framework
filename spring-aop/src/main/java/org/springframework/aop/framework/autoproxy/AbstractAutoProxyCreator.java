@@ -361,16 +361,19 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		/**
 		 * 获取需要生成代理的Bean对象 ，在getAdvicesAndAdvisorsForBean中实现。
 		 * 通过获取Bendifinition中的List<Advisor>来判断
+		 *  为目标bean查找匹配的通知器
 		 */
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
 		if (specificInterceptors != DO_NOT_PROXY) {
 			this.advisedBeans.put(cacheKey, Boolean.TRUE);
 			/**
-			 * 创建代理
+			 * 创建代理：如果通知器的数组specificInterceptors不为空，那么生成代理对象
+			 * 			 有两种生成方式生成代理：JDK动态代理和cglib代理，默认是JDK动态代理
 			 */
 			Object proxy = createProxy(
 					bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
 			this.proxyTypes.put(cacheKey, proxy.getClass());
+			//返回代理对象，此时容器中的beanName对应的对象不再是目标对象，而是代理对象。
 			return proxy;
 		}
 
@@ -484,8 +487,10 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		}
 		/**
 		 * 向ProxyFactory中添加一些参数
+		 * 获取所有的通知器，并给ProxyFactory配置通知器，目标对象
 		 */
 		Advisor[] advisors = buildAdvisors(beanName, specificInterceptors);
+		// 当调用目标方法时，这些配置好的通知器就会起作用
 		proxyFactory.addAdvisors(advisors);
 		proxyFactory.setTargetSource(targetSource);
 		customizeProxyFactory(proxyFactory);
@@ -498,6 +503,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		 * proxy创建核心入口：
 		 * 1、创建AopProxy接口实现类
 		 * 2、通过AopProxy接口的实现类的getProxy方法获取<bean>对应的代理
+		 *  此处生成代理对象，进入ProxyFactory的getProxy方法
 		 */
 		return proxyFactory.getProxy(getProxyClassLoader());
 	}

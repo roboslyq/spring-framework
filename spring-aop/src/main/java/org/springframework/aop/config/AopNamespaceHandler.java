@@ -58,9 +58,21 @@ public class AopNamespaceHandler extends NamespaceHandlerSupport {
 	 * Register the {@link BeanDefinitionParser BeanDefinitionParsers} for the
 	 * '{@code config}', '{@code spring-configured}', '{@code aspectj-autoproxy}'
 	 * and '{@code scoped-proxy}' tags.
+	 *
+	 * roboslyq --> AOP配置解析阶段，将配置文件转换成BeanDefinition
 	 */
 	@Override
 	public void init() {
+		/**
+		 * AOP配置DEMO
+		 *  <aop:config>  ---->第一层标签config
+		 * 	 <aop:aspect id="aopId" ref="sprinbBeanId"> ---->第二层标签aspect
+		 * 		 <aop:pointcut id="pointcutId" expression="execution(* com.roboslyq.cn.*.*(..))" />
+		 * 		 <aop:before method="methodName" pointcut-ref="pointcutId" />
+		 * 		 <aop:after method="methodName2" pointcut-ref="pointcutId" />
+		 * 	 </aop:aspect>
+		 * </aop:config>
+		 */
 		// In 2.0 XSD as well as in 2.1 XSD.
 		registerBeanDefinitionParser("config", new ConfigBeanDefinitionParser());
 		registerBeanDefinitionParser("aspectj-autoproxy", new AspectJAutoProxyBeanDefinitionParser());

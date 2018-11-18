@@ -571,11 +571,20 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
+				//实例化Bean的后置处理器，这样在Bean实例时，后置处理器就可以生效了
 				/**
 				 * robosly-->容器启动第六步 ---（注册用于拦截Bean创建的BeanPostProcessor）-->
 				 * 	注册用于拦截Bean创建的BeanPostProcessor
+				 * 	例如：AOP具体织和在这个入口完成，具体原因如下：
+				 * 	(1) AOP在解析过程中会生成如下对象：
+				 * 		被代理的目标对象
+				 * 		定义的切面
+				 * 		InternalAutoProxyCreator:用来生成代理对象的后置处理器，它实现了BeanPostProcessor，类型是AspectJAwareAdvisorAutoProxyCreator
+				 * 		AspectJPointcutAdvisor#0:定义的通知
+				 * 		AspectJPointcutAdvisor#1:定义的通知
+				 * 		updateUserMethod:切入点表达式
+				 *  （2）其中	InternalAutoProxyCreator实现了BeanPostProcessor，所以会进入此方法处理
 				 */
-
 				registerBeanPostProcessors(beanFactory);
 
 				// Initialize message source for this context.
@@ -596,7 +605,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				// Instantiate all remaining (non-lazy-init) singletons.
 				/**
 				 * roboslyq-->完成BeanFactory的初始化,将属性为no-lazy的BeanDefinition进行初始化,
-				 * 最终得到Spring中可以使用的Bean
+				 * 最终得到Spring中可以使用的Bean（AOP织入也是在此阶段完成）
 				 */
 
 				finishBeanFactoryInitialization(beanFactory);
@@ -932,6 +941,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Instantiate all remaining (non-lazy-init) singletons.
 		/**
 		 * roboslyq-->初始化加载非延迟Bean。在DefaultListableBeanFactory实现
+		 * AOP 织入
 		 */
 		beanFactory.preInstantiateSingletons();
 	}
