@@ -107,7 +107,7 @@ public abstract class AopConfigUtils {
 		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
 			BeanDefinition definition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);
 			definition.getPropertyValues().add("proxyTargetClass", Boolean.TRUE);
-		}As
+		}
 	}
 
 	public static void forceAutoProxyCreatorToExposeProxy(BeanDefinitionRegistry registry) {
