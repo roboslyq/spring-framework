@@ -129,6 +129,8 @@ public final class BeanDefinitionBuilder {
 
 	/**
 	 * The {@code BeanDefinition} instance we are creating.
+	 * 创建的BeanDefinition对象，基本所有的相关set均调用beanDefinition设置方法
+	 * 最终返回Beandinition时即是已经设置好的BeanDefinition
 	 */
 	private final AbstractBeanDefinition beanDefinition;
 

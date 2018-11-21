@@ -41,31 +41,36 @@ abstract class AbstractPropertyLoadingBeanDefinitionParser extends AbstractSingl
 
 	@Override
 	protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
+		/**
+		 * roboslyq --> 获取配置中的location属性，多个之间逗号分隔"
+		 */
 		String location = element.getAttribute("location");
 		if (StringUtils.hasLength(location)) {
 			location = parserContext.getReaderContext().getEnvironment().resolvePlaceholders(location);
+			//逗号分割，解析为数据多个配置文件
 			String[] locations = StringUtils.commaDelimitedListToStringArray(location);
+			//将此配置加入BeanDeifnitionBuilder中
 			builder.addPropertyValue("locations", locations);
 		}
-
+		//如果配置了ref属性值，本地Properties配置
 		String propertiesRef = element.getAttribute("properties-ref");
 		if (StringUtils.hasLength(propertiesRef)) {
 			builder.addPropertyReference("properties", propertiesRef);
 		}
-
+		//指定配置文件编码
 		String fileEncoding = element.getAttribute("file-encoding");
 		if (StringUtils.hasLength(fileEncoding)) {
 			builder.addPropertyValue("fileEncoding", fileEncoding);
 		}
-
+		//指定配置文件顺序
 		String order = element.getAttribute("order");
 		if (StringUtils.hasLength(order)) {
 			builder.addPropertyValue("order", Integer.valueOf(order));
 		}
-
+		//是否忽略未找到配置文件
 		builder.addPropertyValue("ignoreResourceNotFound",
 				Boolean.valueOf(element.getAttribute("ignore-resource-not-found")));
-
+		//是否本地覆盖模式，即如果true，那么properties-ref的属性将覆盖location加载的属性，否则相反
 		builder.addPropertyValue("localOverride",
 				Boolean.valueOf(element.getAttribute("local-override")));
 

@@ -41,6 +41,9 @@ class PropertyPlaceholderBeanDefinitionParser extends AbstractPropertyLoadingBea
 
 	@Override
 	protected Class<?> getBeanClass(Element element) {
+
+		//Spring 3.1提供的PropertySourcesPlaceholderConfigurer，
+		//其他情况使用Spring 3.1之前的PropertyPlaceholderConfigurer
 		// As of Spring 3.1, the default value of system-properties-mode has changed from
 		// 'FALLBACK' to 'ENVIRONMENT'. This latter value indicates that resolution of
 		// placeholders against system properties is a function of the Environment and
@@ -56,11 +59,16 @@ class PropertyPlaceholderBeanDefinitionParser extends AbstractPropertyLoadingBea
 
 	@Override
 	protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
+		//父类完成一些公共属性配置
 		super.doParse(element, parserContext, builder);
-
+		//是否忽略解析不到的属性，如果不忽略，找不到将抛出异常
 		builder.addPropertyValue("ignoreUnresolvablePlaceholders",
 				Boolean.valueOf(element.getAttribute("ignore-unresolvable")));
-
+		//系统属性模式:
+		//(1) 默认ENVIRONMENT（表示先找ENVIRONMENT，再找properties-ref/location的），将使用Spring 3.1提供的PropertySourcesPlaceholderConfigurer，
+		// 其他情况使用Spring 3.1之前的PropertyPlaceholderConfigurer
+		// (2)NEVER：表示永远不用ENVIRONMENT的，O
+		// (3)VERRIDE类似于ENVIRONMENT
 		String systemPropertiesModeName = element.getAttribute(SYSTEM_PROPERTIES_MODE_ATTRIBUTE);
 		if (StringUtils.hasLength(systemPropertiesModeName) &&
 				!systemPropertiesModeName.equals(SYSTEM_PROPERTIES_MODE_DEFAULT)) {
