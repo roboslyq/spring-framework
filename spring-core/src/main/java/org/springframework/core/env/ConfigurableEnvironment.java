@@ -24,6 +24,7 @@ import java.util.Map;
  * property sources. Allows clients to set and validate required properties, customize the
  * conversion service and more through the {@link ConfigurablePropertyResolver}
  * superinterface.
+ * 实现Environment的大部分类都可以通过此接口实现来设置具体的参数值。
  *
  * <h2>Manipulating property sources</h2>
  * <p>Property sources may be removed, reordered, or replaced; and additional

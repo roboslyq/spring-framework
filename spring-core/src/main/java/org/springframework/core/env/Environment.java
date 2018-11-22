@@ -18,10 +18,11 @@ package org.springframework.core.env;
 
 /**
  * Interface representing the environment in which the current application is running.
+ * 此接口表述了当前应用正在运行的环境（dev,test,pro等）
  * Models two key aspects of the application environment: <em>profiles</em> and
  * <em>properties</em>. Methods related to property access are exposed via the
  * {@link PropertyResolver} superinterface.
- *
+ * 此模块与profiles和properties相关联
  * <p>A <em>profile</em> is a named, logical group of bean definitions to be registered
  * with the container only if the given profile is <em>active</em>. Beans may be assigned
  * to a profile whether defined in XML or via annotations; see the spring-beans 3.1 schema
@@ -82,6 +83,7 @@ public interface Environment extends PropertyResolver {
 	 * @see #getDefaultProfiles
 	 * @see ConfigurableEnvironment#setActiveProfiles
 	 * @see AbstractEnvironment#ACTIVE_PROFILES_PROPERTY_NAME
+	 * 获取当前激活的配置文件
 	 */
 	String[] getActiveProfiles();
 
@@ -91,6 +93,7 @@ public interface Environment extends PropertyResolver {
 	 * @see #getActiveProfiles
 	 * @see ConfigurableEnvironment#setDefaultProfiles
 	 * @see AbstractEnvironment#DEFAULT_PROFILES_PROPERTY_NAME
+	 * 获取系统默认的配置文件
 	 */
 	String[] getDefaultProfiles();
 
@@ -107,6 +110,7 @@ public interface Environment extends PropertyResolver {
 	 * @see #getDefaultProfiles
 	 * @see #acceptsProfiles(Profiles)
 	 * @deprecated as of 5.1 in favor of {@link #acceptsProfiles(Profiles)}
+	 * 判断给定的profiles是否激活（已过时，使用Profiles对象包装）
 	 */
 	@Deprecated
 	boolean acceptsProfiles(String... profiles);
@@ -114,6 +118,7 @@ public interface Environment extends PropertyResolver {
 	/**
 	 * Return whether the {@linkplain #getActiveProfiles() active profiles}
 	 * match the given {@link Profiles} predicate.
+	 *  判断给定的profiles是否激活
 	 */
 	boolean acceptsProfiles(Profiles profiles);
 
