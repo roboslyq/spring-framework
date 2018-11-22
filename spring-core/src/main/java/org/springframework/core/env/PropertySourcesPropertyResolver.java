@@ -28,6 +28,9 @@ import org.springframework.lang.Nullable;
  * @see PropertySource
  * @see PropertySources
  * @see AbstractEnvironment
+ *
+ * 该类是体系中唯一的完整实现类。它以PropertySources属性源集合（内部持有属性源列表List<PropertySource>）
+ * 为属性值的来源，按序遍历每个PropertySource，获取到一个非null的属性值则返回。
  */
 public class PropertySourcesPropertyResolver extends AbstractPropertyResolver {
 

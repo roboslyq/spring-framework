@@ -36,7 +36,7 @@ import org.springframework.lang.Nullable;
  * <p>Where <em>precedence</em> is mentioned in methods such as {@link #addFirst}
  * and {@link #addLast}, this is with regard to the order in which property sources
  * will be searched when resolving a given property with a {@link PropertyResolver}.
- *
+ * PropertySource容器，可以装载多个PropertySource。
  * @author Chris Beams
  * @author Juergen Hoeller
  * @since 3.1
@@ -45,12 +45,22 @@ import org.springframework.lang.Nullable;
 public class MutablePropertySources implements PropertySources {
 
 	private final Log logger;
+	/**
+	 * ArrayList的线程安全的变体，其原理大概可以通俗的理解为:初始化的时候只有一个容器，很常一段时间，
+	 * 这个容器数据、数量等没有发生变化的时候，大家(多个线程)，都是读取(假设这段时间里只发生读取的操作)
+	 * 同一个容器中的数据，所以这样大家读到的数据都是唯一、一致、安全的，但是后来有人往里面增加了一个数据，
+	 * 这个时候CopyOnWriteArrayList 底层实现添加的原理是先copy出一个容器(可以简称副本)，
+	 * 再往新的容器里添加这个新的数据，最后把新的容器的引用地址赋值给了之前那个旧的的容器地址，
+	 * 但是在添加这个数据的期间，其他线程如果要去读取数据，仍然是读取到旧的容器里的数据。
+	 *
+	 */
+	// 使用线程安全的List容器，因为初始化完成之后比较少修改
 
 	private final List<PropertySource<?>> propertySourceList = new CopyOnWriteArrayList<>();
 
-
 	/**
 	 * Create a new {@link MutablePropertySources} object.
+	 * 构造函数，创建一个新的MutablePropertySources
 	 */
 	public MutablePropertySources() {
 		this.logger = LogFactory.getLog(getClass());
@@ -75,7 +85,9 @@ public class MutablePropertySources implements PropertySources {
 		this.logger = logger;
 	}
 
-
+	/*
+	 * 遍列当前容器中的PropertySource
+	 */
 	@Override
 	public Iterator<PropertySource<?>> iterator() {
 		return this.propertySourceList.iterator();

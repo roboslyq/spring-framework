@@ -20,7 +20,10 @@ import org.springframework.lang.Nullable;
 
 /**
  * Interface for resolving properties against any underlying source.
- * roboslyq -->解析任何底层的properties资源接口
+ * roboslyq -->属性解析，主要具有两个功能：
+ * 	(1)通过propertyName属性名获取与之对应的propertValue属性值（getProperty）。
+ * 	(2)把${propertyName:defaultValue}格式的属性占位符，替换为实际的值(resolvePlaceholders)。
+ *  注意：getProperty获取的属性值，全都是调用resolvePlaceholders进行占位符替换后的值。
  * @author Chris Beams
  * @author Juergen Hoeller
  * @since 3.1

@@ -24,9 +24,14 @@ import org.springframework.lang.Nullable;
  * types. Provides facilities for accessing and customizing the
  * {@link org.springframework.core.convert.ConversionService ConversionService}
  * used when converting property values from one type to another.
- *
+ * 该接口定义了如何对组件本身进行配置。
+ * (1)获取value时可以指定任意类型，这依赖于ConversionService进行类型转换，当前接口就提供了对ConversionService的设置和获取。
+ * (2)另外，可以配置属性占位符的格式，包括：占位符前缀（默认为"${"）、占位符后缀（默认为"}"）、占位符值分隔符（默认为":"，用于分隔propertyName和defaultValue）。
+ * (3)组件还可以设置哪些属性是必须存在的，还可以校验必须存在的属性是否真的存在（不存在的话会抛出异常）
  * @author Chris Beams
  * @since 3.1
+ *
+ *
  */
 public interface ConfigurablePropertyResolver extends PropertyResolver {
 
