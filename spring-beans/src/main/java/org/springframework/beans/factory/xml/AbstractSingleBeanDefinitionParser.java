@@ -57,16 +57,24 @@ public abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDef
 	 * @throws IllegalStateException if the bean {@link Class} returned from
 	 * {@link #getBeanClass(org.w3c.dom.Element)} is {@code null}
 	 * @see #doParse
+	 *
+	 * 最先被父类调用，方法入口
 	 */
 	@Override
 	protected final AbstractBeanDefinition parseInternal(Element element, ParserContext parserContext) {
+		/**
+		 * 在BeanDefinitionBuilder对象里创建了一个GenericBeanDefinition(普通的BeanDefinition定义)
+		 */
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition();
 		String parentName = getParentName(element);
 		if (parentName != null) {
+			//设置BeanDefinition的Parents名字
 			builder.getRawBeanDefinition().setParentName(parentName);
 		}
+		//获取BeanClasss,具体子类实现 。比如子类PropertyPlaceholderBeanDefinitionParser中实现
 		Class<?> beanClass = getBeanClass(element);
 		if (beanClass != null) {
+			//设置BeanClass
 			builder.getRawBeanDefinition().setBeanClass(beanClass);
 		}
 		else {
@@ -75,6 +83,7 @@ public abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDef
 				builder.getRawBeanDefinition().setBeanClassName(beanClassName);
 			}
 		}
+		//设置BeanDefinition的Source资源
 		builder.getRawBeanDefinition().setSource(parserContext.extractSource(element));
 		BeanDefinition containingBd = parserContext.getContainingBeanDefinition();
 		if (containingBd != null) {
@@ -85,7 +94,9 @@ public abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDef
 			// Default-lazy-init applies to custom bean definitions as well.
 			builder.setLazyInit(true);
 		}
+		//解析Bean入口
 		doParse(element, parserContext, builder);
+		//返回解析结果
 		return builder.getBeanDefinition();
 	}
 

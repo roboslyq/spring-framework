@@ -43,9 +43,13 @@ import org.springframework.lang.Nullable;
  * @since 2.0
  */
 public class XmlReaderContext extends ReaderContext {
-
+	/**
+	 * 包含Bean的Xml读取器XmlBeanDefinitionReader
+	 */
 	private final XmlBeanDefinitionReader reader;
-
+	/**
+	 * Bean对应的namespaceHandler解析器
+	 */
 	private final NamespaceHandlerResolver namespaceHandlerResolver;
 
 
@@ -96,6 +100,7 @@ public class XmlReaderContext extends ReaderContext {
 	/**
 	 * Return the bean definition registry to use.
 	 * @see XmlBeanDefinitionReader#XmlBeanDefinitionReader(BeanDefinitionRegistry)
+	 * Bean注册器
 	 */
 	public final BeanDefinitionRegistry getRegistry() {
 		return this.reader.getRegistry();
@@ -107,6 +112,7 @@ public class XmlReaderContext extends ReaderContext {
 	 * also allowing access to the resource class loader.
 	 * @see XmlBeanDefinitionReader#setResourceLoader
 	 * @see ResourceLoader#getClassLoader()
+	 * 资源加载器
 	 */
 	@Nullable
 	public final ResourceLoader getResourceLoader() {

@@ -108,9 +108,12 @@ public class ProxyFactory extends ProxyCreatorSupport {
 	 */
 	public Object getProxy(@Nullable ClassLoader classLoader) {
 		/**
-		 * createAopProxy()：
-		 * 	创建AopProxy接口实现类，有两种实现:Cglib和jdk。
-		 * 	通过AopProxy接口的实现类的getProxy方法获取<bean>对应的代理
+		 *  此处有两步骤：
+		 *  第一步：获取AopProxy
+		 * 		createAopProxy()：此方法返回的是AopProxy接口类型，有两种实现CglibAopProxy(通过cglib方式生成代理对象)和JdkDynamicAopProxy(通过JDK动态代理方式生成对象)
+		 * 		创建AopProxy接口实现类，有两种实现:Cglib和jdk。
+		 * 第二步：getProxy(classLoader) 获取被代理类的代理类（即最终保存在Spring容器中的代理类）
+		 * 		通过AopProxy接口的实现类的getProxy方法获取<bean>对应的代理
 		 *
 		 */
 		return createAopProxy().getProxy(classLoader);

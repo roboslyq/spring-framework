@@ -72,7 +72,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	@Nullable
 	protected Object[] getAdvicesAndAdvisorsForBean(
 			Class<?> beanClass, String beanName, @Nullable TargetSource targetSource) {
-
+		//进入该方法
 		List<Advisor> advisors = findEligibleAdvisors(beanClass, beanName);
 		if (advisors.isEmpty()) {
 			return DO_NOT_PROXY;
@@ -91,8 +91,11 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 * @see #extendAdvisors
 	 */
 	protected List<Advisor> findEligibleAdvisors(Class<?> beanClass, String beanName) {
+		//查找所有的通知器
 		List<Advisor> candidateAdvisors = findCandidateAdvisors();
 		/**
+		 *  筛选匹配出可应用在beanClass上的通知器：
+		 *
 		 * 寻找候选Advisors，根据上文的配置文件，有两个候选Advisor，
 		 * 分别是<aop:aspect>节点下的<aop:before>和<aop:after>这两个，
 		 * 这两个在XML解析的时候已经被转换生成了RootBeanDefinition。

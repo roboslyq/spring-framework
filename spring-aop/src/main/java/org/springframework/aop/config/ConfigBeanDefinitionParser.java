@@ -60,7 +60,7 @@ import org.springframework.util.xml.DomUtils;
  * @since 2.0
  */
 class ConfigBeanDefinitionParser implements BeanDefinitionParser {
-
+	//AOP标签支持所有的属性配置
 	private static final String ASPECT = "aspect";
 	private static final String EXPRESSION = "expression";
 	private static final String ID = "id";
@@ -92,7 +92,7 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 	private static final int METHOD_INDEX = 0;
 	private static final int POINTCUT_INDEX = 1;
 	private static final int ASPECT_INSTANCE_FACTORY_INDEX = 2;
-
+	//ROBOSLYQ --> SpringBean解析状态
 	private ParseState parseState = new ParseState();
 
 
@@ -103,7 +103,7 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 	 */
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
 		/**
-		 * 获取一个聚合功能的组件Difinition
+		 * BeanDefinition容器
 		 */
 		CompositeComponentDefinition compositeDef =
 				new CompositeComponentDefinition(element.getTagName(), parserContext.extractSource(element));
@@ -117,7 +117,7 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 		 * 根据配置proxy-target-class和expose-proxy，设置是否使用CGLIB进行代理以及是否暴露最终的代理。
 		 */
 		configureAutoProxyCreator(parserContext, element);
-
+		//roboslyq-->获取子节点，根据aop.xml文件中的配置，子节点为<aop:aspect>
 		List<Element> childElts = DomUtils.getChildElements(element);
 		for (Element elt: childElts) {
 			String localName = parserContext.getDelegate().getLocalName(elt);
@@ -220,12 +220,16 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 	}
 
 	private void parseAspect(Element aspectElement, ParserContext parserContext) {
+		//获取定义的切面ID和ref
 		String aspectId = aspectElement.getAttribute(ID);
 		String aspectName = aspectElement.getAttribute(REF);
 
 		try {
+			//将获取到的切面ID和ref封装到AspectEntry这个类中
 			this.parseState.push(new AspectEntry(aspectId, aspectName));
+			//把<aop:before>等通知相关的信息封装到AspectJPointcutAdvisor中，然后放到该集合里
 			List<BeanDefinition> beanDefinitions = new ArrayList<>();
+			//把ref相关的信息如aop.xml中相关配置等封装到RunTimeBeanReference中，然后放到这个集合中
 			List<BeanReference> beanReferences = new ArrayList<>();
 
 			List<Element> declareParents = DomUtils.getChildElementsByTagName(aspectElement, DECLARE_PARENTS);
@@ -244,7 +248,8 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 			 * <aop:after>、
 			 * <aop:after-returning>、
 			 * <aop:after-throwing method=”">、
-			 * <aop:around method=”">这五个标签。
+			 * <aop:around method=”">
+			 *     这五个标签。
 			 */
 			for (int i = 0; i < nodeList.getLength(); i++) {
 				Node node = nodeList.item(i);
@@ -272,17 +277,18 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 					 */
 					AbstractBeanDefinition advisorDefinition = parseAdvice(
 							aspectName, i, aspectElement, (Element) node, parserContext, beanDefinitions, beanReferences);
-
+					//封装ref信息
 					beanDefinitions.add(advisorDefinition);
 				}
 			}
-
+			//把切面信息和通知信息封装到这个类中　
 			AspectComponentDefinition aspectComponentDefinition = createAspectComponentDefinition(
 					aspectElement, aspectId, beanDefinitions, beanReferences, parserContext);
 			parserContext.pushContainingComponent(aspectComponentDefinition);
-
+			//解析切入点，然后封装信息　
 			List<Element> pointcuts = DomUtils.getChildElementsByTagName(aspectElement, POINTCUT);
 			for (Element pointcutElement : pointcuts) {
+				//这个是具体解析切入点的方法
 				parsePointcut(pointcutElement, parserContext);
 			}
 

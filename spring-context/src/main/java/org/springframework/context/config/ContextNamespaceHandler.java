@@ -23,7 +23,7 @@ import org.springframework.context.annotation.ComponentScanBeanDefinitionParser;
 /**
  * {@link org.springframework.beans.factory.xml.NamespaceHandler}
  * for the '{@code context}' namespace.
- *
+ * roboslyq --> Context相关命名空间
  * @author Mark Fisher
  * @author Juergen Hoeller
  * @since 2.5
@@ -32,6 +32,7 @@ public class ContextNamespaceHandler extends NamespaceHandlerSupport {
 
 	@Override
 	public void init() {
+		//roboslyq -- > 解析 <context:property-placeholder location="classpath:xxx.properties" />标签
 		registerBeanDefinitionParser("property-placeholder", new PropertyPlaceholderBeanDefinitionParser());
 		registerBeanDefinitionParser("property-override", new PropertyOverrideBeanDefinitionParser());
 		registerBeanDefinitionParser("annotation-config", new AnnotationConfigBeanDefinitionParser());

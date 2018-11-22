@@ -774,7 +774,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				}
 				else {
 					/**
-					 * 普通Bean
+					 * 普通Bean（AOP 织入）
 					 */
 					getBean(beanName);
 				}
