@@ -56,18 +56,26 @@ import org.springframework.util.ObjectUtils;
  * @see PropertySourcesPropertyResolver
  * @see MutablePropertySources
  * @see org.springframework.context.annotation.PropertySource
+ *
+ * PropertySource是一个抽象类，它包含一个source和一个name。source可以是map或其他，
+ * 通常是一组键值对。可以由PropertyResolver（Environment）完成解析并完成占位符的处理
  */
 public abstract class PropertySource<T> {
 
 	protected final Log logger = LogFactory.getLog(getClass());
-
+	/**
+	 * 属性资源名称
+	 */
 	protected final String name;
-
+	/**
+	 * 原始资源-->泛型
+	 */
 	protected final T source;
 
 
 	/**
 	 * Create a new {@code PropertySource} with the given name and source object.
+	 * 创建一个PropertySource资源对象，名称为name,原始类型为source
 	 */
 	public PropertySource(String name, T source) {
 		Assert.hasText(name, "Property source name must contain at least one character");
@@ -118,6 +126,7 @@ public abstract class PropertySource<T> {
 	 * or {@code null} if not found.
 	 * @param name the property to find
 	 * @see PropertyResolver#getRequiredProperty(String)
+	 * 获取具体属性name的值
 	 */
 	@Nullable
 	public abstract Object getProperty(String name);
