@@ -39,6 +39,7 @@ import org.springframework.util.StringUtils;
  * @author Juergen Hoeller
  * @author Phillip Webb
  * @since 3.1.1
+ * 复合型 PropertySource，由LinkedHashSet保存其结构
  */
 public class CompositePropertySource extends EnumerablePropertySource<Object> {
 

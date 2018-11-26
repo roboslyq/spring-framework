@@ -54,6 +54,10 @@ public class ResourcePropertySource extends PropertiesPropertySource {
 	 * loaded from the given encoded resource.
 	 */
 	public ResourcePropertySource(String name, EncodedResource resource) throws IOException {
+		/**
+		 * PropertiesLoaderUtils.loadProperties返回Properties
+		 * 而Properties继承Map，所以。。
+		 */
 		super(name, PropertiesLoaderUtils.loadProperties(resource));
 		this.resourceName = getNameForResource(resource.getResource());
 	}
