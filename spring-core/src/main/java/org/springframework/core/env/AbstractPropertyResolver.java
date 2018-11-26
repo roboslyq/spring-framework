@@ -205,9 +205,14 @@ public abstract class AbstractPropertyResolver implements ConfigurablePropertyRe
 
 	@Override
 	public String resolveRequiredPlaceholders(String text) throws IllegalArgumentException {
+		/**
+		 * 第一次调用构造函数初始化占位符解析器（PropertyPlaceholderHelper），
+		 * 主要是初始化占位符的常量,eg : 前缀 ${  后缀} and so on
+		 */
 		if (this.strictHelper == null) {
 			this.strictHelper = createPlaceholderHelper(false);
 		}
+		//调用私有方法---替换占位符具体值
 		return doResolvePlaceholders(text, this.strictHelper);
 	}
 
@@ -233,7 +238,17 @@ public abstract class AbstractPropertyResolver implements ConfigurablePropertyRe
 				this.valueSeparator, ignoreUnresolvablePlaceholders);
 	}
 
+	/**
+	 * 调用私有方法---替换占位符具体值
+	 * @param text
+	 * @param helper
+	 * @return
+	 */
 	private String doResolvePlaceholders(String text, PropertyPlaceholderHelper helper) {
+		/**
+		 * (1) getPropertyAsRawString : 实现PropertyPlaceholderHelper内部接口PlaceholderResolver方法resolvePlaceholder。
+		 * 		找到占位符key对应的value,为下文替换key埋下伏笔
+		 */
 		return helper.replacePlaceholders(text, this::getPropertyAsRawString);
 	}
 

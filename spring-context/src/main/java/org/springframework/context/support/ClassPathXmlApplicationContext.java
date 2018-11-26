@@ -155,12 +155,16 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 			String[] configLocations, boolean refresh, @Nullable ApplicationContext parent)
 			throws BeansException {
 		/**
-		 * roboslyq--初始化了resourcePatternResolver = PathMatchingResourcePatternResolver
+		 * roboslyq--初始化了resourcePatternResolver = PathMatchingResourcePatternResolver。
+		 * 为后面setConfigLocations()方法中路径包含占位符提前做准备
 		 */
 		super(parent);
 		/**
-		 * roboslyq--设置父类AbstractRefreshableApplicationContext资源位置，后续解析时会使用此值
-		 * 	将String形式的资源转换为String数组
+		 * roboslyq-->
+		 *  （1）设置父类AbstractRefreshableApplicationContext资源位置，后续解析时会使用此值
+		 * 	（2）将String形式的资源转换为String数组
+		 * 	(3) 会调用Enviroment中的resolveRequiredPlaceholders方法，将配置文件中的占位符替换为具体的值
+		 * 		getEnvironment().resolveRequiredPlaceholders(path)
 		 */
 		setConfigLocations(configLocations);
 		if (refresh) {

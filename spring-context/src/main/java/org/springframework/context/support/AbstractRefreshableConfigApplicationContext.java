@@ -78,7 +78,9 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 		if (locations != null) {
 			Assert.noNullElements(locations, "Config locations must not be null");
 			this.configLocations = new String[locations.length];
+			//循环处理bean xml的配置文件
 			for (int i = 0; i < locations.length; i++) {
+				// roboslyq -- > 解析路劲
 				this.configLocations[i] = resolvePath(locations[i]).trim();
 			}
 		}
@@ -123,6 +125,11 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	 * @see org.springframework.core.env.Environment#resolveRequiredPlaceholders(String)
 	 */
 	protected String resolvePath(String path) {
+		/**
+		 * 第一步:通过new 来创建StandardEnvironment对象(即PropertyResolver体系)
+		 * 第二步:通过enviroment.resolveRequiredPlaceholders对象来解析占位符
+		 * 		 其中path是Bean的XML相关配置。所以在此处，就完成Bean中的占位符信息解析
+		 */
 		return getEnvironment().resolveRequiredPlaceholders(path);
 	}
 

@@ -124,6 +124,13 @@ public class PropertyPlaceholderHelper {
 		return parseStringValue(value, placeholderResolver, new HashSet<>());
 	}
 
+	/**
+	 * 占位符 key - > value
+	 * @param value
+	 * @param placeholderResolver
+	 * @param visitedPlaceholders
+	 * @return
+	 */
 	protected String parseStringValue(
 			String value, PlaceholderResolver placeholderResolver, Set<String> visitedPlaceholders) {
 

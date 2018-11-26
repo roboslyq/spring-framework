@@ -127,6 +127,7 @@ public interface PropertyResolver {
 	 * @see org.springframework.util.SystemPropertyUtils#resolvePlaceholders(String, boolean)
 	 *  * 解析${...}这种形式的占位符，具体内容使用getProperty方法返回的值填充。
 	 * 	 * 对于未解析的占位符则抛出异常
+	 * 	 text = filePath
 	 */
 	String resolveRequiredPlaceholders(String text) throws IllegalArgumentException;
 

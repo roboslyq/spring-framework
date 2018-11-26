@@ -552,20 +552,24 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
 				//roboslyq-->在BeanFactory完成初始化后进行一些操作，即在beanFactory初始化之后提供一个修改BeanFactory的机会
-				//BeanFactory定义后，提供一个修改BeanFactory的入口
-				//可以扩展，默认为空
+				//BeanFactory定义后，提供一个修改BeanFactory的入口。
+
 				/**	roboslyq-->容器启动第四步 ---(BeanFactory创建后，提供一个修改BeanFactory默认行为的机会)-->
 				 *	(1)模板方法
 				 *	(2)	在第二步完成Bean容器(BeanFacotory)初始化后，此时BeanFacotry均是默认参数。
 				 *		此入口提供目的是BeanDefinition装载后，可以再次修改BeanFactory的一些属性
-				 *	(3)默认是空，没有实现，可以自定义扩展
+				 *	(3)默认是空，没有实现，可以自定义扩展。具体扩展可以继承ClassPathXmlApplicationContext类
+				 *  	并重写postProcessBeanFactory即可
 				 */
 				postProcessBeanFactory(beanFactory);
 
 				// Invoke factory processors registered as beans in the context.
 				/**
 				 * roboslyq-->容器启动第五步 ---（提供一个修改BeanDefinition的入口）-->
-				 *  	在Bean未开始实例化时，对Definition定义的修改入口
+				 *   (1)此功能与postProcessBeanFactory()方法有异曲同工之妙，需要实现BeanFactoryPostProcess的postProcessBeanFactory方法类似。
+				 *   可以实现和postProcessBeanFactory()。
+				 *   (2)例如PropertyResourceConfigurer,此类实现Bean相关配置中的点位符处理。
+				 *     就在这里调用PropertyResourceConfigurer相应实现完成。
 				 */
 
 				invokeBeanFactoryPostProcessors(beanFactory);
@@ -588,11 +592,14 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				registerBeanPostProcessors(beanFactory);
 
 				// Initialize message source for this context.
-				//roboslyq-->初始化MessageSource
+				//roboslyq-->初始化MessageSource（国际化资源处理）
 				initMessageSource();
 
 				// Initialize event multicaster for this context.
-				// roboslyq-->初始化上下文事件广播
+				// roboslyq-->初始化应用事件广播器(观察者模式得典型应用)。
+				// 我们知道观察者模式由主题Subject和Observer组成。广播器相当于主题Subject，其包含多个监听器。
+				// 当主题发生变化时会通知所有得监听器，此时只是完成广播初始化，还未绑定具体广播的监听器。
+				// 在下面的registerListeners()方法中完成监听器与广播绑定
 				initApplicationEventMulticaster();
 
 				// Initialize other special beans in specific context subclasses.
@@ -600,6 +607,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 				// Check for listener beans and register them.
 				//roboslyq-->注册监听器
+				//注册监听器，与广播器是同时存在的。在广播器章节，spring只是初始化的广播器，
+				// 但是并没有为广播器绑定Listener, Spring在此方法中进行了绑定。
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.
@@ -883,18 +892,22 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void registerListeners() {
 		// Register statically specified listeners first.
+		// 和手动注册BeanPostProcess一样，可以自己通过set手动注册监听器
 		for (ApplicationListener<?> listener : getApplicationListeners()) {
+			//手动注册的监听器绑定到广播器
 			getApplicationEventMulticaster().addApplicationListener(listener);
 		}
 
 		// Do not initialize FactoryBeans here: We need to leave all regular beans
 		// uninitialized to let post-processors apply to them!
+		//取到监听器的名称，设置到广播器
 		String[] listenerBeanNames = getBeanNamesForType(ApplicationListener.class, true, false);
 		for (String listenerBeanName : listenerBeanNames) {
 			getApplicationEventMulticaster().addApplicationListenerBean(listenerBeanName);
 		}
 
 		// Publish early application events now that we finally have a multicaster...
+		// 如果存在早期应用事件，发布
 		Set<ApplicationEvent> earlyEventsToProcess = this.earlyApplicationEvents;
 		this.earlyApplicationEvents = null;
 		if (earlyEventsToProcess != null) {
