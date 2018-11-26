@@ -178,6 +178,8 @@ import org.springframework.util.StringUtils;
  * @see org.springframework.util.AntPathMatcher
  * @see org.springframework.core.io.ResourceLoader#getResource(String)
  * @see ClassLoader#getResources(String)
+ * 1、实现了ResourceLoader接口
+ * 2、同时也可以指定其它的ResourceLoader,对过构造函数进行初始化
  */
 public class PathMatchingResourcePatternResolver implements ResourcePatternResolver {
 

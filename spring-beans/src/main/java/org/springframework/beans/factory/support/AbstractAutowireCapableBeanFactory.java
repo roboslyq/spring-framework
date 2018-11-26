@@ -169,6 +169,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 */
 	public AbstractAutowireCapableBeanFactory() {
 		super();
+		//忽略自动装配
+		//如果在加载bean的时候发现此bean是忽略接口的实现类，spring就不自动将其初始化，而是交给他自己
+		//因为此类接口依赖于相关环境
 		ignoreDependencyInterface(BeanNameAware.class);
 		ignoreDependencyInterface(BeanFactoryAware.class);
 		ignoreDependencyInterface(BeanClassLoaderAware.class);

@@ -85,7 +85,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 * @param configLocation resource location
 	 * @throws BeansException if context creation failed
 	 *
-	 * roboslyq-->Bean工厂构造函数入口,传入单个资源位置。并且refresh默认为true
+	 * roboslyq-->Bean工厂构造函数入口,传入单个资源位置(支持占位符)。并且refresh默认为true
 	 *
 	 */
 	public ClassPathXmlApplicationContext(String configLocation) throws BeansException {
@@ -155,21 +155,22 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 			String[] configLocations, boolean refresh, @Nullable ApplicationContext parent)
 			throws BeansException {
 		/**
-		 * roboslyq--初始化了resourcePatternResolver = PathMatchingResourcePatternResolver。
-		 * 为后面setConfigLocations()方法中路径包含占位符提前做准备
+		 * roboslyq--使用new方法创建PathMatchingResourcePatternResolver，可以用来解析资源文件，主要是用来解析类路径下的资源文件。
+		 * 当然它也可以用来解析其它资源文件，如基于文件系统的本地资源文件。
+		 * 使用方式为PathMatchingResourcePatternResolver.getResource("file:pom.xml");
 		 */
 		super(parent);
 		/**
 		 * roboslyq-->
-		 *  （1）设置父类AbstractRefreshableApplicationContext资源位置，后续解析时会使用此值
-		 * 	（2）将String形式的资源转换为String数组
-		 * 	(3) 会调用Enviroment中的resolveRequiredPlaceholders方法，将配置文件中的占位符替换为具体的值
+		 *   (1)设置父类AbstractRefreshableApplicationContext资源位置，后续解析时会使用此值
+		 * 	 (2)将String形式的资源转换为String数组
+		 * 	 (3) 会调用Enviroment中的resolveRequiredPlaceholders方法，将配置文件中的占位符替换为具体的值
 		 * 		getEnvironment().resolveRequiredPlaceholders(path)
 		 */
 		setConfigLocations(configLocations);
 		if (refresh) {
 			/**
-			 *roboslyq--启动容器,不带参数
+			 *roboslyq-->启动容器,不带参数
 			 */
 			refresh();
 		}
