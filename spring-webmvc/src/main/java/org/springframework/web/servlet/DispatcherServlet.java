@@ -503,17 +503,31 @@ public class DispatcherServlet extends FrameworkServlet {
 	/**
 	 * Initialize the strategy objects that this servlet uses.
 	 * <p>May be overridden in subclasses in order to initialize further strategy objects.
-	 * 启动时初始化
+	 * 启动时初始化，在父类FrameWorkServlet.initWebApplicationContext()中调用。
+	 * 完成SpringMVC的初始化工作
 	 */
 	protected void initStrategies(ApplicationContext context) {
+		//文件上传解析，用于支持文件上传；
 		initMultipartResolver(context);
+		//用于本地序列化，支持国际化。
 		initLocaleResolver(context);
+		//主题解析
 		initThemeResolver(context);
+		/**
+		 * 就是请求处理器的映射。可以通过注解，Bean的name值等等
+		 */
 		initHandlerMappings(context);
+		/**
+		 * HandlerAdapter会将处理器包装成适配器
+		 */
 		initHandlerAdapters(context);
+		//处理器异常解析，可以将异常映射到相应的统一错误界面，从而显示用户友好的界面
 		initHandlerExceptionResolvers(context);
+		//initHandlerExceptionResolvers(context);
 		initRequestToViewNameTranslator(context);
+		//用于将逻辑视图名传话为集体的视图名
 		initViewResolvers(context);
+		//Flash相关
 		initFlashMapManager(context);
 	}
 

@@ -146,7 +146,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 	 */
 	@Override
 	/**
-	 * roboslyq-->APP容器启动时，servlet初始方法入口
+	 * roboslyq-->WEB APP容器启动时，servlet初始方法入口
 	 */
 	public final void init() throws ServletException {
 		if (logger.isTraceEnabled()) {
