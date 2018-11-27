@@ -156,6 +156,13 @@ import org.springframework.web.util.WebUtils;
  * @see org.springframework.web.HttpRequestHandler
  * @see org.springframework.web.servlet.mvc.Controller
  * @see org.springframework.web.context.ContextLoaderListener
+ * Servlet的生命周期分为3个阶段：初始化、运行和销毁。
+ * 初始化阶段可分为：
+ * (1)Servlet容器加载Servlet类，把类的.class文件中的数据读到内存中；
+ * (2)Servlet容器中创建一个ServletConfig对象。该对象中包含了Servlet的初始化配置信息；
+ * (3)Servlet容器创建一个Servlet对象；
+ * (4)Servlet容器调用Servlet对象的init()方法进行初始化。Servlet的初始化阶段会调用它的init()方法，
+ * DispatcherServlet也不例外，在它的父类HttpServletBean中找到了该方法。
  */
 @SuppressWarnings("serial")
 public class DispatcherServlet extends FrameworkServlet {
