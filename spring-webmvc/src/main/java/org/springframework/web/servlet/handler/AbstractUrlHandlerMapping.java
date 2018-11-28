@@ -59,7 +59,10 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 	private boolean useTrailingSlashMatch = false;
 
 	private boolean lazyInitHandlers = false;
-
+	/**
+	 * 请求路径与相关参数的key-value
+	 * key为String类型，与请求路径（例如/user/get）相匹配
+	 */
 	private final Map<String, Object> handlerMap = new LinkedHashMap<>();
 
 
@@ -119,7 +122,14 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 	@Override
 	@Nullable
 	protected Object getHandlerInternal(HttpServletRequest request) throws Exception {
+		/**
+		 * 如果请求为http://xxx.yyy.com/user/get
+		 * 那么lookupPath = /user/get
+		 */
 		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
+		/**
+		 * 查找对应的Handler
+		 */
 		Object handler = lookupHandler(lookupPath, request);
 		if (handler == null) {
 			// We need to care for the default handler directly, since we need to
@@ -160,14 +170,18 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 	@Nullable
 	protected Object lookupHandler(String urlPath, HttpServletRequest request) throws Exception {
 		// Direct match?
+		// 直接匹配优先级最高
 		Object handler = this.handlerMap.get(urlPath);
 		if (handler != null) {
 			// Bean name or resolved handler?
+			// 如果handler是一个String,则猜想是Bean的名称
 			if (handler instanceof String) {
 				String handlerName = (String) handler;
 				handler = obtainApplicationContext().getBean(handlerName);
 			}
+			//验证handler是否合法，默认为空，可扩展
 			validateHandler(handler, request);
+			//构建请求处理链HandlerExecutionChain
 			return buildPathExposingHandler(handler, urlPath, urlPath, null);
 		}
 

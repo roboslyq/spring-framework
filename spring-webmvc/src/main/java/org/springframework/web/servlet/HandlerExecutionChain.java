@@ -35,25 +35,37 @@ import org.springframework.util.ObjectUtils;
  * @author Juergen Hoeller
  * @since 20.06.2003
  * @see HandlerInterceptor
+ * HandlerExecutionChain执行链，包含handler对象及所有Handler拦截器
  */
 public class HandlerExecutionChain {
 
 	private static final Log logger = LogFactory.getLog(HandlerExecutionChain.class);
-
+	/**
+	 * 对应的Handler
+	 */
 	private final Object handler;
 
 	@Nullable
+	/**
+	 * 对应的拦截器数组
+	 */
 	private HandlerInterceptor[] interceptors;
 
 	@Nullable
+	/**
+	 * 对应的拦截器集合
+	 */
 	private List<HandlerInterceptor> interceptorList;
-
+	/**
+	 * 当前拦截器索引，从-1开始计数
+	 */
 	private int interceptorIndex = -1;
 
 
 	/**
 	 * Create a new HandlerExecutionChain.
 	 * @param handler the handler object to execute
+	 *  构造函数，指定一个处理器。拦截器默认为空
 	 */
 	public HandlerExecutionChain(Object handler) {
 		this(handler, (HandlerInterceptor[]) null);
@@ -64,8 +76,10 @@ public class HandlerExecutionChain {
 	 * @param handler the handler object to execute
 	 * @param interceptors the array of interceptors to apply
 	 * (in the given order) before the handler itself executes
+	 *  构造函数，指定一个处理器和一系列拦截器
 	 */
 	public HandlerExecutionChain(Object handler, @Nullable HandlerInterceptor... interceptors) {
+		//如果是HandlerExecutionChain，合并originalChain到当前HandlerExecutionChain中
 		if (handler instanceof HandlerExecutionChain) {
 			HandlerExecutionChain originalChain = (HandlerExecutionChain) handler;
 			this.handler = originalChain.getHandler();
@@ -74,6 +88,7 @@ public class HandlerExecutionChain {
 			CollectionUtils.mergeArrayIntoCollection(interceptors, this.interceptorList);
 		}
 		else {
+			//可能为String类型，即handlerBean名称
 			this.handler = handler;
 			this.interceptors = interceptors;
 		}
@@ -82,11 +97,16 @@ public class HandlerExecutionChain {
 
 	/**
 	 * Return the handler object to execute.
+	 * 返回Hanlder
 	 */
 	public Object getHandler() {
 		return this.handler;
 	}
 
+	/**
+	 * 添加拦截器
+	 * @param interceptor
+	 */
 	public void addInterceptor(HandlerInterceptor interceptor) {
 		initInterceptorList().add(interceptor);
 	}

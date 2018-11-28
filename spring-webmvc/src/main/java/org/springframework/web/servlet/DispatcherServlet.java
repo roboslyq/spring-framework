@@ -329,6 +329,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	private ThemeResolver themeResolver;
 
 	/** List of HandlerMappings used by this servlet. */
+	/** HandlerMapping集合 */
 	@Nullable
 	private List<HandlerMapping> handlerMappings;
 
@@ -607,15 +608,23 @@ public class DispatcherServlet extends FrameworkServlet {
 
 	/**
 	 * Initialize the HandlerMappings used by this class.
+	 * 初始化HandlerMappings
 	 * <p>If no HandlerMapping beans are defined in the BeanFactory for this namespace,
+	 * 如果当前命名空间在BeanFactory没有定义HandlerMapping Bean，
 	 * we default to BeanNameUrlHandlerMapping.
+	 * 则使用默认的BeanNameUrlHandlerMapping
 	 */
 	private void initHandlerMappings(ApplicationContext context) {
 		this.handlerMappings = null;
-		//如果检索所有handlerMapping为true
+		//如果检索所有handlerMapping为true，默认为true。会进入此条件
 		if (this.detectAllHandlerMappings) {
 			// Find all HandlerMappings in the ApplicationContext, including ancestor contexts.
-			//检索所有的HandlerMapping（包括父容器）
+			/**
+			 *  检索所有的HandlerMapping（包括父容器）
+			 *  默认情况返回两个handlerMapping
+			 *  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
+			 *  org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping
+			 **/
 			Map<String, HandlerMapping> matchingBeans =
 					BeanFactoryUtils.beansOfTypeIncludingAncestors(context, HandlerMapping.class, true, false);
 			if (!matchingBeans.isEmpty()) {
@@ -626,9 +635,10 @@ public class DispatcherServlet extends FrameworkServlet {
 				AnnotationAwareOrderComparator.sort(this.handlerMappings);
 			}
 		}
+		//仅检索HandlerMapping Bean
 		else {
 			try {
-				//否则使用默认的handlerMapping
+				//否则仅在当前Context中获取指定的handlerMapping
 				HandlerMapping hm = context.getBean(HANDLER_MAPPING_BEAN_NAME, HandlerMapping.class);
 				this.handlerMappings = Collections.singletonList(hm);
 			}
@@ -639,6 +649,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		// Ensure we have at least one HandlerMapping, by registering
 		// a default HandlerMapping if no other mappings are found.
+		//经过上面两步步骤，如果HandlerMapping Bean还没有找到，则使用默认的HandlerMapping Bean
 		if (this.handlerMappings == null) {
 			this.handlerMappings = getDefaultStrategies(context, HandlerMapping.class);
 			if (logger.isTraceEnabled()) {
@@ -655,9 +666,16 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	private void initHandlerAdapters(ApplicationContext context) {
 		this.handlerAdapters = null;
-
+		//是否检索所有的HandlerAdapters（包含父容器）
 		if (this.detectAllHandlerAdapters) {
 			// Find all HandlerAdapters in the ApplicationContext, including ancestor contexts.
+			/**
+			 * 默认返回3个HandlerAdapter
+			 * (1)RequestMappingHandlerAdapter
+			 * (2)HttpRequestHandlerAdapter
+			 * (3)SimpleControllerHandlerAdapter
+			 */
+
 			Map<String, HandlerAdapter> matchingBeans =
 					BeanFactoryUtils.beansOfTypeIncludingAncestors(context, HandlerAdapter.class, true, false);
 			if (!matchingBeans.isEmpty()) {
@@ -944,6 +962,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		 * 保存request的请求参数到snapshot中
 		 */
 		Map<String, Object> attributesSnapshot = null;
+		//是否为javaServlet内置的请求（Servlet 2.3+ ），普通请求为false
 		if (WebUtils.isIncludeRequest(request)) {
 			attributesSnapshot = new HashMap<>();
 			Enumeration<?> attrNames = request.getAttributeNames();
@@ -1039,6 +1058,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		HttpServletRequest processedRequest = request;
 		HandlerExecutionChain mappedHandler = null;
+		//是否是文件处理器
 		boolean multipartRequestParsed = false;
 		/**
 		 * 异常管理器
@@ -1052,9 +1072,11 @@ public class DispatcherServlet extends FrameworkServlet {
 			try {
 				/**
 				 * 将request转换为MultipartRequest，若不是文件传输则保留原request.
-				 * 1.检查是否是文件上传的请求
+				 * 检查是否是文件上传的请求，如果是则将普通request包装为MultipartHttpServletRequest
+				 * 否则返回原对象request
 				 */
 				processedRequest = checkMultipart(request);
+				//processedRequest是包装后的对象，则processedRequest != request为true
 				multipartRequestParsed = (processedRequest != request);
 
 				// Determine handler for the current request.
@@ -1234,6 +1256,9 @@ public class DispatcherServlet extends FrameworkServlet {
 			}
 			else {
 				try {
+					/**
+					 * 返回包装后的MultipartHttpServletRequest
+					 */
 					return this.multipartResolver.resolveMultipart(request);
 				}
 				catch (MultipartException ex) {
@@ -1290,7 +1315,9 @@ public class DispatcherServlet extends FrameworkServlet {
 	protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
 		if (this.handlerMappings != null) {
 			//循环获取初始化时存储的HandlerMapping。直到目标handler不为空为止
+
 			for (HandlerMapping mapping : this.handlerMappings) {
+				//获取HandlerExecutionChain的入口关键方法
 				HandlerExecutionChain handler = mapping.getHandler(request);
 				if (handler != null) {
 					return handler;
