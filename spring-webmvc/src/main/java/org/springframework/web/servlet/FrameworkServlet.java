@@ -566,9 +566,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		/**
 		 * 1、getServletContext()为javax.servlet.GenericServlet中的方法,返回javax.servlet.ServletContext
 		 * 2、若web.xml配置了ServletContextListener,则已经将WebApplicationContext存入Servletcontext中。
-		 *    此时rootContext = WebApplicationContext
-		 * 若没有配置web.xml中的ServletContextListener,那么此时rootContext为空。
-		 *
+		 *    此时rootContext = WebApplicationContext，若没有配置web.xml中的ServletContextListener,那么此时rootContext为空。
 		 */
 		WebApplicationContext rootContext =
 				WebApplicationContextUtils.getWebApplicationContext(getServletContext());
