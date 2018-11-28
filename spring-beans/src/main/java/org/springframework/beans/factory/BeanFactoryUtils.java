@@ -42,6 +42,7 @@ import org.springframework.util.StringUtils;
  * @author Juergen Hoeller
  * @author Chris Beams
  * @since 04.07.2003
+ * 获取Bean工具类
  */
 public abstract class BeanFactoryUtils {
 
@@ -269,27 +270,34 @@ public abstract class BeanFactoryUtils {
 	 * hiding corresponding beans in ancestor factories.</b> This feature allows for
 	 * 'replacing' beans by explicitly choosing the same bean name in a child factory;
 	 * the bean in the ancestor factory won't be visible then, not even for by-type lookups.
-	 * @param lbf the bean factory
-	 * @param type type of bean to match
+	 * @param lbf the bean factory   工厂类
+	 * @param type type of bean to match 需要查找的类型
 	 * @param includeNonSingletons whether to include prototype or scoped beans too
 	 * or just singletons (also applies to FactoryBeans)
+	 *                             是否包含非单例Bean或者仅查找singletonBean
 	 * @param allowEagerInit whether to initialize <i>lazy-init singletons</i> and
 	 * <i>objects created by FactoryBeans</i> (or by factory methods with a
+	 *                       是否允许提前初始化lazy-Bean
 	 * "factory-bean" reference) for the type check. Note that FactoryBeans need to be
 	 * eagerly initialized to determine their type: So be aware that passing in "true"
 	 * for this flag will initialize FactoryBeans and "factory-bean" references.
 	 * @return the Map of matching bean instances, or an empty Map if none
 	 * @throws BeansException if a bean could not be created
+	 * 按类型获取所有的Bean(包括所有的ancestor(父容器))
 	 */
 	public static <T> Map<String, T> beansOfTypeIncludingAncestors(
 			ListableBeanFactory lbf, Class<T> type, boolean includeNonSingletons, boolean allowEagerInit)
 			throws BeansException {
 
 		Assert.notNull(lbf, "ListableBeanFactory must not be null");
+		//创建一个结果Map
 		Map<String, T> result = new LinkedHashMap<>(4);
+		//获取当前Context中的所有符合条件的类型
 		result.putAll(lbf.getBeansOfType(type, includeNonSingletons, allowEagerInit));
+		//如果是HierarchicalBeanFactory类型（可继承类型，即有允许有父容器），获取父容器中符合条件的Bean
 		if (lbf instanceof HierarchicalBeanFactory) {
 			HierarchicalBeanFactory hbf = (HierarchicalBeanFactory) lbf;
+			//如果此Bean实现了可枚举Bean
 			if (hbf.getParentBeanFactory() instanceof ListableBeanFactory) {
 				Map<String, T> parentResult = beansOfTypeIncludingAncestors(
 						(ListableBeanFactory) hbf.getParentBeanFactory(), type, includeNonSingletons, allowEagerInit);

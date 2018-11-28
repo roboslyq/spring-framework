@@ -161,15 +161,23 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
 
 	/** Map of singleton and non-singleton bean names, keyed by dependency type. */
+	/** 缓存了所有解析之后某一特定类型Class的Bean名称对应的
+	 *  例如A为一个接口，且有A1,A2,A3...An个具体Bean的实现(A1,A2...为具体Bean名称)
+	 *  那此时allBeanNamesByType中的Key为A.class,值为String[] = {"A1","A2","A3",...."An"}
+	 *  此时，就可以通过GetBeanType获取某一类型所有的Bean
+	 **/
 	private final Map<Class<?>, String[]> allBeanNamesByType = new ConcurrentHashMap<>(64);
 
 	/** Map of singleton-only bean names, keyed by dependency type. */
+	/** 与allBeanNamesByType类似，不过此Map仅保存单例Bean的缓存 */
 	private final Map<Class<?>, String[]> singletonBeanNamesByType = new ConcurrentHashMap<>(64);
 
 	/** List of bean definition names, in registration order. */
+	/** 缓存了所有BeanDefinition的名称，按注册顺序保存（因为List有序，即可保证顺序，但不去重） */
 	private volatile List<String> beanDefinitionNames = new ArrayList<>(256);
 
 	/** List of names of manually registered singletons, in registration order. */
+	/** 列出所有手动注入的单例Bean，按注入顺序（使用Set有序去重） */
 	private volatile Set<String> manualSingletonNames = new LinkedHashSet<>(16);
 
 	/** Cached array of bean definition names in case of frozen configuration. */
@@ -387,12 +395,18 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	}
 
 	@Override
+	/**
+	 * 根据Classic类型获取所有的相应的名称
+	 *
+	 */
 	public String[] getBeanNamesForType(@Nullable Class<?> type, boolean includeNonSingletons, boolean allowEagerInit) {
 		if (!isConfigurationFrozen() || type == null || !allowEagerInit) {
 			return doGetBeanNamesForType(ResolvableType.forRawClass(type), includeNonSingletons, allowEagerInit);
 		}
+		//获取Bean初始化解析时缓存的信息
 		Map<Class<?>, String[]> cache =
 				(includeNonSingletons ? this.allBeanNamesByType : this.singletonBeanNamesByType);
+		//获取对应KEY的String数组
 		String[] resolvedBeanNames = cache.get(type);
 		if (resolvedBeanNames != null) {
 			return resolvedBeanNames;
@@ -507,6 +521,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	@Override
 	@SuppressWarnings("unchecked")
+	/**
+	 * 获取Class类型的所有Bean
+	 */
 	public <T> Map<String, T> getBeansOfType(@Nullable Class<T> type, boolean includeNonSingletons, boolean allowEagerInit)
 			throws BeansException {
 
