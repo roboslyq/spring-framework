@@ -162,24 +162,40 @@ import org.springframework.web.util.WebUtils;
  * (2)Servlet容器中创建一个ServletConfig对象。该对象中包含了Servlet的初始化配置信息；
  * (3)Servlet容器创建一个Servlet对象；
  * (4)Servlet容器调用Servlet对象的init()方法进行初始化。Servlet的初始化阶段会调用它的init()方法，
- * DispatcherServlet也不例外，在它的父类HttpServletBean中找到了该方法。
+ * DispatcherServlet也不例外，在它的父类HttpServletBean中实现了init()方法
  */
 @SuppressWarnings("serial")
 public class DispatcherServlet extends FrameworkServlet {
 
 	/** Well-known name for the MultipartResolver object in the bean factory for this namespace. */
+	/** 默认文件上传解析器Bean名称 */
 	public static final String MULTIPART_RESOLVER_BEAN_NAME = "multipartResolver";
 
 	/** Well-known name for the LocaleResolver object in the bean factory for this namespace. */
+	/**
+	 * 区域解析器：为了让web应用程序支持国际化，必须识别每个用户的首选区域，并根据这个区域显示内容。
+	 * 			Spring MVC提供了几个LocaleResolver实现，让你可以按照不同的条件来解析区域。
+	 * 			除此之外，你还可以实现这个接口，创建自己的区域解析器
+	 * 常见解析方式：
+	 * 	1.按HTTP请求头部解析区域
+	 *  2.按会话属性解析区域
+	 *  3.按Cookie解析区域
+	 *  4.FixedLocaleResolver
+	 */
 	public static final String LOCALE_RESOLVER_BEAN_NAME = "localeResolver";
 
 	/** Well-known name for the ThemeResolver object in the bean factory for this namespace. */
+	/**
+	 *  提供对动态更换样式的支持，并提供了ResourceBundleThemeSource这个具体实现类来提供通
+	 * 	过properties配置文件对theme中的样式的配置
+	 */
 	public static final String THEME_RESOLVER_BEAN_NAME = "themeResolver";
 
 	/**
 	 * Well-known name for the HandlerMapping object in the bean factory for this namespace.
 	 * Only used when "detectAllHandlerMappings" is turned off.
 	 * @see #setDetectAllHandlerMappings
+	 * 默认HandlerMapping Bean名称,只有在detectAllHandlerMappings关闭情况情才生效
 	 */
 	public static final String HANDLER_MAPPING_BEAN_NAME = "handlerMapping";
 
@@ -187,6 +203,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Well-known name for the HandlerAdapter object in the bean factory for this namespace.
 	 * Only used when "detectAllHandlerAdapters" is turned off.
 	 * @see #setDetectAllHandlerAdapters
+	 * 默认handlerAdapter Bean名称,只有在detectAllHandlerAdapters关闭情况情才生效
 	 */
 	public static final String HANDLER_ADAPTER_BEAN_NAME = "handlerAdapter";
 
@@ -194,11 +211,13 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Well-known name for the HandlerExceptionResolver object in the bean factory for this namespace.
 	 * Only used when "detectAllHandlerExceptionResolvers" is turned off.
 	 * @see #setDetectAllHandlerExceptionResolvers
+	 * 默认的异常错误处理器,只有在detectAllHandlerExceptionResolvers关闭情况情才生效
 	 */
 	public static final String HANDLER_EXCEPTION_RESOLVER_BEAN_NAME = "handlerExceptionResolver";
 
 	/**
 	 * Well-known name for the RequestToViewNameTranslator object in the bean factory for this namespace.
+	 * 在Handler处理器返回的View为空时,使用此Bean根据Request获取viewName
 	 */
 	public static final String REQUEST_TO_VIEW_NAME_TRANSLATOR_BEAN_NAME = "viewNameTranslator";
 
@@ -206,11 +225,13 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Well-known name for the ViewResolver object in the bean factory for this namespace.
 	 * Only used when "detectAllViewResolvers" is turned off.
 	 * @see #setDetectAllViewResolvers
+	 * 默认的视图处理器,只有在detectAllViewResolvers关闭情况情才生效
 	 */
 	public static final String VIEW_RESOLVER_BEAN_NAME = "viewResolver";
 
 	/**
 	 * Well-known name for the FlashMapManager object in the bean factory for this namespace.
+	 * FlashMapManager是一个接口，定义了保存FlashMap和获取FlashMap的方法
 	 */
 	public static final String FLASH_MAP_MANAGER_BEAN_NAME = "flashMapManager";
 
@@ -218,12 +239,14 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Request attribute to hold the current web application context.
 	 * Otherwise only the global web app context is obtainable by tags etc.
 	 * @see org.springframework.web.servlet.support.RequestContextUtils#findWebApplicationContext
+	 * 定义默认的springMVC Context 的ID
 	 */
 	public static final String WEB_APPLICATION_CONTEXT_ATTRIBUTE = DispatcherServlet.class.getName() + ".CONTEXT";
 
 	/**
 	 * Request attribute to hold the current LocaleResolver, retrievable by views.
 	 * @see org.springframework.web.servlet.support.RequestContextUtils#getLocaleResolver
+	 * 定义默认的LOCALE_RESOLVER 的ID，此ID用于保存在Request中
 	 */
 	public static final String LOCALE_RESOLVER_ATTRIBUTE = DispatcherServlet.class.getName() + ".LOCALE_RESOLVER";
 
@@ -272,6 +295,11 @@ public class DispatcherServlet extends FrameworkServlet {
 	/**
 	 * Name of the class path resource (relative to the DispatcherServlet class)
 	 * that defines DispatcherServlet's default strategy names.
+	 * 定义了springMVC默认的配置，在目录 ：
+	 *    spring-webmvc\src\main\resources\org\springframework\web\servlet\DispatcherServlet.properties
+	 *    主要是指定了各类Bean的默认实现，如：
+	 *    org.springframework.web.servlet.LocaleResolver=org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver
+	 * org.springframework.web.servlet.ThemeResolver=org.springframework.web.servlet.theme.FixedThemeResolver
 	 */
 	private static final String DEFAULT_STRATEGIES_PATH = "DispatcherServlet.properties";
 
@@ -282,7 +310,9 @@ public class DispatcherServlet extends FrameworkServlet {
 
 	/** Additional logger to use when no mapped handler is found for a request. */
 	protected static final Log pageNotFoundLogger = LogFactory.getLog(PAGE_NOT_FOUND_LOG_CATEGORY);
-
+	/**
+	 * 默认的相关策略，在类加载时初始
+	 */
 	private static final Properties defaultStrategies;
 
 	static {
