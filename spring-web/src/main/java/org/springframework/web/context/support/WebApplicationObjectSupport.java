@@ -39,6 +39,7 @@ import org.springframework.web.util.WebUtils;
  * @author Juergen Hoeller
  * @since 28.08.2003
  * @see SpringBeanAutowiringSupport
+ * 继承此抽象类，可以获取SpringContext
  */
 public abstract class WebApplicationObjectSupport extends ApplicationObjectSupport implements ServletContextAware {
 

@@ -46,6 +46,10 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @see org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter
  * @see org.springframework.web.servlet.handler.SimpleServletHandlerAdapter
+ * 默认实现有3个：
+ * 	 (1)RequestMappingHandlerAdapter
+ * 	 (2)HttpRequestHandlerAdapter
+ * 	 (3)SimpleControllerHandlerAdapter
  */
 public interface HandlerAdapter {
 

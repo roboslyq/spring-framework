@@ -137,6 +137,9 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	}
 
 	@Override
+	/**
+	 * 默认初始化
+	 */
 	public void afterPropertiesSet() {
 		this.config = new RequestMappingInfo.BuilderConfiguration();
 		this.config.setUrlPathHelper(getUrlPathHelper());

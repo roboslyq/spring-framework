@@ -52,6 +52,9 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.web.servlet.handler.AbstractHandlerMapping
  * @see org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping
  * @see org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
+ * 常见实现：
+ * 		org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
+ * 		org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping
  */
 public interface HandlerMapping {
 
@@ -127,6 +130,7 @@ public interface HandlerMapping {
 	 * @return a HandlerExecutionChain instance containing handler object and
 	 * any interceptors, or {@code null} if no mapping found
 	 * @throws Exception if there is an internal error
+	 * 获取HandlerExecutionChain的入口关键方法
 	 */
 	@Nullable
 	HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception;

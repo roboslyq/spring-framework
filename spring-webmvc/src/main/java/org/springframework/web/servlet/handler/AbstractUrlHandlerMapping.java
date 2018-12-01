@@ -338,6 +338,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 	 * (a bean name will automatically be resolved into the corresponding handler bean)
 	 * @throws BeansException if the handler couldn't be registered
 	 * @throws IllegalStateException if there is a conflicting handler registered
+	 * 注册Handler
 	 */
 	protected void registerHandler(String urlPath, Object handler) throws BeansException, IllegalStateException {
 		Assert.notNull(urlPath, "URL path must not be null");
