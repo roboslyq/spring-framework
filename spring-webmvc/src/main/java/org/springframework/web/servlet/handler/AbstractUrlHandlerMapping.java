@@ -46,7 +46,7 @@ import org.springframework.web.servlet.HandlerExecutionChain;
  * <p>Will search all path patterns to find the most exact match for the
  * current request path. The most exact match is defined as the longest
  * path pattern that matches the current request path.
- *
+ *  获取最匹配的路径，最匹配的路径算法为：与当前请求相匹配的最长路径的pattern
  * @author Juergen Hoeller
  * @author Arjen Poutsma
  * @since 16.04.2003
@@ -54,10 +54,20 @@ import org.springframework.web.servlet.HandlerExecutionChain;
 public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping implements MatchableHandlerMapping {
 
 	@Nullable
+	/**
+	 * 设置根路径("/")的处理器
+	 */
 	private Object rootHandler;
-
+	/**
+	 * trailing：尾部
+	 * flash:斜杠
+	 * 即是否启用发问斜杠匹配规则，默认为false。如果需要启动设置为true。
+	 * 启用时，pattern = “/user”也匹配到"/user/"请求。
+	 */
 	private boolean useTrailingSlashMatch = false;
-
+	/**
+	 * 是否延迟初始化
+	 */
 	private boolean lazyInitHandlers = false;
 	/**
 	 * 请求路径与相关参数的key-value
@@ -118,6 +128,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 	 * Look up a handler for the URL path of the given request.
 	 * @param request current HTTP request
 	 * @return the handler instance, or {@code null} if none found
+	 * 根据请求中的URL获取对应的Handler
 	 */
 	@Override
 	@Nullable
@@ -128,19 +139,22 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 		 */
 		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
 		/**
-		 * 查找对应的Handler
+		 * 查找对应的Handler-->核心入口
 		 */
 		Object handler = lookupHandler(lookupPath, request);
 		if (handler == null) {
 			// We need to care for the default handler directly, since we need to
 			// expose the PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE for it as well.
+			//如果是根路径
 			Object rawHandler = null;
 			if ("/".equals(lookupPath)) {
 				rawHandler = getRootHandler();
 			}
+			//非根路径并且没有Handler，则获取默认Handler
 			if (rawHandler == null) {
 				rawHandler = getDefaultHandler();
 			}
+			//如果没有默认handler
 			if (rawHandler != null) {
 				// Bean name or resolved handler?
 				if (rawHandler instanceof String) {
@@ -170,7 +184,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 	@Nullable
 	protected Object lookupHandler(String urlPath, HttpServletRequest request) throws Exception {
 		// Direct match?
-		// 直接匹配优先级最高
+		// 直接匹配优先级最高（pattern与urlPath完全匹配，即没有通配符，全路径匹配）
 		Object handler = this.handlerMap.get(urlPath);
 		if (handler != null) {
 			// Bean name or resolved handler?
@@ -338,6 +352,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 	 * (a bean name will automatically be resolved into the corresponding handler bean)
 	 * @throws BeansException if the handler couldn't be registered
 	 * @throws IllegalStateException if there is a conflicting handler registered
+	 * 注册对应的Handler
 	 */
 	protected void registerHandler(String urlPath, Object handler) throws BeansException, IllegalStateException {
 		Assert.notNull(urlPath, "URL path must not be null");

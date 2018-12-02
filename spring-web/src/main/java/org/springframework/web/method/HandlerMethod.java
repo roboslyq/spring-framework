@@ -50,23 +50,25 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Juergen Hoeller
  * @author Sam Brannen
  * @since 3.1
+ * Controller中的requestMapping注解对应的封装
+ * 即一个HandlerMapping
  */
 public class HandlerMethod {
 
 	/** Logger that is available to subclasses. */
 	protected final Log logger = LogFactory.getLog(getClass());
-
+	//具体Controller对应的Bean
 	private final Object bean;
 
 	@Nullable
 	private final BeanFactory beanFactory;
-
+	//Controller对应的Bean类型
 	private final Class<?> beanType;
-
+	//当前Controller中具体的方法
 	private final Method method;
 
 	private final Method bridgedMethod;
-
+	//方法对应的参数
 	private final MethodParameter[] parameters;
 
 	@Nullable

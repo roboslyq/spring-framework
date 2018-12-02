@@ -61,6 +61,9 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
 
 
 	@Override
+	/**
+	 * handlerMapp初始化入口
+	 */
 	public final void setApplicationContext(@Nullable ApplicationContext context) throws BeansException {
 		if (context == null && !isContextRequired()) {
 			// Reset internal context state.
@@ -75,6 +78,9 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
 			}
 			this.applicationContext = context;
 			this.messageSourceAccessor = new MessageSourceAccessor(context);
+			/**
+			 * 初始化application()
+			 */
 			initApplicationContext(context);
 		}
 		else {
@@ -154,6 +160,7 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
 	 * @return the ApplicationContext (never {@code null})
 	 * @throws IllegalStateException in case of no ApplicationContext set
 	 * @since 5.0
+	 * 获取Context
 	 */
 	protected final ApplicationContext obtainApplicationContext() {
 		ApplicationContext applicationContext = getApplicationContext();

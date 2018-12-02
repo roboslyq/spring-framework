@@ -538,18 +538,33 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * 完成SpringMVC的初始化工作
 	 */
 	protected void initStrategies(ApplicationContext context) {
-		//文件上传解析，用于支持文件上传；
+		/**
+		 * 初始化 MultipartResolver
+		 * 内容类型( Content-Type )为 multipart/* 的请求的解析器接口。例如文件上传，，MultipartResolver
+		 * 会将 HttpServletRequest 封装成MultipartHttpServletRequest ，这样从 MultipartHttpServletRequest 中获得上传的文件
+		 */
 		initMultipartResolver(context);
-		//用于本地序列化，支持国际化。
+		/*
+		 *用于本地序列化，支持国际化。
+		 * （1）从请求中，解析出要使用的语言。例如，请求头的 "Accept-Language"
+		 * （2）可手动设置具体的请求语言
+		 */
 		initLocaleResolver(context);
-		//主题解析
+		/*
+		 *主题解析
+		 * (1)从请求中，解析出使用的主题。例如，从请求头 User-Agent ，判断使用 PC 端，还是移动端的主题
+		 * (2)当然可以设置请求所使用的主题。
+		 */
 		initThemeResolver(context);
 		/**
-		 * 就是请求处理器的映射。可以通过注解，Bean的name值等等
+		 * 处理器匹配接口，根据请求( request )获得其的处理器( handler )和拦截器们( HandlerInterceptor 数组)
+		 * 返回对象类型是 HandlerExecutionChain ，它包含处理器( handler )和拦截器们( HandlerInterceptor 数组 )
+		 *
 		 */
 		initHandlerMappings(context);
 		/**
-		 * HandlerAdapter会将处理器包装成适配器
+		 * 如果说HandlerMapping是一支笔，那么HandlerAdapter就是用笔的人。
+		 * 也就是说HandlerAdapter就是使用处理器干活的人
 		 */
 		initHandlerAdapters(context);
 		//处理器异常解析，可以将异常映射到相应的统一错误界面，从而显示用户友好的界面
@@ -558,7 +573,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		initRequestToViewNameTranslator(context);
 		//用于将逻辑视图名传话为集体的视图名
 		initViewResolvers(context);
-		//Flash相关
+		//负责重定向时，保存参数到临时存储中
 		initFlashMapManager(context);
 	}
 
@@ -593,6 +608,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	private void initLocaleResolver(ApplicationContext context) {
 		try {
+
 			this.localeResolver = context.getBean(LOCALE_RESOLVER_BEAN_NAME, LocaleResolver.class);
 			if (logger.isTraceEnabled()) {
 				logger.trace("Detected " + this.localeResolver);
@@ -1022,7 +1038,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		try {
 			/**
-			 * request处理方法
+			 * request处理方法()
 			 */
 			doDispatch(request, response);
 		}
