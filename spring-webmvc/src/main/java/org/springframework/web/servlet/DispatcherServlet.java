@@ -1139,7 +1139,8 @@ public class DispatcherServlet extends FrameworkServlet {
 
 				// Determine handler adapter for the current request.
 				//设置handler适配器
-				// 4.实际的处理器处理请求,返回结果视图对象
+				// 实际的处理器处理请求,返回结果视图对象
+				//假如把HanlderMapping比作一支笔，那么上面步骤是获取这支笔。而HandlerAdapter则是使用这支笔
 
 				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
 
@@ -1363,7 +1364,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			//循环获取初始化时存储的HandlerMapping。直到目标handler不为空为止
 
 			for (HandlerMapping mapping : this.handlerMappings) {
-				//获取HandlerExecutionChain的入口关键方法
+				//获取HandlerExecutionChain的入口关键方法,在抽象AbstractHandlerMapping中实现
 				HandlerExecutionChain handler = mapping.getHandler(request);
 				if (handler != null) {
 					return handler;

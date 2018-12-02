@@ -356,12 +356,15 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 	/**
 	 * Look up a handler method for the given request.
+	 * 根据request获取对应的Handler
 	 */
 	@Override
 	protected HandlerMethod getHandlerInternal(HttpServletRequest request) throws Exception {
+		//解析Request中的路径，例如 /user/info
 		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
 		this.mappingRegistry.acquireReadLock();
 		try {
+			//获取HandlerMethod封装
 			HandlerMethod handlerMethod = lookupHandlerMethod(lookupPath, request);
 			return (handlerMethod != null ? handlerMethod.createWithResolvedBean() : null);
 		}
@@ -372,16 +375,24 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 	/**
 	 * Look up the best-matching handler method for the current request.
+	 * 根据当前的请求获取最佳匹配的handler
 	 * If multiple matches are found, the best match is selected.
+	 * 即如果有多个匹配符合条件，选择最优的一条
 	 * @param lookupPath mapping lookup path within the current servlet mapping
 	 * @param request the current request
 	 * @return the best-matching handler method, or {@code null} if no match
 	 * @see #handleMatch(Object, String, HttpServletRequest)
 	 * @see #handleNoMatch(Set, String, HttpServletRequest)
+	 *
 	 */
 	@Nullable
 	protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletRequest request) throws Exception {
 		List<Match> matches = new ArrayList<>();
+		//从mapping注册器中获取一系列符合条件的
+		//
+		//		 * Key = [String]url
+		//		 * Value = Mapping
+		//
 		List<T> directPathMatches = this.mappingRegistry.getMappingsByUrl(lookupPath);
 		if (directPathMatches != null) {
 			addMatchingMappings(directPathMatches, matches, request);
@@ -393,6 +404,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 		if (!matches.isEmpty()) {
 			Comparator<Match> comparator = new MatchComparator(getMappingComparator(request));
+			//排序之后取最工匹配路径
 			matches.sort(comparator);
 			Match bestMatch = matches.get(0);
 			if (matches.size() > 1) {
@@ -520,13 +532,21 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * to perform lookups and providing concurrent access.
 	 *
 	 * <p>Package-private for testing purposes.
+	 *
+	 * Mapping注册器
 	 */
 	class MappingRegistry {
 
 		private final Map<T, MappingRegistration<T>> registry = new HashMap<>();
-
+		/**
+		 * T = HandlerMapping
+		 * V = HandlerMethod
+		 */
 		private final Map<T, HandlerMethod> mappingLookup = new LinkedHashMap<>();
-
+		/**
+		 * Key = [String]url
+		 * Value = Mapping
+		 */
 		private final MultiValueMap<String, T> urlLookup = new LinkedMultiValueMap<>();
 
 		private final Map<String, List<HandlerMethod>> nameLookup = new ConcurrentHashMap<>();
@@ -596,9 +616,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 				assertUniqueMethodMapping(handlerMethod, mapping);
 				//将HandlerMethod保存到mappingLookup
 				this.mappingLookup.put(mapping, handlerMethod);
-
 				List<String> directUrls = getDirectUrls(mapping);
 				for (String url : directUrls) {
+					//保存url与Mapping关系
 					this.urlLookup.add(url, mapping);
 				}
 

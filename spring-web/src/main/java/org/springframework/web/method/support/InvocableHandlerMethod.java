@@ -125,15 +125,21 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	 * @return the raw value returned by the invoked method
 	 * @throws Exception raised if no suitable argument resolver can be found,
 	 * or if the method raised an exception
+	 * 调用请求方法
 	 */
 	@Nullable
 	public Object invokeForRequest(NativeWebRequest request, @Nullable ModelAndViewContainer mavContainer,
 			Object... providedArgs) throws Exception {
-
+		/**
+		 * 获取handlerMethod方法参数
+		 */
 		Object[] args = getMethodArgumentValues(request, mavContainer, providedArgs);
 		if (logger.isTraceEnabled()) {
 			logger.trace("Arguments: " + Arrays.toString(args));
 		}
+		/**
+		 * 调用方法
+		 */
 		return doInvoke(args);
 	}
 
