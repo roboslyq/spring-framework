@@ -46,7 +46,7 @@ import org.springframework.web.servlet.HandlerExecutionChain;
  * <p>Will search all path patterns to find the most exact match for the
  * current request path. The most exact match is defined as the longest
  * path pattern that matches the current request path.
- *
+ *  获取最匹配的路径，最匹配的路径算法为：与当前请求相匹配的最长路径的pattern
  * @author Juergen Hoeller
  * @author Arjen Poutsma
  * @since 16.04.2003
@@ -54,6 +54,9 @@ import org.springframework.web.servlet.HandlerExecutionChain;
 public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping implements MatchableHandlerMapping {
 
 	@Nullable
+	/**
+	 * 设置根路径("/")的处理器
+	 */
 	private Object rootHandler;
 
 	private boolean useTrailingSlashMatch = false;

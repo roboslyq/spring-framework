@@ -31,7 +31,8 @@ import org.springframework.web.util.WebUtils;
  * Convenient superclass for application objects running in a {@link WebApplicationContext}.
  * Provides {@code getWebApplicationContext()}, {@code getServletContext()}, and
  * {@code getTempDir()} accessors.
- *
+ * 为了方便获取运行在WebApplicationContext中的应用对象而设计的一个父类（抽象类），因此会Application初始化
+ * 时会自动注入Application
  * <p>Note: It is generally recommended to use individual callback interfaces for the actual
  * callbacks needed. This broad base class is primarily intended for use within the framework,
  * in case of {@link ServletContext} access etc typically being needed.
@@ -72,13 +73,18 @@ public abstract class WebApplicationObjectSupport extends ApplicationObjectSuppo
 	/**
 	 * Calls {@link #initServletContext(javax.servlet.ServletContext)} if the
 	 * given ApplicationContext is a {@link WebApplicationContext}.
+	 * 初始化WebApplicationContext
 	 */
 	@Override
 	protected void initApplicationContext(ApplicationContext context) {
+		//在父类AbstractDetectingUrlHandlerMapping中有具体实现，关键入口
 		super.initApplicationContext(context);
 		if (this.servletContext == null && context instanceof WebApplicationContext) {
 			this.servletContext = ((WebApplicationContext) context).getServletContext();
 			if (this.servletContext != null) {
+				/**
+				 * 初始化servletContext
+				 */
 				initServletContext(this.servletContext);
 			}
 		}

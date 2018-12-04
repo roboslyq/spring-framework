@@ -205,6 +205,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 */
 	@Override
 	protected boolean isHandler(Class<?> beanType) {
+		//就否包含Controller.class注解或者RequestMapping注解，如果是则返回为true
 		return (AnnotatedElementUtils.hasAnnotation(beanType, Controller.class) ||
 				AnnotatedElementUtils.hasAnnotation(beanType, RequestMapping.class));
 	}
@@ -216,6 +217,9 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * does not have a {@code @RequestMapping} annotation.
 	 * @see #getCustomMethodCondition(Method)
 	 * @see #getCustomTypeCondition(Class)
+	 * method--->handlerType具体某一个方法
+	 * handlerType -->包含Controller注解的类，即处理器
+	 * 将Controller中的方法包装为RequestMappingInfo
 	 */
 	@Override
 	@Nullable
@@ -254,10 +258,13 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * the supplied {@code annotatedElement} is a class or method.
 	 * @see #getCustomTypeCondition(Class)
 	 * @see #getCustomMethodCondition(Method)
+	 *  创建RequestMapping信息
 	 */
 	@Nullable
 	private RequestMappingInfo createRequestMappingInfo(AnnotatedElement element) {
+		//获取方法中的RequestMapping注解
 		RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(element, RequestMapping.class);
+		//获取客户自定义请求条件
 		RequestCondition<?> condition = (element instanceof Class ?
 				getCustomTypeCondition((Class<?>) element) : getCustomMethodCondition((Method) element));
 		return (requestMapping != null ? createRequestMappingInfo(requestMapping, condition) : null);
@@ -303,15 +310,20 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 */
 	protected RequestMappingInfo createRequestMappingInfo(
 			RequestMapping requestMapping, @Nullable RequestCondition<?> customCondition) {
-
+		//创建RequestMapping信息
 		RequestMappingInfo.Builder builder = RequestMappingInfo
+				//解析并获取路径信息
 				.paths(resolveEmbeddedValuesInPatterns(requestMapping.path()))
+				//添加Request对应的GET,POST等
 				.methods(requestMapping.method())
+				//添加参数信息
 				.params(requestMapping.params())
+				//添加头信息
 				.headers(requestMapping.headers())
 				.consumes(requestMapping.consumes())
 				.produces(requestMapping.produces())
 				.mappingName(requestMapping.name());
+		//如果用户自定义信息不为空
 		if (customCondition != null) {
 			builder.customCondition(customCondition);
 		}

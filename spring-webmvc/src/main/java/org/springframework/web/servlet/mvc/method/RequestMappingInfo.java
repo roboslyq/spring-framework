@@ -50,6 +50,7 @@ import org.springframework.web.util.UrlPathHelper;
  * @author Arjen Poutsma
  * @author Rossen Stoyanchev
  * @since 3.1
+ * RequesMapping信息，即对应RequstMapping注解的封装。
  */
 public final class RequestMappingInfo implements RequestCondition<RequestMappingInfo> {
 
