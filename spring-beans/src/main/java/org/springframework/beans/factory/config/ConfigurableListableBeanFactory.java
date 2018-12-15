@@ -38,15 +38,23 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since 03.11.2003
  * @see org.springframework.context.support.AbstractApplicationContext#getBeanFactory()
+ *
+ *  提供bean definition的解析,注册功能,再对单例来个预加载(解决循环依赖问题). 
+ *   通常我们一般开发就会直接定义这么个接口了事.而不是像Spring这样先根据使用情况细分那么多
+ *   然后再一个接口中进行合并
  */
 public interface ConfigurableListableBeanFactory
 		extends ListableBeanFactory, AutowireCapableBeanFactory, ConfigurableBeanFactory {
+	//-------------------------------------------------------------------------
+	// 设置忽略的依赖关系,注册找到的特殊依赖
+	//-------------------------------------------------------------------------
 
 	/**
 	 * Ignore the given dependency type for autowiring:
 	 * for example, String. Default is none.
 	 * @param type the dependency type to ignore
 	 */
+	//忽略自动装配的依赖类型
 	void ignoreDependencyType(Class<?> type);
 
 	/**
@@ -60,6 +68,7 @@ public interface ConfigurableListableBeanFactory
 	 * @see org.springframework.beans.factory.BeanFactoryAware
 	 * @see org.springframework.context.ApplicationContextAware
 	 */
+	//忽略自动装配的接口
 	void ignoreDependencyInterface(Class<?> ifc);
 
 	/**
@@ -78,6 +87,9 @@ public interface ConfigurableListableBeanFactory
 	 * implementation of the {@link org.springframework.beans.factory.ObjectFactory}
 	 * interface, which allows for lazy resolution of the actual target value.
 	 */
+	/*
+	 * 注册一个可分解的依赖
+	 */
 	void registerResolvableDependency(Class<?> dependencyType, @Nullable Object autowiredValue);
 
 	/**
@@ -89,8 +101,14 @@ public interface ConfigurableListableBeanFactory
 	 * @return whether the bean should be considered as autowire candidate
 	 * @throws NoSuchBeanDefinitionException if there is no bean with the given name
 	 */
+	/*
+	 * 判断指定的Bean是否有资格作为自动装配的候选者
+	 */
 	boolean isAutowireCandidate(String beanName, DependencyDescriptor descriptor)
 			throws NoSuchBeanDefinitionException;
+	//-------------------------------------------------------------------------
+	// 获取bean定义 (可以访问属性值跟构造方法的参数值)
+	//-------------------------------------------------------------------------
 
 	/**
 	 * Return the registered BeanDefinition for the specified bean, allowing access
@@ -105,6 +123,9 @@ public interface ConfigurableListableBeanFactory
 	 * @return the registered BeanDefinition
 	 * @throws NoSuchBeanDefinitionException if there is no bean with the given name
 	 * defined in this factory
+	 */
+	/*
+	 * 返回注册的Bean定义
 	 */
 	BeanDefinition getBeanDefinition(String beanName) throws NoSuchBeanDefinitionException;
 
@@ -133,12 +154,16 @@ public interface ConfigurableListableBeanFactory
 	 * @see #getMergedBeanDefinition
 	 */
 	void clearMetadataCache();
+	//-------------------------------------------------------------------------
+	// 锁定配置信息.在调用refresh时会使用到.
+	//-------------------------------------------------------------------------
 
 	/**
 	 * Freeze all bean definitions, signalling that the registered bean definitions
 	 * will not be modified or post-processed any further.
 	 * <p>This allows the factory to aggressively cache bean definition metadata.
 	 */
+	//暂时冻结所有的Bean配置
 	void freezeConfiguration();
 
 	/**
@@ -146,6 +171,7 @@ public interface ConfigurableListableBeanFactory
 	 * i.e. are not supposed to be modified or post-processed any further.
 	 * @return {@code true} if the factory's configuration is considered frozen
 	 */
+
 	boolean isConfigurationFrozen();
 
 	/**
@@ -157,6 +183,10 @@ public interface ConfigurableListableBeanFactory
 	 * Call {@link #destroySingletons()} for full cleanup in this case.
 	 * @see #destroySingletons()
 	 */
+	//-------------------------------------------------------------------------
+	// 预加载不是懒加载的单例.用于解决循环依赖问题
+	//-------------------------------------------------------------------------
+	//使所有的非延迟加载的单例类都实例化。
 	void preInstantiateSingletons() throws BeansException;
 
 }

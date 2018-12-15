@@ -793,7 +793,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		 * 1、getBeanFactoryPostProcessors()返回手动注册的BeanFactoryPostProcessor集合
 		 *    手动注册指调用set方法把自己写的BeanFactoryPostProcessor类set进去，就可以用。
 		 *    不需要加注解或者是在xml中配置就可以执行
-		 *
+		 *    Springboot自动装载就是扩展BeanFactoryPostProcessor接口实现
 		 */
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 

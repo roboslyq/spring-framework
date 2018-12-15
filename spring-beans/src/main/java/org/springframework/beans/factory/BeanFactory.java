@@ -113,7 +113,7 @@ import org.springframework.lang.Nullable;
  * @see DisposableBean#destroy
  * @see org.springframework.beans.factory.support.RootBeanDefinition#getDestroyMethodName
  *
- * roboslyq 源码阅读git提交测试
+ * roboslyq Bean工厂父类
  */
 public interface BeanFactory {
 
@@ -122,12 +122,16 @@ public interface BeanFactory {
 	 * beans <i>created</i> by the FactoryBean. For example, if the bean named
 	 * {@code myJndiObject} is a FactoryBean, getting {@code &myJndiObject}
 	 * will return the factory, not the instance returned by the factory.
+	 * FactoryBean前缀，用来区分FactoryBean实例和被FactoryBean创建出来的具体实例。
+	 * 例如一个名字叫{@code myJndiObject}的FactoryBean，使用{@code &myJndiObject}返回的是factory本身
+	 * 而不是返回工厂创建的实例。如果想返回FactoryBean创建的实现，则使用{@code myJndiObject}即可。
 	 */
 	String FACTORY_BEAN_PREFIX = "&";
 
 
 	/**
 	 * Return an instance, which may be shared or independent, of the specified bean.
+	 * 返回指定的Bean实例，此Bean可以是共享模式或者单例模式。
 	 * <p>This method allows a Spring BeanFactory to be used as a replacement for the
 	 * Singleton or Prototype design pattern. Callers may retain references to
 	 * returned objects in the case of Singleton beans.
@@ -138,6 +142,7 @@ public interface BeanFactory {
 	 * @throws NoSuchBeanDefinitionException if there is no bean definition
 	 * with the specified name
 	 * @throws BeansException if the bean could not be obtained
+	 * 根据名称，返回Bean实例，抛出异常
 	 */
 	Object getBean(String name) throws BeansException;
 
@@ -158,6 +163,7 @@ public interface BeanFactory {
 	 * @throws NoSuchBeanDefinitionException if there is no such bean definition
 	 * @throws BeanNotOfRequiredTypeException if the bean is not of the required type
 	 * @throws BeansException if the bean could not be created
+	 * 根据名称及指定具体Bean的类型，返回Bean实例，抛出异常。
 	 */
 	<T> T getBean(String name, @Nullable Class<T> requiredType) throws BeansException;
 
@@ -174,6 +180,9 @@ public interface BeanFactory {
 	 * the affected bean isn't a prototype
 	 * @throws BeansException if the bean could not be created
 	 * @since 2.5
+	 * 从spring2.5之后加入此方法
+	 * 获取一个Bean，并且传入参数。此参数会在Bean的构造函数或者FactoryBean中使用。
+	 * 如果是FactoryBean,会覆盖其默认值
 	 */
 	Object getBean(String name, Object... args) throws BeansException;
 
@@ -191,6 +200,7 @@ public interface BeanFactory {
 	 * @throws BeansException if the bean could not be created
 	 * @since 3.0
 	 * @see ListableBeanFactory
+	 * 返回某类型的Bean的列表
 	 */
 	<T> T getBean(Class<T> requiredType) throws BeansException;
 
@@ -212,6 +222,7 @@ public interface BeanFactory {
 	 * the affected bean isn't a prototype
 	 * @throws BeansException if the bean could not be created
 	 * @since 4.1
+	 * 返回某类型的Bean的列表，并且传入参数(构造函数或者FactoryBean配置参数)
 	 */
 	<T> T getBean(Class<T> requiredType, Object... args) throws BeansException;
 
@@ -230,6 +241,7 @@ public interface BeanFactory {
 	 * will be able to obtain an instance for the same name.
 	 * @param name the name of the bean to query
 	 * @return whether a bean with the given name is present
+	 * 是否包含指定名称的Bean
 	 */
 	boolean containsBean(String name);
 
@@ -247,6 +259,7 @@ public interface BeanFactory {
 	 * @throws NoSuchBeanDefinitionException if there is no bean with the given name
 	 * @see #getBean
 	 * @see #isPrototype
+	 * 某一名称的Bean是否是单例
 	 */
 	boolean isSingleton(String name) throws NoSuchBeanDefinitionException;
 
@@ -265,6 +278,7 @@ public interface BeanFactory {
 	 * @since 2.0.3
 	 * @see #getBean
 	 * @see #isSingleton
+	 * 指定名称的Bean是否是原生模式
 	 */
 	boolean isPrototype(String name) throws NoSuchBeanDefinitionException;
 
@@ -282,6 +296,7 @@ public interface BeanFactory {
 	 * @since 4.2
 	 * @see #getBean
 	 * @see #getType
+	 * 确认指定名称的Bean是否属于某种具体类型的Bean
 	 */
 	boolean isTypeMatch(String name, ResolvableType typeToMatch) throws NoSuchBeanDefinitionException;
 
@@ -299,6 +314,8 @@ public interface BeanFactory {
 	 * @since 2.0.1
 	 * @see #getBean
 	 * @see #getType
+	 *
+	 * 确认指定名称的Bean是否属于某种具体类型的Bean
 	 */
 	boolean isTypeMatch(String name, @Nullable Class<?> typeToMatch) throws NoSuchBeanDefinitionException;
 
@@ -315,6 +332,7 @@ public interface BeanFactory {
 	 * @since 1.1.2
 	 * @see #getBean
 	 * @see #isTypeMatch
+	 * 获取具体name的Bean类型
 	 */
 	@Nullable
 	Class<?> getType(String name) throws NoSuchBeanDefinitionException;
@@ -329,6 +347,7 @@ public interface BeanFactory {
 	 * @param name the bean name to check for aliases
 	 * @return the aliases, or an empty array if none
 	 * @see #getBean
+	 * 获取指定Bean名称的所有别名
 	 */
 	String[] getAliases(String name);
 

@@ -41,6 +41,8 @@ import org.springframework.beans.BeansException;
  * @since 06.07.2003
  * @see BeanPostProcessor
  * @see PropertyResourceConfigurer
+ * BeanFacotory后置处理器，在Spring准备好BeanFactory之后，可以进行扩展操作。
+ * SpringBoot自动装配就是通过实现此接口来实现的
  */
 @FunctionalInterface
 public interface BeanFactoryPostProcessor {
