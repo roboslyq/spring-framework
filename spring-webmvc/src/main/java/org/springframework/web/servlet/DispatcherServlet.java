@@ -862,6 +862,10 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	private void initFlashMapManager(ApplicationContext context) {
 		try {
+			/**
+			 * 获取用户自定义flashMapManager Bean，名称为flashMapManager。
+			 * 如果没有找到则会抛出BeansException if the bean could not be created
+			 */
 			this.flashMapManager = context.getBean(FLASH_MAP_MANAGER_BEAN_NAME, FlashMapManager.class);
 			if (logger.isTraceEnabled()) {
 				logger.trace("Detected " + this.flashMapManager.getClass().getSimpleName());
@@ -872,6 +876,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			// We need to use the default.
+			//如果客户没有自定义，则使用默认的Bean（使用FlashMapManager.class的类名作KEY，从Map中获取）
 			this.flashMapManager = getDefaultStrategy(context, FlashMapManager.class);
 			if (logger.isTraceEnabled()) {
 				logger.trace("No FlashMapManager '" + FLASH_MAP_MANAGER_BEAN_NAME +
@@ -946,6 +951,10 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	@SuppressWarnings("unchecked")
 	protected <T> List<T> getDefaultStrategies(ApplicationContext context, Class<T> strategyInterface) {
+		/**
+		 * 获取策略接口名称作为KEY，然后从Properties中获取，所以Properties中的KEY必须为对应的策略接口名称。
+		 * 如FlashMapManager.class接口的KEY为FlashMapManager
+		 */
 		String key = strategyInterface.getName();
 		String value = defaultStrategies.getProperty(key);
 		if (value != null) {
