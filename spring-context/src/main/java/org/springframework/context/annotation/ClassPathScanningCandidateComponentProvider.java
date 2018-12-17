@@ -143,6 +143,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 * @see #registerDefaultFilters()
 	 */
 	public ClassPathScanningCandidateComponentProvider(boolean useDefaultFilters, Environment environment) {
+		//如果使用默认过滤器，则注册默认过滤器
 		if (useDefaultFilters) {
 			registerDefaultFilters();
 		}
@@ -200,13 +201,15 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 * {@link Controller @Controller} stereotype annotations.
 	 * <p>Also supports Java EE 6's {@link javax.annotation.ManagedBean} and
 	 * JSR-330's {@link javax.inject.Named} annotations, if available.
-	 *
+	 * 注册默认的Componet过滤器，同时支持“派生性”。
 	 */
 	@SuppressWarnings("unchecked")
 	protected void registerDefaultFilters() {
+		// @Component注册过滤器
 		this.includeFilters.add(new AnnotationTypeFilter(Component.class));
 		ClassLoader cl = ClassPathScanningCandidateComponentProvider.class.getClassLoader();
 		try {
+			// @ManagedBean过滤器
 			this.includeFilters.add(new AnnotationTypeFilter(
 					((Class<? extends Annotation>) ClassUtils.forName("javax.annotation.ManagedBean", cl)), false));
 			logger.debug("JSR-250 'javax.annotation.ManagedBean' found and supported for component scanning");
@@ -215,6 +218,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 			// JSR-250 1.1 API (as included in Java EE 6) not available - simply skip.
 		}
 		try {
+			// @Named过滤器
 			this.includeFilters.add(new AnnotationTypeFilter(
 					((Class<? extends Annotation>) ClassUtils.forName("javax.inject.Named", cl)), false));
 			logger.debug("JSR-330 'javax.inject.Named' annotation found and supported for component scanning");
@@ -419,6 +423,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 			//将普通路径 例如："com.roboslyq"转换成“classpath*:com.roboslyq/**/*.class”
 			String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
 					resolveBasePackage(basePackage) + '/' + this.resourcePattern;
+			//通过PathMatchingResourcePatternResolver来找寻资源,常用的Resource为FileSystemResource
 			Resource[] resources = getResourcePatternResolver().getResources(packageSearchPath);
 			boolean traceEnabled = logger.isTraceEnabled();
 			boolean debugEnabled = logger.isDebugEnabled();
@@ -428,16 +433,21 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 				}
 				if (resource.isReadable()) {
 					try {
+						//生成MetadataReader对象->SimpleMetadataReader，内部包含AnnotationMetadataReadingVisitor注解访问处理类
 						MetadataReader metadataReader = getMetadataReaderFactory().getMetadataReader(resource);
+						//判断class是否不属于excludeFilters集合内但至少符合一个includeFilters集合
 						if (isCandidateComponent(metadataReader)) {
 							//将MetadataReader包装成BeanDefinition
 							ScannedGenericBeanDefinition sbd = new ScannedGenericBeanDefinition(metadataReader);
+							//保存文件资源
 							sbd.setResource(resource);
 							sbd.setSource(resource);
+							//判断class文件是否不为接口或者抽象类并且是独立的
 							if (isCandidateComponent(sbd)) {
 								if (debugEnabled) {
 									logger.debug("Identified candidate component class: " + resource);
 								}
+								//完成验证加入集合中
 								candidates.add(sbd);
 							}
 							else {
@@ -491,12 +501,16 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 */
 	protected boolean isCandidateComponent(MetadataReader metadataReader) throws IOException {
 		for (TypeFilter tf : this.excludeFilters) {
+			//满足excludeFilter集合中的一个便返回false，表示不对对应的beanDefinition注册
 			if (tf.match(metadataReader, getMetadataReaderFactory())) {
 				return false;
 			}
 		}
 		for (TypeFilter tf : this.includeFilters) {
+			//首先满足其中includeFilter集合中的一个
 			if (tf.match(metadataReader, getMetadataReaderFactory())) {
+				//判断对应的beanDifinition不存在@Conditional注解或者满足@Conditional中指定的条件，则返回true
+				//@Conditional注解的使用可自行查看相关资料
 				return isConditionMatch(metadataReader);
 			}
 		}
@@ -527,6 +541,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 */
 	protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
 		AnnotationMetadata metadata = beanDefinition.getMetadata();
+		//非抽象类、接口类并且有独立特性[它是一个顶级类还是一个嵌套类(静态内部类)，可以独立于封闭类构造。]
 		return (metadata.isIndependent() && (metadata.isConcrete() ||
 				(metadata.isAbstract() && metadata.hasAnnotatedMethods(Lookup.class.getName()))));
 	}
