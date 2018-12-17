@@ -33,10 +33,14 @@ public class ContextNamespaceHandler extends NamespaceHandlerSupport {
 	@Override
 	public void init() {
 		//roboslyq -- > 解析 <context:property-placeholder location="classpath:xxx.properties" />标签
+		//资源配置相关
 		registerBeanDefinitionParser("property-placeholder", new PropertyPlaceholderBeanDefinitionParser());
 		registerBeanDefinitionParser("property-override", new PropertyOverrideBeanDefinitionParser());
+		//注解Bean相关
 		registerBeanDefinitionParser("annotation-config", new AnnotationConfigBeanDefinitionParser());
+		//package扫描相关
 		registerBeanDefinitionParser("component-scan", new ComponentScanBeanDefinitionParser());
+		//
 		registerBeanDefinitionParser("load-time-weaver", new LoadTimeWeaverBeanDefinitionParser());
 		registerBeanDefinitionParser("spring-configured", new SpringConfiguredBeanDefinitionParser());
 		registerBeanDefinitionParser("mbean-export", new MBeanExportBeanDefinitionParser());

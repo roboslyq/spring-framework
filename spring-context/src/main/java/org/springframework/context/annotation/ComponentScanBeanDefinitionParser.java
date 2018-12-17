@@ -46,7 +46,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Parser for the {@code <context:component-scan/>} element.
- *
+ * 解析{@code <context:component-scan/>}标签
  * @author Mark Fisher
  * @author Ramnivas Laddad
  * @author Juergen Hoeller
@@ -80,14 +80,20 @@ public class ComponentScanBeanDefinitionParser implements BeanDefinitionParser {
 	@Override
 	@Nullable
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
+		//获取basePackage标签
 		String basePackage = element.getAttribute(BASE_PACKAGE_ATTRIBUTE);
+		//basePackage占位符处理
 		basePackage = parserContext.getReaderContext().getEnvironment().resolvePlaceholders(basePackage);
+		//支持多个package，使用,;分割
 		String[] basePackages = StringUtils.tokenizeToStringArray(basePackage,
 				ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS);
 
 		// Actually scan for bean definitions and register them.
+		//创建ClassPathBeanDefinitionScanner对象
 		ClassPathBeanDefinitionScanner scanner = configureScanner(parserContext, element);
+		//核心入口，使用ClassPathBeanDefinitionScanner对象扫描加载所有的配置的package,返回集合BeanDefinitionHolder
 		Set<BeanDefinitionHolder> beanDefinitions = scanner.doScan(basePackages);
+		//将BeanDefinitionHolder注入到容器中
 		registerComponents(parserContext.getReaderContext(), beanDefinitions, element);
 
 		return null;
