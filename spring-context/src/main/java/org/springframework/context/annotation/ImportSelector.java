@@ -37,7 +37,9 @@ import org.springframework.core.type.AnnotationMetadata;
  * annotations, however, it is also possible to defer selection of imports until all
  * {@code @Configuration} classes have been processed (see {@link DeferredImportSelector}
  * for details).
- *
+ * ImportSelector主要作用是收集需要导入的配置类，如果该接口的实现类同时实现Aware接口，例如：EnvironmentAware， BeanFactoryAware
+ * ，BeanClassLoaderAware或者ResourceLoaderAware等，那么在调用其selectImports方法之前先调用上述接口中对应的
+ * 方法，如果需要在所有的@Configuration处理完在导入时可以实现DeferredImportSelector接口
  * @author Chris Beams
  * @since 3.1
  * @see DeferredImportSelector
