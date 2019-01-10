@@ -571,7 +571,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		initHandlerExceptionResolvers(context);
 		//initHandlerExceptionResolvers(context);
 		initRequestToViewNameTranslator(context);
-		//用于将逻辑视图名传话为集体的视图名
+		//初始化视图解析器：根据视图逻辑名称，解析为具体的View(视图)
 		initViewResolvers(context);
 		//负责重定向时，保存参数到临时存储中
 		initFlashMapManager(context);

@@ -34,6 +34,7 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.web.servlet.view.InternalResourceViewResolver
  * @see org.springframework.web.servlet.view.ResourceBundleViewResolver
  * @see org.springframework.web.servlet.view.XmlViewResolver
+ * View处理器
  */
 public interface ViewResolver {
 
