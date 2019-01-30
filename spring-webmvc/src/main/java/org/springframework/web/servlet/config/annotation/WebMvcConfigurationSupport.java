@@ -375,7 +375,7 @@ public class WebMvcConfigurationSupport implements ApplicationContextAware, Serv
 	/**
 	 * Return a global {@link PathMatcher} instance for path matching
 	 * patterns in {@link HandlerMapping HandlerMappings}.
-	 * This instance can be configured using the {@link PathMatchConfigurer}
+	 * This instance can be configured usisetConfigurersng the {@link PathMatchConfigurer}
 	 * in {@link #configurePathMatch(PathMatchConfigurer)}.
 	 * @since 4.1
 	 */

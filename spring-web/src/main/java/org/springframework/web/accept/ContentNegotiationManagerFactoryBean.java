@@ -87,6 +87,11 @@ import org.springframework.web.context.ServletContextAware;
  * @author Rossen Stoyanchev
  * @author Brian Clozel
  * @since 3.2
+ *
+ * SpringWebMvc模块内容协商管理器工厂Bean，用来创建内容管理器{@link ContentNegotiationManager}
+ * 1、包含了内容协商的策略集合strategies。{@link ContentNegotiationStrategy}为策略具体实现
+ * 2、包含了一个内容协商管理器contentNegotiationManager。 {@link ContentNegotiationManager}为其具体实现
+ * 3、
  */
 public class ContentNegotiationManagerFactoryBean
 		implements FactoryBean<ContentNegotiationManager>, ServletContextAware, InitializingBean {
@@ -289,7 +294,9 @@ public class ContentNegotiationManagerFactoryBean
 		this.servletContext = servletContext;
 	}
 
-
+	/**
+	 * 配置入口类
+	 */
 	@Override
 	public void afterPropertiesSet() {
 		build();
@@ -298,14 +305,19 @@ public class ContentNegotiationManagerFactoryBean
 	/**
 	 * Actually build the {@link ContentNegotiationManager}.
 	 * @since 5.0
+	 * 构建具体的contentNegotiationManager。
+	 * 可以通过接口{@link org.springframework.web.servlet.config.annotation.WebMvcConfigurer}接口，来实现对应的参数调整。
 	 */
 	public ContentNegotiationManager build() {
 		List<ContentNegotiationStrategy> strategies = new ArrayList<>();
-
+		//是否有通过set方法来添加相关策略
 		if (this.strategies != null) {
 			strategies.addAll(this.strategies);
 		}
 		else {
+			/**
+			 * 是否有将path路径策略标记为true
+			 */
 			if (this.favorPathExtension) {
 				PathExtensionContentNegotiationStrategy strategy;
 				if (this.servletContext != null && !useRegisteredExtensionsOnly()) {
@@ -320,7 +332,9 @@ public class ContentNegotiationManagerFactoryBean
 				}
 				strategies.add(strategy);
 			}
-
+			/**
+			 * 是否有将请求参数策略标记为true
+			 */
 			if (this.favorParameter) {
 				ParameterContentNegotiationStrategy strategy = new ParameterContentNegotiationStrategy(this.mediaTypes);
 				strategy.setParameterName(this.parameterName);
@@ -332,16 +346,22 @@ public class ContentNegotiationManagerFactoryBean
 				}
 				strategies.add(strategy);
 			}
-
+			/**
+			 * 是否标识请求头策略为True
+			 */
 			if (!this.ignoreAcceptHeader) {
 				strategies.add(new HeaderContentNegotiationStrategy());
 			}
-
+			/**
+			 * 默认策略不为空
+			 */
 			if (this.defaultNegotiationStrategy != null) {
 				strategies.add(this.defaultNegotiationStrategy);
 			}
 		}
-
+		/**
+		 * 创建内容协商管理器ContentNegotiationManager，并将策略集合传递给内容协商处理器。
+		 */
 		this.contentNegotiationManager = new ContentNegotiationManager(strategies);
 		return this.contentNegotiationManager;
 	}
