@@ -107,14 +107,17 @@ public final class SpringFactoriesLoader {
 		if (classLoaderToUse == null) {
 			classLoaderToUse = SpringFactoriesLoader.class.getClassLoader();
 		}
-		//根据名称加载
+		//根据指定的factoryClass类，按名称加载
 		List<String> factoryNames = loadFactoryNames(factoryClass, classLoaderToUse);
 		if (logger.isTraceEnabled()) {
 			logger.trace("Loaded [" + factoryClass.getName() + "] names: " + factoryNames);
 		}
 		List<T> result = new ArrayList<>(factoryNames.size());
 		for (String factoryName : factoryNames) {
-			result.add(instantiateFactory(factoryName, factoryClass, classLoaderToUse));
+			result.add(
+					//将全类名进行实例化。
+					instantiateFactory(factoryName, factoryClass, classLoaderToUse)
+			);
 		}
 		AnnotationAwareOrderComparator.sort(result);
 		return result;
@@ -134,6 +137,7 @@ public final class SpringFactoriesLoader {
 		//获取类名称，例如：org.springframework.core.io.support.SpringFactoriesLoader
 		String factoryClassName = factoryClass.getName();
 		return loadSpringFactories(classLoader)
+				//根据factoryClassName进行过滤
 				.getOrDefault(factoryClassName, Collections.emptyList());
 	}
 
@@ -141,6 +145,7 @@ public final class SpringFactoriesLoader {
 	 * 加载factories
 	 * @param classLoader
 	 * @return
+	 * 加载当前classLoader下所有Jar中spring.factories配置文件（所有Key，未过滤）
 	 */
 	private static Map<String, List<String>> loadSpringFactories(@Nullable ClassLoader classLoader) {
 		//检查缓存
@@ -155,6 +160,10 @@ public final class SpringFactoriesLoader {
 					classLoader.getResources(FACTORIES_RESOURCE_LOCATION) :
 					ClassLoader.getSystemResources(FACTORIES_RESOURCE_LOCATION));
 			//默认使用LinkedMultiValueMap实现
+			//result的Key为spring.factories配置文件中的Key，例如：org.springframework.core.io.support.DummyFactory=\
+			//result的Value为List<String>，具体为factories中具体Key所对应的值（使用逗号分割）
+			// e.g. org.springframework.core.io.support.MyDummyFactory2,\
+			//      org.springframework.core.io.support.MyDummyFactory1
 			result = new LinkedMultiValueMap<>();
 			while (urls.hasMoreElements()) {
 				URL url = urls.nextElement();
@@ -177,6 +186,9 @@ public final class SpringFactoriesLoader {
 	}
 
 	@SuppressWarnings("unchecked")
+	/**
+	 * 根据类名称，加载相关的类，返回类型为配置Key的实现类。
+	 */
 	private static <T> T instantiateFactory(String instanceClassName, Class<T> factoryClass, ClassLoader classLoader) {
 		try {
 			Class<?> instanceClass = ClassUtils.forName(instanceClassName, classLoader);
@@ -184,6 +196,7 @@ public final class SpringFactoriesLoader {
 				throw new IllegalArgumentException(
 						"Class [" + instanceClassName + "] is not assignable to [" + factoryClass.getName() + "]");
 			}
+			//使用反射工具，进行类初始化
 			return (T) ReflectionUtils.accessibleConstructor(instanceClass).newInstance();
 		}
 		catch (Throwable ex) {
