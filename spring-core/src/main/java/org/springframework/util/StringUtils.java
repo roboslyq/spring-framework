@@ -1209,6 +1209,7 @@ public abstract class StringUtils {
 	 * array of strings.
 	 * @param str the input {@code String}
 	 * @return an array of strings, or the empty array in case of empty input
+	 * 逗号分割字符串并转换成数组
 	 */
 	public static String[] commaDelimitedListToStringArray(@Nullable String str) {
 		return delimitedListToStringArray(str, ",");

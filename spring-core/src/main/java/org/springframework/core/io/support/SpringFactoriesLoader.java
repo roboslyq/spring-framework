@@ -65,12 +65,18 @@ public final class SpringFactoriesLoader {
 	/**
 	 * The location to look for factories.
 	 * <p>Can be present in multiple JAR files.
+	 * factories文件所在路径
 	 */
 	public static final String FACTORIES_RESOURCE_LOCATION = "META-INF/spring.factories";
 
 
 	private static final Log logger = LogFactory.getLog(SpringFactoriesLoader.class);
-
+	/**
+	 * 使用ClassLoader为Key，定义了其加载的相关factories。
+	 * 使用MultiValueMap保存factories文件中相关属性。
+	 * 这是spring对JDK的SPI机制进行了增强和扩展。
+	 * 此处是缓存，第一次加载之后就不需要重新加载
+	 */
 	private static final Map<ClassLoader, MultiValueMap<String, String>> cache = new ConcurrentReferenceHashMap<>();
 
 
@@ -85,17 +91,23 @@ public final class SpringFactoriesLoader {
 	 * <p>If a custom instantiation strategy is required, use {@link #loadFactoryNames}
 	 * to obtain all registered factory names.
 	 * @param factoryClass the interface or abstract class representing the factory
+	 *                     factoryClass = com.roboslyq.test.TestInterface
+	 *                     为具体的接口或者抽象工厂类
 	 * @param classLoader the ClassLoader to use for loading (can be {@code null} to use the default)
 	 * @throws IllegalArgumentException if any factory implementation class cannot
 	 * be loaded or if an error occurs while instantiating any factory
 	 * @see #loadFactoryNames
+	 * 开始加载配置文件
 	 */
 	public static <T> List<T> loadFactories(Class<T> factoryClass, @Nullable ClassLoader classLoader) {
 		Assert.notNull(factoryClass, "'factoryClass' must not be null");
+		//选择合适的ClassLoder，如果传入classLoader并且不为空，则以传入ClassLoader为准，否则以SpringFactoriesLoader.class类
+		//所在ClassLoader为准
 		ClassLoader classLoaderToUse = classLoader;
 		if (classLoaderToUse == null) {
 			classLoaderToUse = SpringFactoriesLoader.class.getClassLoader();
 		}
+		//根据名称加载
 		List<String> factoryNames = loadFactoryNames(factoryClass, classLoaderToUse);
 		if (logger.isTraceEnabled()) {
 			logger.trace("Loaded [" + factoryClass.getName() + "] names: " + factoryNames);
@@ -119,24 +131,35 @@ public final class SpringFactoriesLoader {
 	 * @see #loadFactories
 	 */
 	public static List<String> loadFactoryNames(Class<?> factoryClass, @Nullable ClassLoader classLoader) {
+		//获取类名称，例如：org.springframework.core.io.support.SpringFactoriesLoader
 		String factoryClassName = factoryClass.getName();
-		return loadSpringFactories(classLoader).getOrDefault(factoryClassName, Collections.emptyList());
+		return loadSpringFactories(classLoader)
+				.getOrDefault(factoryClassName, Collections.emptyList());
 	}
 
+	/**
+	 * 加载factories
+	 * @param classLoader
+	 * @return
+	 */
 	private static Map<String, List<String>> loadSpringFactories(@Nullable ClassLoader classLoader) {
+		//检查缓存
 		MultiValueMap<String, String> result = cache.get(classLoader);
 		if (result != null) {
 			return result;
 		}
-
+		//
 		try {
 			Enumeration<URL> urls = (classLoader != null ?
+					//使用classLoader.getResources可以获取Jar包里面的文件内容
 					classLoader.getResources(FACTORIES_RESOURCE_LOCATION) :
 					ClassLoader.getSystemResources(FACTORIES_RESOURCE_LOCATION));
+			//默认使用LinkedMultiValueMap实现
 			result = new LinkedMultiValueMap<>();
 			while (urls.hasMoreElements()) {
 				URL url = urls.nextElement();
 				UrlResource resource = new UrlResource(url);
+				//PropertiesLoaderUtils工具加载具体的spring.factories
 				Properties properties = PropertiesLoaderUtils.loadProperties(resource);
 				for (Map.Entry<?, ?> entry : properties.entrySet()) {
 					List<String> factoryClassNames = Arrays.asList(
