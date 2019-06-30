@@ -139,7 +139,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 			//可对Bean工厂进行定制，一个扩展点
 			customizeBeanFactory(beanFactory);
 			/**
-			 * 	roboslyq-->初始化XmlBeanDefinitionReader用来读取xml，并加载解析。装载BeanDefinition。核心入口。
+			 * 	roboslyq-->初始化XmlBeanDefinitionReader用来读取xml，并加载解析。装载BeanDefinition核心入口。
 			 * 	在AbstractXmlApplicationContext中有具体实现
 			 */
 			loadBeanDefinitions(beanFactory);

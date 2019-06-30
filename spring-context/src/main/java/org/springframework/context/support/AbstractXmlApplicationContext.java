@@ -96,6 +96,7 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 
 		// Allow a subclass to provide custom initialization of the reader,
 		// then proceed with actually loading the bean definitions.
+		//一个扩展点，允许子类提供关于reader初始化相关功能。
 		initBeanDefinitionReader(beanDefinitionReader);
 		/**
 		 * roboslyq-->加载Bean定义（核心流程）

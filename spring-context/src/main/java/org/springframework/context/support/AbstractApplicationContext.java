@@ -566,10 +566,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 				// Invoke factory processors registered as beans in the context.
 				/**
+				 * 占位符处理扩展
+				 *
 				 * roboslyq-->容器启动第五步 ---（提供一个修改BeanDefinition的入口）-->
 				 *   (1)此功能与postProcessBeanFactory()方法有异曲同工之妙，需要实现BeanFactoryPostProcess的postProcessBeanFactory方法类似。
 				 *   可以实现和postProcessBeanFactory()。
-				 *   (2)例如PropertyResourceConfigurer,此类实现Bean相关配置中的点位符处理。
+				 *   (2)例如PropertyResourceConfigurer,此类实现Bean相关配置中的<b>占位符<b/>处理。
 				 *     就在这里调用PropertyResourceConfigurer相应实现完成。
 				 */
 
@@ -652,6 +654,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	/**
 	 * Prepare this context for refreshing, setting its startup date and
 	 * active flag as well as performing any initialization of property sources.
+	 * 容器启动前的准备阶段，设置启动日期和启动标识并且完成property资源初始化
 	 */
 	protected void prepareRefresh() {
 		//设置容器的启动时间戳

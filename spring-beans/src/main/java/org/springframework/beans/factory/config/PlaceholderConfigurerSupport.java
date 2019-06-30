@@ -214,7 +214,7 @@ public abstract class PlaceholderConfigurerSupport extends PropertyResourceConfi
 			StringValueResolver valueResolver) {
 
 		BeanDefinitionVisitor visitor = new BeanDefinitionVisitor(valueResolver);
-
+		//从bean工厂中获取所有beanDefinition集合
 		String[] beanNames = beanFactoryToProcess.getBeanDefinitionNames();
 		for (String curName : beanNames) {
 			// Check that we're not parsing our own bean definition,
@@ -222,6 +222,7 @@ public abstract class PlaceholderConfigurerSupport extends PropertyResourceConfi
 			if (!(curName.equals(this.beanName) && beanFactoryToProcess.equals(this.beanFactory))) {
 				BeanDefinition bd = beanFactoryToProcess.getBeanDefinition(curName);
 				try {
+					//核心逻辑，处理BeanDefinition的属性占位符
 					visitor.visitBeanDefinition(bd);
 				}
 				catch (Exception ex) {
