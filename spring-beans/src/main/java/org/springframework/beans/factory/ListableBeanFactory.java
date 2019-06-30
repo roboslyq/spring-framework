@@ -71,7 +71,7 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * @return if this bean factory contains a bean definition with the given name
 	 * @see #containsBean
 	 */
-	// 对于给定的名字是否含有BeanDefinition
+	// 检查Bean容器中是否包含给定Bean名称的BeanDefinition
 	boolean containsBeanDefinition(String beanName);
 
 	/**

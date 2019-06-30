@@ -21,7 +21,7 @@ package org.springframework.beans.factory;
  * on destruction. A BeanFactory is supposed to invoke the destroy
  * method if it disposes a cached singleton. An application context
  * is supposed to dispose all of its singletons on close.
- *
+ * Bean的生命周期中的最后一步骤，卸载Bean时被调用，可以用来释放相关资源。
  * <p>An alternative to implementing DisposableBean is specifying a custom
  * destroy-method, for example in an XML bean definition.
  * For a list of all bean lifecycle methods, see the
