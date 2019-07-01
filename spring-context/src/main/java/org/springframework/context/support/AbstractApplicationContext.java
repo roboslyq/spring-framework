@@ -717,6 +717,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	/**
 	 * Configure the factory's standard context characteristics,
 	 * such as the context's ClassLoader and post-processors.
+	 * 配置factory的标准上下文相关属性，例如类加载器，post-processors,SPEL处理器，属性Property编辑器
+	 * BeanPostProcessor等
 	 * @param beanFactory the BeanFactory to configure
 	 */
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
