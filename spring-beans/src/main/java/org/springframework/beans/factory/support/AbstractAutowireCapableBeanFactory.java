@@ -89,7 +89,7 @@ import org.springframework.util.StringUtils;
  * with the full capabilities specified by the {@link RootBeanDefinition} class.
  * Implements the {@link org.springframework.beans.factory.config.AutowireCapableBeanFactory}
  * interface in addition to AbstractBeanFactory's {@link #createBean} method.
- *
+ * 一个抽象的工厂父类，这个类实现了Bean的创建功能，并且创建的Bean拥有RootBeanDefinition中所定义的所有能力。
  * <p>Provides bean creation (with constructor resolution), property population,
  * wiring (including autowiring), and initialization. Handles runtime bean
  * references, resolves managed collections, calls initialization methods, etc.
@@ -542,6 +542,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * 1、通过createBeanInstance(beanName, mbd, args)创建BeanWrapper实例。但此时Spring并没有通过解析好的构造函数和实参来直接创建，
 	 * 	而是使用了策略模式，使用策略模式的类InstantiationStrategy 来创建bean。
 	 * 2、InstantiationStrategy有两个实现类，结构如下：
+	 *
 	 */
 	protected Object doCreateBean(final String beanName, final RootBeanDefinition mbd, final @Nullable Object[] args)
 			throws BeanCreationException {
