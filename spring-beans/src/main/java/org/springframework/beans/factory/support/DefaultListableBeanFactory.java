@@ -746,6 +746,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		return (this.configurationFrozen || super.isBeanEligibleForMetadataCaching(beanName));
 	}
 
+	/**
+	 * 提前实例化非延迟单实例Bean
+	 * @throws BeansException
+	 */
 	@Override
 	public void preInstantiateSingletons() throws BeansException {
 		if (logger.isDebugEnabled()) {
@@ -754,10 +758,12 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 		// Iterate over a copy to allow for init methods which in turn register new bean definitions.
 		// While this may not be part of the regular factory bootstrap, it does otherwise work fine.
+		// 获取所有Bean的名称,用于遍列
 		List<String> beanNames = new ArrayList<>(this.beanDefinitionNames);
 
 		// Trigger initialization of all non-lazy singleton beans...
 		for (String beanName : beanNames) {
+			//获取Bean定义
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
 			/**
 			 * 三个条件：
@@ -766,9 +772,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			 * 3、lazy配置为false
 			 */
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
+				//是否是工厂Bean,如果是则特殊处理
 				if (isFactoryBean(beanName)) {
 					/**
-					 * roboslyq-->调用getBean方法，即BeanFactory.getBean(beanName)方法
+					 * roboslyq-->调用getBean方法，即BeanFactory.getBean(beanName)方法,工厂Bean的规则默认有一个前缀'&'
 					 */
 					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
 					/**
@@ -776,7 +783,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					 */
 					if (bean instanceof FactoryBean) {
 						final FactoryBean<?> factory = (FactoryBean<?>) bean;
-						boolean isEagerInit;
+						boolean isEagerInit;//是否提前初始化
 						if (System.getSecurityManager() != null && factory instanceof SmartFactoryBean) {
 							isEagerInit = AccessController.doPrivileged((PrivilegedAction<Boolean>)
 											((SmartFactoryBean<?>) factory)::isEagerInit,
