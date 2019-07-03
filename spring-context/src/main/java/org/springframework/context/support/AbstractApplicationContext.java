@@ -583,7 +583,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
-				//实例化Bean的后置处理器，这样在Bean实例时，后置处理器就可以生效了
+				//注册相关的实BeanPostProcessor，在AbstractBeanFactory中有一个BeanPostProcessor容器
+				// private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>()
+				// 这样在例化Bean的后置处理器，这样在Bean实例时，后置处理器就可以生效了。
 				/**
 				 * robosly-->容器启动第六步：注册BeanPostProcessor（Bean的后置处理器）
 				 * --（注册用于拦截Bean创建的BeanPostProcessor）-->
@@ -596,7 +598,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				 * 		AspectJPointcutAdvisor#0:定义的通知
 				 * 		AspectJPointcutAdvisor#1:定义的通知
 				 * 		updateUserMethod:切入点表达式
-				 *  （2）其中	InternalAutoProxyCreator实现了BeanPostProcessor，所以会进入此方法处理
+				 *  （2）其中InternalAutoProxyCreator实现了BeanPostProcessor，所以会进入此方法处理
 				 */
 				registerBeanPostProcessors(beanFactory);
 
