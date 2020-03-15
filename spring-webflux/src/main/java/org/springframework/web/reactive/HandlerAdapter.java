@@ -25,7 +25,7 @@ import org.springframework.web.server.ServerWebExchange;
 /**
  * Contract that decouples the {@link DispatcherHandler} from the details of
  * invoking a handler and makes it possible to support any handler type.
- *
+ * 将{@link DispatcherHandler}与具体的调用处理程序(handler)的详细信息分离,并使其能够支持任何处理程序类型的协定。
  * @author Rossen Stoyanchev
  * @author Sebastien Deleuze
  * @since 5.0

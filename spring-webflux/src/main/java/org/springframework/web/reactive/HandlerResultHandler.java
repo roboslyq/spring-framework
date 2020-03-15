@@ -22,7 +22,7 @@ import org.springframework.web.server.ServerWebExchange;
 
 /**
  * Process the {@link HandlerResult}, usually returned by an {@link HandlerAdapter}.
- *
+ * 一个处理{@link HandlerResult}的Handler，通常返回一个HandlerAdapter
  * @author Rossen Stoyanchev
  * @author Sebastien Deleuze
  * @since 5.0
@@ -39,6 +39,8 @@ public interface HandlerResultHandler {
 	/**
 	 * Process the given result modifying response headers and/or writing data
 	 * to the response.
+	 * 因为有Response，可以直接输出，所以此处返回的是Mono<Void>
+	 *
 	 * @param exchange current server exchange
 	 * @param result the result from the handling
 	 * @return {@code Mono<Void>} to indicate when request handling is complete.

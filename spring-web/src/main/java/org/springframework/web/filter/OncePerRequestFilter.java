@@ -33,6 +33,11 @@ import org.springframework.web.util.WebUtils;
  * dispatch, on any servlet container. It provides a {@link #doFilterInternal}
  * method with HttpServletRequest and HttpServletResponse arguments.
  *
+ *  OncePerRequestFilter，顾名思义，它能够确保在一次请求中只通过一次filter，而需要重复的执行。
+ *  大家常识上都认为，一次请求本来就只filter一次，为什么还要由此特别限定呢，往往我们的常识和实际的实现并不真的一样.
+ *  此方法是为了兼容不同的web container，也就是说并不是所有的container都入我们期望的只过滤一次，servlet版本不同，
+ *  执行过程也不同。因此，为了兼容各种不同运行环境和版本，默认filter继承OncePerRequestFilter是一个比较稳妥的选择。
+ *
  * <p>As of Servlet 3.0, a filter may be invoked as part of a
  * {@link javax.servlet.DispatcherType#REQUEST REQUEST} or
  * {@link javax.servlet.DispatcherType#ASYNC ASYNC} dispatches that occur in
