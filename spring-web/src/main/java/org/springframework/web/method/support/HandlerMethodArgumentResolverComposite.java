@@ -33,7 +33,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 /**
  * Resolves method parameters by delegating to a list of registered {@link HandlerMethodArgumentResolver HandlerMethodArgumentResolvers}.
  * Previously resolved method parameters are cached for faster lookups.
- *
+ * 组合模式,参数解析器集合:组合了各种不同参数类型的解析器.
  * @author Rossen Stoyanchev
  * @author Juergen Hoeller
  * @since 3.1
@@ -111,16 +111,18 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
 	/**
 	 * Iterate over registered {@link HandlerMethodArgumentResolver HandlerMethodArgumentResolvers} and invoke the one that supports it.
 	 * @throws IllegalStateException if no suitable {@link HandlerMethodArgumentResolver} is found.
+	 * 具体的参数解析器
 	 */
 	@Override
 	@Nullable
 	public Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {
-
+		//根据参数类型的封装 MethodParameter,获取具体的解析器
 		HandlerMethodArgumentResolver resolver = getArgumentResolver(parameter);
 		if (resolver == null) {
 			throw new IllegalArgumentException("Unknown parameter type [" + parameter.getParameterType().getName() + "]");
 		}
+		//解析参数
 		return resolver.resolveArgument(parameter, mavContainer, webRequest, binderFactory);
 	}
 
