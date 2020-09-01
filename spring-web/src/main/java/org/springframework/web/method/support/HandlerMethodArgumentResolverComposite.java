@@ -41,9 +41,13 @@ import org.springframework.web.context.request.NativeWebRequest;
 public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgumentResolver {
 
 	protected final Log logger = LogFactory.getLog(getClass());
-
+	/**
+	 * 所有的参数解析器集合
+	 */
 	private final List<HandlerMethodArgumentResolver> argumentResolvers = new LinkedList<>();
-
+	/**
+	 * 参数解析器缓存，其中key为MethodParameter
+	 */
 	private final Map<MethodParameter, HandlerMethodArgumentResolver> argumentResolverCache =
 			new ConcurrentHashMap<>(256);
 
@@ -58,6 +62,7 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
 
 	/**
 	 * Add the given {@link HandlerMethodArgumentResolver HandlerMethodArgumentResolvers}.
+	 * 添加自定义参数解析器《多个参数形式》
 	 * @since 4.3
 	 */
 	public HandlerMethodArgumentResolverComposite addResolvers(@Nullable HandlerMethodArgumentResolver... resolvers) {
@@ -71,6 +76,7 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
 
 	/**
 	 * Add the given {@link HandlerMethodArgumentResolver HandlerMethodArgumentResolvers}.
+	 * 添加自定义参数解析器，《List集合模式》
 	 */
 	public HandlerMethodArgumentResolverComposite addResolvers(
 			@Nullable List<? extends HandlerMethodArgumentResolver> resolvers) {
@@ -122,7 +128,7 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
 		if (resolver == null) {
 			throw new IllegalArgumentException("Unknown parameter type [" + parameter.getParameterType().getName() + "]");
 		}
-		//解析参数
+		//解析参数<核心入口>
 		return resolver.resolveArgument(parameter, mavContainer, webRequest, binderFactory);
 	}
 

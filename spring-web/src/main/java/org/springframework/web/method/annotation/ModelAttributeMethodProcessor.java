@@ -60,7 +60,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
  * <p>When this handler is created with {@code annotationNotRequired=true}
  * any non-simple type argument and return value is regarded as a model
  * attribute with or without the presence of an {@code @ModelAttribute}.
- *
+ * 解析注解{@code @ModelAttribute}标注的参数
  * @author Rossen Stoyanchev
  * @author Juergen Hoeller
  * @author Sebastien Deleuze
@@ -113,7 +113,8 @@ public class ModelAttributeMethodProcessor implements HandlerMethodArgumentResol
 
 		Assert.state(mavContainer != null, "ModelAttributeMethodProcessor requires ModelAndViewContainer");
 		Assert.state(binderFactory != null, "ModelAttributeMethodProcessor requires WebDataBinderFactory");
-
+		// 获取参数名字, 如: User user 获取的结果为 user ; 其实现原理为获取该注解的 value 值
+		// 如果缓存中没有该参数的解析,那么就实例化一个参数实例，并放入缓存
 		String name = ModelFactory.getNameForParameter(parameter);
 		ModelAttribute ann = parameter.getParameterAnnotation(ModelAttribute.class);
 		if (ann != null) {
@@ -147,9 +148,11 @@ public class ModelAttributeMethodProcessor implements HandlerMethodArgumentResol
 		if (bindingResult == null) {
 			// Bean property binding and validation;
 			// skipped in case of binding failure on construction.
+			// 将参数包装进 WebDataBinder 中，方便统一操作, 将参数实例放入到 target 字段域中
 			WebDataBinder binder = binderFactory.createBinder(webRequest, attribute, name);
 			if (binder.getTarget() != null) {
 				if (!mavContainer.isBindingDisabled(name)) {
+					// 进行参数的解析过程, 将由 ServletModelAttributeMethodProcessor 处理
 					bindRequestParameters(binder, webRequest);
 				}
 				validateIfApplicable(binder, parameter);

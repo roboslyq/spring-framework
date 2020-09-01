@@ -55,7 +55,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  * resolution mode in which simple types (int, long, etc.) not annotated with
  * {@link RequestParam @RequestParam} are also treated as request parameters with
  * the parameter name derived from the argument name.
- *
+ * {@link RequestParam}解析, 解析普通的变量;
  * <p>If the method parameter type is {@link Map}, the name specified in the
  * annotation is used to resolve the request parameter String value. The value is
  * then converted to a {@link Map} via type conversion assuming a suitable
@@ -66,7 +66,13 @@ import org.springframework.web.util.UriComponentsBuilder;
  *
  * <p>A {@link WebDataBinder} is invoked to apply type conversion to resolved request
  * header values that don't yet match the method parameter type.
- *
+ * {@link @RequestParam }的处理过程:
+ * 　　　　1. 由于 RequestParam 的处理方式简单，直接继承父类操作 resolveArgument();
+ * 　　　　2. 使用 namedValueInfo 来封装请求参数, 一般只针对简单类型的参数操作;
+ * 　　　　3. 解析定义的 变量名称,可支持 ${xxx} 这样的 expr 表达式处理;
+ * 　　　　4. 根据变量名称,从request中获取参数，返回第一个值作为参数的原始值;
+ * 　　　　5. 经过一些类型转换操作,如果需要的话;
+ * 　　　　6. 值设置完成后，预留一个扩展点给用户;
  * @author Arjen Poutsma
  * @author Rossen Stoyanchev
  * @author Brian Clozel

@@ -147,7 +147,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 *               父容器，Spring容器有父子继承关系
 	 * @throws BeansException if context creation failed
 	 * 				容器创建会抛出异常，并且优雅的执行destroyBeans()和cancelRefresh(ex)操作
-	 * @see #refresh() 启动容器
+	 * @see #refresh() 启动容器，默认为true
 	 *  roboslyq-20180905
 	 *  SpringFramework框架分析的入口类
 	 */
