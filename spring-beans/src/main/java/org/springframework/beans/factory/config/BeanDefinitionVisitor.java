@@ -33,10 +33,11 @@ import org.springframework.util.StringValueResolver;
  * Visitor class for traversing {@link BeanDefinition} objects, in particular
  * the property values and constructor argument values contained in them,
  * resolving bean metadata values.
+ * Visitor类，用于遍历BeanDefinition对象,特别是其中包含的属性值和构造函数参数值，用于解析bean元数据值。
  *
  * <p>Used by {@link PropertyPlaceholderConfigurer} to parse all String values
  * contained in a BeanDefinition, resolving any placeholders found.
- *
+ * 用于{@link PropertyPlaceholderConfigurer}类去解析所有的占位置符。
  * @author Juergen Hoeller
  * @author Sam Brannen
  * @since 1.2
@@ -74,6 +75,7 @@ public class BeanDefinitionVisitor {
 	 * and ConstructorArgumentValues contained in them.
 	 * @param beanDefinition the BeanDefinition object to traverse
 	 * @see #resolveStringValue(String)
+	 * 处理当前BeanDefinition的占位符
 	 */
 	public void visitBeanDefinition(BeanDefinition beanDefinition) {
 		visitParentName(beanDefinition);
@@ -82,7 +84,7 @@ public class BeanDefinitionVisitor {
 		visitFactoryMethodName(beanDefinition);
 		visitScope(beanDefinition);
 		if (beanDefinition.hasPropertyValues()) {
-			//以替换易变的属性列表进行跟踪
+			//======>以替换易变的属性列表进行跟踪
 			visitPropertyValues(beanDefinition.getPropertyValues());
 		}
 		if (beanDefinition.hasConstructorArgumentValues()) {
@@ -92,6 +94,10 @@ public class BeanDefinitionVisitor {
 		}
 	}
 
+	/**
+	 * 处理父类名称
+	 * @param beanDefinition
+	 */
 	protected void visitParentName(BeanDefinition beanDefinition) {
 		String parentName = beanDefinition.getParentName();
 		if (parentName != null) {
@@ -102,6 +108,10 @@ public class BeanDefinitionVisitor {
 		}
 	}
 
+	/**
+	 * 处理Bean名称
+	 * @param beanDefinition
+	 */
 	protected void visitBeanClassName(BeanDefinition beanDefinition) {
 		String beanClassName = beanDefinition.getBeanClassName();
 		if (beanClassName != null) {
@@ -293,7 +303,7 @@ public class BeanDefinitionVisitor {
 	 */
 	@Nullable
 	protected String resolveStringValue(String strVal) {
-		//valueResolver = org.springframework.beans.factory.config.PropertyPlaceholderConfigurer
+		// valueResolver = org.springframework.beans.factory.config.PropertyPlaceholderConfigurer
 		// 此处会触发PropertyPlaceholderConfigurer.resolveStringValue(String)
 		// 在resolveStringValue(String)中，会触发PropertyPlaceholderHelper类的parseStringValue方法获取占位符对应的值
 		if (this.valueResolver == null) {
