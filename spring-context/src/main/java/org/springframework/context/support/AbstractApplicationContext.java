@@ -961,7 +961,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
 		// Initialize conversion service for this context.
-		/**
+		/*
 		 * conversionService转换服务
 		 */
 		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) &&

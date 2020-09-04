@@ -84,7 +84,8 @@ import org.springframework.util.StringUtils;
  * based on bean definition metadata, extensible through post-processors.
  * 接口BeanDefinitionRegistry和ConfigurableListableBeanFactory的默认实现 ，Spring BeanFactory体系及后面的ApplicationContext体系中
  * 完成具体的通用功能基石是靠此类。
- * 此类使用方式不是继承而是组合来实现 。 通过new创建实例
+ * 此类使用方式不是继承而是组合来实现 ，在具体的(ApplicationConext或者BeanFactory)实现中，是通过手动new创建实例。
+ * 比如在ClassPathXmlApplicationContext。
  * <p>Typical usage is registering all bean definitions first (possibly read
  * from a bean definition file), before accessing beans. Bean lookup by name
  * is therefore an inexpensive operation in a local bean definition table,

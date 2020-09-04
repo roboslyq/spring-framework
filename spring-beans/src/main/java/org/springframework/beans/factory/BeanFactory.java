@@ -286,7 +286,7 @@ public interface BeanFactory {
 	 * @since 2.0.3
 	 * @see #getBean
 	 * @see #isSingleton
-	 * 指定名称的Bean是否是原生模式
+	 * 指定名称的Bean是否是原生模式(Prototype，获取Bean实例时，每次返回不一样的Bean实例)
 	 */
 	boolean isPrototype(String name) throws NoSuchBeanDefinitionException;
 
