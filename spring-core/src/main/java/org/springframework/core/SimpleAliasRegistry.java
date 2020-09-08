@@ -44,6 +44,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	/** Map from alias to canonical name. */
+	/** key为 alias, Map为 name*/
 	private final Map<String, String> aliasMap = new ConcurrentHashMap<>(16);
 
 
@@ -208,12 +209,14 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	 * Determine the raw name, resolving aliases to canonical names.
 	 * @param name the user-specified name
 	 * @return the transformed name
+	 * canonical:典型的;规范的;标准的;公认的
 	 */
 	public String canonicalName(String name) {
 		String canonicalName = name;
 		// Handle aliasing...
 		//roboslyq-->处理别名，别名转bean Name
 		String resolvedName;
+		//循环获取，支持多重别名嵌套，直接最后的别名为空，表示此名称是一个真实的bean名称。
 		do {
 			resolvedName = this.aliasMap.get(canonicalName);
 			if (resolvedName != null) {

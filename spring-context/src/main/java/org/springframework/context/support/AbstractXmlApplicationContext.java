@@ -90,12 +90,13 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 		// Configure the bean definition reader with this context's
 		// resource loading environment.
 		beanDefinitionReader.setEnvironment(this.getEnvironment());
-		//roboslyq -->如果使用ClassPathXmlApplicationContext,则将ResourceLoader = 如果使用ClassPathXmlApplicationContext
+		//roboslyq -->如果使用ClassPathXmlApplicationContext,则ResourceLoader = ClassPathXmlApplicationContext
 		beanDefinitionReader.setResourceLoader(this);
 		beanDefinitionReader.setEntityResolver(new ResourceEntityResolver(this));
 
 		// Allow a subclass to provide custom initialization of the reader,
 		// then proceed with actually loading the bean definitions.
+		//一个扩展点，允许子类提供关于reader初始化相关功能。
 		initBeanDefinitionReader(beanDefinitionReader);
 		/**
 		 * roboslyq-->加载Bean定义（核心流程）

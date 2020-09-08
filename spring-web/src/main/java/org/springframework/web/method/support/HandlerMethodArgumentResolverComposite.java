@@ -33,7 +33,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 /**
  * Resolves method parameters by delegating to a list of registered {@link HandlerMethodArgumentResolver HandlerMethodArgumentResolvers}.
  * Previously resolved method parameters are cached for faster lookups.
- *
+ * 组合模式,参数解析器集合:组合了各种不同参数类型的解析器.
  * @author Rossen Stoyanchev
  * @author Juergen Hoeller
  * @since 3.1
@@ -41,9 +41,13 @@ import org.springframework.web.context.request.NativeWebRequest;
 public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgumentResolver {
 
 	protected final Log logger = LogFactory.getLog(getClass());
-
+	/**
+	 * 所有的参数解析器集合
+	 */
 	private final List<HandlerMethodArgumentResolver> argumentResolvers = new LinkedList<>();
-
+	/**
+	 * 参数解析器缓存，其中key为MethodParameter
+	 */
 	private final Map<MethodParameter, HandlerMethodArgumentResolver> argumentResolverCache =
 			new ConcurrentHashMap<>(256);
 
@@ -58,6 +62,7 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
 
 	/**
 	 * Add the given {@link HandlerMethodArgumentResolver HandlerMethodArgumentResolvers}.
+	 * 添加自定义参数解析器《多个参数形式》
 	 * @since 4.3
 	 */
 	public HandlerMethodArgumentResolverComposite addResolvers(@Nullable HandlerMethodArgumentResolver... resolvers) {
@@ -71,6 +76,7 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
 
 	/**
 	 * Add the given {@link HandlerMethodArgumentResolver HandlerMethodArgumentResolvers}.
+	 * 添加自定义参数解析器，《List集合模式》
 	 */
 	public HandlerMethodArgumentResolverComposite addResolvers(
 			@Nullable List<? extends HandlerMethodArgumentResolver> resolvers) {
@@ -111,16 +117,18 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
 	/**
 	 * Iterate over registered {@link HandlerMethodArgumentResolver HandlerMethodArgumentResolvers} and invoke the one that supports it.
 	 * @throws IllegalStateException if no suitable {@link HandlerMethodArgumentResolver} is found.
+	 * 具体的参数解析器
 	 */
 	@Override
 	@Nullable
 	public Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {
-
+		//根据参数类型的封装 MethodParameter,获取具体的解析器
 		HandlerMethodArgumentResolver resolver = getArgumentResolver(parameter);
 		if (resolver == null) {
 			throw new IllegalArgumentException("Unknown parameter type [" + parameter.getParameterType().getName() + "]");
 		}
+		//解析参数<核心入口>
 		return resolver.resolveArgument(parameter, mavContainer, webRequest, binderFactory);
 	}
 

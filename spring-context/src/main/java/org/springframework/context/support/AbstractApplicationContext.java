@@ -521,7 +521,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	public void refresh() throws BeansException, IllegalStateException {
 		synchronized (this.startupShutdownMonitor) {
 			// Prepare this context for refreshing.
-			/** roboslyq--> 容器启动第一步 ---(创建BeanFactory容器前环境准备)-->
+			/* roboslyq--> 容器启动第一步：刷新前的预处理---(创建BeanFactory容器前环境准备)-->
 			 *  (1)启动前准备操作（在父类AbstractRefreshableApplicationContext中实现）
 			 *  (2)记录spring容器上下文的启动(刷新)时间和标记
 			 *  (3)将容器激活状态active设为true，初始化一些容器启动必要的资源
@@ -529,7 +529,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
-			/**
+			/*
 			 * roboslyq-->容器启动第二步（十分重要核心！！！） ---(创建BeanFactory，并将资源文件转换为BeanDefinition存入容器中)-->
 			 * （1）创建建Bean工厂，使用具体的子类去获取Bean工厂类，如果有则先销毁再创建。
 			 * （2）完成Bean的定位，加载及注册整个过程，最终得到BeanDefinition
@@ -538,12 +538,14 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			 *  	fresh:新的，新鲜的
 			 *  	BeanFactory:Bean工厂
 			 *  	obtainFreshBeanFactory:获取一个新的Bean工厂
+			 *  默认的beanFactory类型为：DefaultListableBeanFactory
  			 */
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
 			//配置工厂的标准上下文特征
-			/**	roboslyq-->容器启动第三步 ---(BeanFactory创建后，在创建具体Bean之前设置一些环境相关参数-->
+			/*	roboslyq-->容器启动第三步：BeanFactory的预准备工作（BeanFactory进行一些设置）
+			 * ---(BeanFactory创建后，在创建具体Bean之前设置一些环境相关参数-->
 			 * (1)容器启动第二步仅完成xml等资源文件到BeanDefinition的转换，还未开始初始化具体的SpringBean
 			 * (2)在完成Bean资源文件加载及注册之后，为了可以使用使用IOC，进行Bean工厂初始化。
 			 * (3)类装载器Classloader,PostProcessor等处理
@@ -555,30 +557,37 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				//roboslyq-->在BeanFactory完成初始化后进行一些操作，即在beanFactory初始化之后提供一个修改BeanFactory的机会
 				//BeanFactory定义后，提供一个修改BeanFactory的入口。
 
-				/**	roboslyq-->容器启动第四步 ---(BeanFactory创建后，提供一个修改BeanFactory默认行为的机会)-->
-				 *	(1)模板方法
+				/*	roboslyq-->容器启动第四步：BeanFactory准备工作完成后进行的后置处理工作；
+				 *  ---(BeanFactory创建后，提供一个修改BeanFactory默认行为的机会)-->
+				 *	(1)模板抽象方法,当前未做处理。子类通过重写这个方法来在BeanFactory创建并预准备完成以后做进一步的设置
 				 *	(2)	在第二步完成Bean容器(BeanFacotory)初始化后，此时BeanFacotry均是默认参数。
 				 *		此入口提供目的是BeanDefinition装载后，可以再次修改BeanFactory的一些属性
 				 *	(3)默认是空，没有实现，可以自定义扩展。具体扩展可以继承ClassPathXmlApplicationContext类
 				 *  	并重写postProcessBeanFactory即可
 				 */
 				postProcessBeanFactory(beanFactory);
-
+//--------------------------------------------以上方法是处理BeanFactory相关---------------------------------------------------------------------
 				// Invoke factory processors registered as beans in the context.
-				/**
+				/*
+				 * 占位符处理扩展
 				 * roboslyq-->容器启动第五步 ---（提供一个修改BeanDefinition的入口）-->
 				 *   (1)此功能与postProcessBeanFactory()方法有异曲同工之妙，需要实现BeanFactoryPostProcess的postProcessBeanFactory方法类似。
 				 *   可以实现和postProcessBeanFactory()。
-				 *   (2)例如PropertyResourceConfigurer,此类实现Bean相关配置中的点位符处理。
+				 *   (2)例如PropertyResourceConfigurer,此类实现Bean相关配置中的<b>占位符<b/>处理。
 				 *     就在这里调用PropertyResourceConfigurer相应实现完成。
+				 *     BeanFactoryPostProcessor：BeanFactory的后置处理器。在BeanFactory标准初始化之后执行的；
+				 * 	 (3)相关接口定义：PropertyResourceConfigurer，BeanFactoryPostProcessor及其子接口BeanDefinitionRegistryPostProcessor等
 				 */
 
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
-				//实例化Bean的后置处理器，这样在Bean实例时，后置处理器就可以生效了
-				/**
-				 * robosly-->容器启动第六步 ---（注册用于拦截Bean创建的BeanPostProcessor）-->
+				// 注册相关的实BeanPostProcessor，在AbstractBeanFactory中有一个BeanPostProcessor容器
+				// private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>()
+				// 这样在例化Bean的后置处理器，这样在Bean实例时，后置处理器就可以生效了。
+				/*
+				 * robosly-->容器启动第六步：注册BeanPostProcessor（Bean的后置处理器）
+				 * --（注册用于拦截Bean创建的BeanPostProcessor）-->
 				 * 	注册用于拦截Bean创建的BeanPostProcessor
 				 * 	例如：AOP具体织和在这个入口完成，具体原因如下：
 				 * 	(1) AOP在解析过程中会生成如下对象：
@@ -588,12 +597,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				 * 		AspectJPointcutAdvisor#0:定义的通知
 				 * 		AspectJPointcutAdvisor#1:定义的通知
 				 * 		updateUserMethod:切入点表达式
-				 *  （2）其中	InternalAutoProxyCreator实现了BeanPostProcessor，所以会进入此方法处理
+				 *  （2）其中InternalAutoProxyCreator实现了BeanPostProcessor，所以会进入此方法处理
 				 */
 				registerBeanPostProcessors(beanFactory);
 
 				// Initialize message source for this context.
-				//roboslyq-->初始化MessageSource（国际化资源处理）
+				//roboslyq-->初始化MessageSource（国际化资源处理，消息绑定，消息解析）；
 				initMessageSource();
 
 				// Initialize event multicaster for this context.
@@ -604,24 +613,24 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				initApplicationEventMulticaster();
 
 				// Initialize other special beans in specific context subclasses.
-				//特定的上下文中初始化特别的beans,默认空实现。由子类自己实现
+				//特定的上下文中初始化特别的beans,默认空实现。由子类自己实现重写，在容器刷新的时候可以自定义逻辑；
 				onRefresh();
 
 				// Check for listener beans and register them.
-				//roboslyq-->注册监听器
+				//roboslyq-->注册监听器（给容器中将所有项目里面的ApplicationListener注册进来）
 				//注册监听器，与广播器是同时存在的。在广播器章节，spring只是初始化的广播器，
 				// 但是并没有为广播器绑定Listener, Spring在此方法中进行了绑定。
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.
-				/**
-				 * roboslyq-->完成BeanFactory的初始化,将属性为no-lazy的BeanDefinition进行初始化,
-				 * 最终得到Spring中可以使用的Bean（AOP织入也是在此阶段完成）
+				/*
+				 * roboslyq-->初始化所有剩下的单实例bean，即将属性为no-lazy的BeanDefinition进行初始化,
+				 * 最终得到Spring中可以使用的Bean（AOP织入也是在此阶段完成）。
 				 */
 				finishBeanFactoryInitialization(beanFactory);
 
 				// Last step: publish corresponding event.
-				//容器结束启动
+				//容器结束启动,表明已经完成BeanFactory的初始化创建工作及IOC容器就创建；
 				finishRefresh();
 			}
 
@@ -652,6 +661,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	/**
 	 * Prepare this context for refreshing, setting its startup date and
 	 * active flag as well as performing any initialization of property sources.
+	 * 容器启动前的准备阶段，设置启动日期和启动标识并且完成property资源初始化
 	 */
 	protected void prepareRefresh() {
 		//设置容器的启动时间戳
@@ -671,6 +681,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Validate that all properties marked as required are resolvable
 		// see ConfigurablePropertyResolver#setRequiredProperties
 		//验证是否系统环境中有RequiredProperties参数值,默认空实现，一个扩展点
+		//此处会getEnvironment,如果没有初始化，则新初始化一个。如果已经初始化则直接获取
 		getEnvironment().validateRequiredProperties();
 
 		// Allow for the collection of early ApplicationEvents,
@@ -713,6 +724,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	/**
 	 * Configure the factory's standard context characteristics,
 	 * such as the context's ClassLoader and post-processors.
+	 * 配置factory的标准上下文相关属性，例如类加载器，post-processors,SPEL处理器，属性Property编辑器
+	 * BeanPostProcessor等
 	 * @param beanFactory the BeanFactory to configure
 	 */
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
@@ -948,7 +961,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
 		// Initialize conversion service for this context.
-		/**
+		/*
 		 * conversionService转换服务
 		 */
 		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) &&
@@ -978,7 +991,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// Instantiate all remaining (non-lazy-init) singletons.
 		/**
-		 * roboslyq-->初始化加载非延迟Bean。在DefaultListableBeanFactory实现
+		 * roboslyq-->初始化加载非延迟Bean，会调用doGetBean()方法。具体实现在DefaultListableBeanFactory实现
 		 * AOP 织入
 		 */
 		beanFactory.preInstantiateSingletons();

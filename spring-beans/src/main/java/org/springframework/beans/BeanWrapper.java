@@ -20,7 +20,7 @@ import java.beans.PropertyDescriptor;
 
 /**
  * The central interface of Spring's low-level JavaBeans infrastructure.
- *
+ * Spring中JavaBean的底层结构，包含原始Bean实例和原始Bean Class对象。
  * <p>Typically not used directly but rather implicitly via a
  * {@link org.springframework.beans.factory.BeanFactory} or a
  * {@link org.springframework.validation.DataBinder}.
@@ -63,6 +63,7 @@ public interface BeanWrapper extends ConfigurablePropertyAccessor {
 
 	/**
 	 * Return the bean instance wrapped by this object.
+	 *
 	 */
 	Object getWrappedInstance();
 

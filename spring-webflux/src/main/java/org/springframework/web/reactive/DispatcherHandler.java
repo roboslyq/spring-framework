@@ -41,7 +41,8 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
  * Central dispatcher for HTTP request handlers/controllers. Dispatches to
  * registered handlers for processing a request, providing convenient mapping
  * facilities.
- *
+ * 请求request的核心分发器，通过DispatcherHandler可以将请求request分发到具体的handler或者Controller中。
+ * 提供了方便的映射器，将request请求映射到具体的handler中。
  * <p>{@code DispatcherHandler} discovers the delegate components it needs from
  * Spring configuration. It detects the following in the application context:
  * <ul>

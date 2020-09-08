@@ -48,6 +48,7 @@ import org.springframework.util.StringValueResolver;
  * @see org.springframework.beans.factory.ListableBeanFactory
  * @see ConfigurableListableBeanFactory
  * 可配置的BeanFactory，定义BeanFactory的配置.
+ * 可配置最常见的方式即通过Set方法，完成相关配置类的注入。
  */
 public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, SingletonBeanRegistry {
 	//-------------------------------------------------------------------------

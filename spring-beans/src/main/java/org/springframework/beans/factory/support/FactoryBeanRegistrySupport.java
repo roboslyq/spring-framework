@@ -92,6 +92,9 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 	 * @return the object obtained from the FactoryBean
 	 * @throws BeanCreationException if FactoryBean object creation failed
 	 * @see org.springframework.beans.factory.FactoryBean#getObject()
+	 *
+	 * 如果是单例模式，创建后会将结果放入缓存 factoryBeanObjectCache ，该字段保存了 beanName -> 工厂创建的bean实例的关系。
+	 * 如果需要的话，会调用ObjectFactory的后处理器
 	 */
 	//Bean工厂生产Bean实例对象
 	protected Object getObjectFromFactoryBean(FactoryBean<?> factory, String beanName, boolean shouldPostProcess) {
@@ -160,6 +163,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 	 * @return the object obtained from the FactoryBean
 	 * @throws BeanCreationException if FactoryBean object creation failed
 	 * @see org.springframework.beans.factory.FactoryBean#getObject()
+	 * FactoryBean的 getObject 方法来获取bean
 	 */
 	//调用Bean工厂的getObject方法生产指定Bean的实例对象
 private Object doGetObjectFromFactoryBean(final FactoryBean<?> factory, final String beanName)

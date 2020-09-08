@@ -58,7 +58,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 
 
 	/**
-	 * Create a new ClassPathXmlApplicationContext for bean-style configuration.
+	 * Create a new ClassPathXmlApplicationConretext for bean-style configuration.
 	 * @see #setConfigLocation
 	 * @see #setConfigLocations
 	 * @see #afterPropertiesSet()
@@ -97,7 +97,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 * from the given XML files and automatically refreshing the context.
 	 * @param configLocations array of resource locations
 	 * @throws BeansException if context creation failed
-	 *  传入多个资源位置
+	 *  通过传入多个资源位置创建ClassPathXmlApplicationContext，并且自动执行refresh() context操作。
 	 */
 	public ClassPathXmlApplicationContext(String... configLocations) throws BeansException {
 		//parent为空
@@ -147,7 +147,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 *               父容器，Spring容器有父子继承关系
 	 * @throws BeansException if context creation failed
 	 * 				容器创建会抛出异常，并且优雅的执行destroyBeans()和cancelRefresh(ex)操作
-	 * @see #refresh() 启动容器
+	 * @see #refresh() 启动容器，默认为true
 	 *  roboslyq-20180905
 	 *  SpringFramework框架分析的入口类
 	 */
@@ -164,7 +164,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 		 * roboslyq-->
 		 *   (1)设置父类AbstractRefreshableApplicationContext资源位置，后续解析时会使用此值
 		 * 	 (2)将String形式的资源转换为String数组
-		 * 	 (3) 会调用Enviroment中的resolveRequiredPlaceholders方法，将配置文件中的占位符替换为具体的值
+		 * 	 (3) 会调用Enviroment中的resolveRequiredPlaceholders方法，解析传入的路径中的占位符（即将占位符替换为具体的值）
 		 * 		getEnvironment().resolveRequiredPlaceholders(path)
 		 */
 		setConfigLocations(configLocations);

@@ -145,21 +145,25 @@ public class InvocableHandlerMethod extends HandlerMethod {
 
 	/**
 	 * Get the method argument values for the current request.
+	 * 从当前请求Request中获取相关参数
 	 */
 	private Object[] getMethodArgumentValues(NativeWebRequest request, @Nullable ModelAndViewContainer mavContainer,
 			Object... providedArgs) throws Exception {
-
+		//获取具体Hanler的方法参数
 		MethodParameter[] parameters = getMethodParameters();
 		Object[] args = new Object[parameters.length];
+		//循环解析参数
 		for (int i = 0; i < parameters.length; i++) {
 			MethodParameter parameter = parameters[i];
 			parameter.initParameterNameDiscovery(this.parameterNameDiscoverer);
+			//有指定值
 			args[i] = resolveProvidedArgument(parameter, providedArgs);
 			if (args[i] != null) {
 				continue;
 			}
 			if (this.argumentResolvers.supportsParameter(parameter)) {
 				try {
+					//解析第i个参数
 					args[i] = this.argumentResolvers.resolveArgument(
 							parameter, mavContainer, request, this.dataBinderFactory);
 					continue;
@@ -169,6 +173,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 					String message = ex.getMessage();
 					if (!message.contains(parameter.getExecutable().toGenericString())) {
 						if (logger.isDebugEnabled()) {
+							//记录异常日志Could not resolve parameter [" + param.getParameterIndex() + "] in "
 							logger.debug(formatArgumentError(parameter, message));
 						}
 					}
@@ -189,6 +194,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 
 	/**
 	 * Attempt to resolve a method parameter from the list of provided argument values.
+	 * 从提供的参数值中获取参数
 	 */
 	@Nullable
 	private Object resolveProvidedArgument(MethodParameter parameter, @Nullable Object... providedArgs) {

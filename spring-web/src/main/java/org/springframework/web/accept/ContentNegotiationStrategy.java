@@ -28,6 +28,7 @@ import org.springframework.web.context.request.NativeWebRequest;
  *
  * @author Rossen Stoyanchev
  * @since 3.2
+ * 内容协商策略接口
  */
 @FunctionalInterface
 public interface ContentNegotiationStrategy {

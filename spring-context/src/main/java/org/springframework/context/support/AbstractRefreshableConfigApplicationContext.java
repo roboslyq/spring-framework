@@ -80,7 +80,7 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 			this.configLocations = new String[locations.length];
 			//循环处理bean xml的配置文件
 			for (int i = 0; i < locations.length; i++) {
-				// roboslyq -- > 解析路劲
+				// roboslyq -- > 解析路径并转换路径占位符
 				this.configLocations[i] = resolvePath(locations[i]).trim();
 			}
 		}

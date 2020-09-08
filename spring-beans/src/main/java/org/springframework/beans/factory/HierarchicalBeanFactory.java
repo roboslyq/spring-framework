@@ -19,6 +19,7 @@ package org.springframework.beans.factory;
 import org.springframework.lang.Nullable;
 
 /**
+ * hierarchy:[/'haɪərɑːkɪ/ ],分层的，分等级的。即存在父子关系的。
  * Sub-interface implemented by bean factories that can be part
  * of a hierarchy.
  * 子类实现，可以组成一个层级的BeanFactory,即可组成一个父子容器关系。

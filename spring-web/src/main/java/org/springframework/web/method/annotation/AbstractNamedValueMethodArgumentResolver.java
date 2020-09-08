@@ -94,16 +94,18 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 	@Nullable
 	public final Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {
-
+		// 使用 NamedValueInfo 来封装参数,
 		NamedValueInfo namedValueInfo = getNamedValueInfo(parameter);
 		MethodParameter nestedParameter = parameter.nestedIfOptional();
 
+		// 变量名称替换 比如将 ${a} 替换为 a; 这里会经过一层 BeanExpressionResolver 的解析处理
 		Object resolvedName = resolveStringValue(namedValueInfo.name);
 		if (resolvedName == null) {
 			throw new IllegalArgumentException(
 					"Specified name must not resolve to null: [" + namedValueInfo.name + "]");
 		}
 
+		// 根据参数名, 获取该值,该方法为 子类的扩展点,即由 RequestParamMethodArgumentResolver 处理
 		Object arg = resolveName(resolvedName.toString(), nestedParameter, webRequest);
 		if (arg == null) {
 			if (namedValueInfo.defaultValue != null) {
@@ -121,6 +123,7 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 		if (binderFactory != null) {
 			WebDataBinder binder = binderFactory.createBinder(webRequest, null, namedValueInfo.name);
 			try {
+				// 进行类型转换切入点处理, 由于前面返回的参数是 String 类型的，所以，类型的转换必然交给此处处理
 				arg = binder.convertIfNecessary(arg, parameter.getParameterType(), parameter);
 			}
 			catch (ConversionNotSupportedException ex) {
@@ -133,7 +136,7 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 
 			}
 		}
-
+		// 再一个预留扩展点，供用户自定义再次处理结果，默认为空
 		handleResolvedValue(arg, namedValueInfo.name, parameter, mavContainer, webRequest);
 
 		return arg;

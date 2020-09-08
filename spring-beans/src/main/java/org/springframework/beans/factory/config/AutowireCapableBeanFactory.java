@@ -60,20 +60,18 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.beans.factory.config.ConfigurableListableBeanFactory
  * @see org.springframework.context.ApplicationContext#getAutowireCapableBeanFactory()
  *
- *  对于想要拥有自动装配能力，并且想把这种能力暴露给外部应用的BeanFactory类需要实现此接口。
- * 	正常情况下，不要使用此接口，应该更倾向于使用BeanFactory或者ListableBeanFactory接口。
- *   此接口主要是针对框架之外，没有向Spring托管Bean的应用。通过暴露此功能，Spring框架之外的程序，具有自动装配等Spring的功能。
- *   需要注意的是，ApplicationContext接口并没有实现此接口，因为应用代码很少用到此功能，如果确实需要的话，
- *   可以调用ApplicationContext的getAutowireCapableBeanFactory方法，来获取此接口的实例。
- *   如果一个类实现了此接口，那么很大程度上它还需要实现BeanFactoryAware接口。它可以在应用上下文中返回BeanFactory。
- *
+ * 1、对于想要拥有自动装配能力，并且想把这种能力暴露给外部应用的BeanFactory类需要实现此接口。
+ * 	 正常情况下，不要使用此接口，应该更倾向于使用BeanFactory或者ListableBeanFactory接口。
+ * 2、此接口主要是针对框架之外，没有向Spring托管Bean的应用。通过暴露此功能，Spring框架之外的程序，具有自动装配等Spring的功能。
+ *    需要注意的是，ApplicationContext接口并没有实现此接口而是使用了组合模式，因为应用代码很少用到此功能，如果确实需要的话，
+ *    可以调用ApplicationContext的getAutowireCapableBeanFactory方法，来获取此接口的实例。
+ * 3、如果一个类实现了此接口，那么很大程度上它还需要实现BeanFactoryAware接口。它可以在应用上下文中返回BeanFactory。
  *   使用场景：
  *   （1）问题的抛出
  *		在应用中一般普通的JavaPojo都是由Spring来管理的，所以使用autowire注解来进行注入不会产生问题，但是有两个东西是例外的，
  *		一个是 Filter，一个是Servlet，这两样东西都是由Servlet容器来维护管理的，
- *		所以如果想和其他的Bean一样使用Autowire来注入的 话，是需要做一些额外的功夫的。
- *	（2）AutowireCapableBeanFactory的作用
- *	让不受spring管理的类具有spring自动注入的特性
+ *		所以如果想和其他的Bean一样使用Autowire来注入的话，是需要做一些额外的功夫的。
+ *	（2）AutowireCapableBeanFactory的作用：让不受spring管理的类具有spring自动注入的特性
  */
 public interface AutowireCapableBeanFactory extends BeanFactory {
 

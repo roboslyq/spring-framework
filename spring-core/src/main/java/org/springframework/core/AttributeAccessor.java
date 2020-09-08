@@ -22,7 +22,12 @@ import org.springframework.lang.Nullable;
  * Interface defining a generic contract for attaching and accessing metadata
  * to/from arbitrary objects.
  * roboslyq-->定义用于附加和访问元数据的通用的接口，来自任意对象
- *
+ *            定义了最基本的对任意对象的元数据的修改或者获取，主要方法有：
+ *  String[] attributeNames()
+ * Object getAttribute(String name)
+ * boolean hasAttribute(String name)
+ * Object removeAttribute(String name)
+ * void setAttribute(String name, Object value)
  * @author Rob Harrop
  * @since 2.0
  */

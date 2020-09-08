@@ -55,6 +55,7 @@ public abstract class AbstractAnnotationConfigDispatcherServletInitializer
 	protected WebApplicationContext createRootApplicationContext() {
 		Class<?>[] configClasses = getRootConfigClasses();
 		if (!ObjectUtils.isEmpty(configClasses)) {
+			// 创建父容器,默认是AnnotationConfigWebApplicationContext
 			AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 			context.register(configClasses);
 			return context;

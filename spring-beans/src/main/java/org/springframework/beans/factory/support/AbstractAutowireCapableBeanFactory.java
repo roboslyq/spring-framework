@@ -89,7 +89,7 @@ import org.springframework.util.StringUtils;
  * with the full capabilities specified by the {@link RootBeanDefinition} class.
  * Implements the {@link org.springframework.beans.factory.config.AutowireCapableBeanFactory}
  * interface in addition to AbstractBeanFactory's {@link #createBean} method.
- *
+ * 一个抽象的工厂父类，这个类实现了Bean的创建功能，并且创建的Bean拥有RootBeanDefinition中所定义的所有能力。
  * <p>Provides bean creation (with constructor resolution), property population,
  * wiring (including autowiring), and initialization. Handles runtime bean
  * references, resolves managed collections, calls initialization methods, etc.
@@ -123,30 +123,43 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		implements AutowireCapableBeanFactory {
 
 	/** Strategy for creating bean instances. */
+	/**
+	 *  Bean的初始化策略:所以此处的Bean初始化并不是直接进行的,而是通过策略模式指定相关策略进行具体的初始化
+	 *  默认是Cglib
+	 */
+
 	private InstantiationStrategy instantiationStrategy = new CglibSubclassingInstantiationStrategy();
 
 	/** Resolver strategy for method parameter names. */
+	/** 参数解析策略*/
 	@Nullable
 	private ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
 
 	/** Whether to automatically try to resolve circular references between beans. */
+	/** 是否自动尝试解析bean之间的循环引用 */
 	private boolean allowCircularReferences = true;
 
 	/**
 	 * Whether to resort to injecting a raw bean instance in case of circular reference,
 	 * even if the injected bean eventually got wrapped.
 	 */
+	/**
+	 * 在循环引用的情况下，是否需要注入原始bean实例，即使注入的bean最终被包装好
+	 * Despite:尽管
+	 */
 	private boolean allowRawInjectionDespiteWrapping = false;
 
 	/**
 	 * Dependency types to ignore on dependency check and autowire, as Set of
 	 * Class objects: for example, String. Default is none.
+	 * 在依赖检查和注入时，需要忽略的类型。
 	 */
 	private final Set<Class<?>> ignoredDependencyTypes = new HashSet<>();
 
 	/**
 	 * Dependency interfaces to ignore on dependency check and autowire, as Set of
 	 * Class objects. By default, only the BeanFactory interface is ignored.
+	 * 在依赖检查时，需要忽略的接口
 	 */
 	private final Set<Class<?>> ignoredDependencyInterfaces = new HashSet<>();
 
@@ -157,6 +170,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	private final NamedThreadLocal<String> currentlyCreatedBean = new NamedThreadLocal<>("Currently created bean");
 
 	/** Cache of unfinished FactoryBean instances: FactoryBean name to BeanWrapper. */
+	/** 缓存未完成实例化的FactoryBean */
 	private final Map<String, BeanWrapper> factoryBeanInstanceCache = new ConcurrentHashMap<>(16);
 
 	/** Cache of filtered PropertyDescriptors: bean Class to PropertyDescriptor array. */
@@ -294,6 +308,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 	//-------------------------------------------------------------------------
 	// Typical methods for creating and populating external bean instances
+	// 创建和填充外部bean实例的典型方法
 	//-------------------------------------------------------------------------
 
 	@Override
@@ -303,6 +318,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		RootBeanDefinition bd = new RootBeanDefinition(beanClass);
 		bd.setScope(SCOPE_PROTOTYPE);
 		bd.allowCaching = ClassUtils.isCacheSafe(beanClass, getBeanClassLoader());
+		//核心入口
 		return (T) createBean(beanClass.getName(), bd, null);
 	}
 
@@ -459,6 +475,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	/**
 	 * Central method of this class: creates a bean instance,
 	 * populates the bean instance, applies post-processors, etc.
+	 * 核心方法：创建Bean实例，填充Bean实例和调用post-processors等
+	 *
 	 * @see #doCreateBean
 	 */
 	@Override
@@ -490,6 +508,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
+			/*
+			  *1、InstantiationAwareBeanPostProcessor的执行入口，InstantiationAwareBeanPostProcessor是BeanPostProcessor的一种
+			 *    可以用来完成Bean的初始化工作（是一个扩展点）。
+			 * 2、如果此处获取的Bean为空，则继承Bean的创建流程
+			 */
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
@@ -534,6 +557,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @see #instantiateBean
 	 * @see #instantiateUsingFactoryMethod
 	 * @see #autowireConstructor
+	 * 1、通过createBeanInstance(beanName, mbd, args)创建BeanWrapper实例。但此时Spring并没有通过解析好的构造函数和实参来直接创建，
+	 * 	而是使用了策略模式，使用策略模式的类InstantiationStrategy 来创建bean。
+	 * 2、InstantiationStrategy有两个实现类，结构如下：
+	 *
 	 */
 	protected Object doCreateBean(final String beanName, final RootBeanDefinition mbd, final @Nullable Object[] args)
 			throws BeanCreationException {
@@ -545,7 +572,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 		if (instanceWrapper == null) {
 			/**
-			 * roboslyq-->创建Bean实例
+			 * roboslyq-->创建BeanWrapper实例
 			 */
 			instanceWrapper = createBeanInstance(beanName, mbd, args);
 		}
@@ -556,6 +583,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Allow post-processors to modify the merged bean definition.
+		//调用
 		synchronized (mbd.postProcessingLock) {
 			if (!mbd.postProcessed) {
 				try {
@@ -1063,6 +1091,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 				Class<?> targetType = determineTargetType(beanName, mbd);
 				if (targetType != null) {
+					//
 					bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
 					if (bean != null) {
 						bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
@@ -1110,56 +1139,74 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @see #instantiateUsingFactoryMethod
 	 * @see #autowireConstructor
 	 * @see #instantiateBean
+	 * 1、如果bean定义中存在 InstanceSupplier ，会使用这个回调接口创建对象（应该是3.X以后新加的，3.X的源码中没有）
+	 * 2、根据配置的factoryMethodName或factory-mtehod创建bean
+	 * 3、解析构造函数并进行实例化
+	 * 		因为一个类可能有多个构造函数，所以需要根据配置文件中配置的参数或者传入的参数确定最终调用的构造函数。
+	 * 		因为判断过程会比较消耗性能，所以Spring会将解析、确定好的构造函数缓存到BeanDefinition中的
+	 * 		resolvedConstructorOrFactoryMethod字段中。在下次创建相同bean的时候，会直接从RootBeanDefinition中的属性
+	 * 		resolvedConstructorOrFactoryMethod缓存的值获取，避免再次解析。
 	 */
 	protected BeanWrapper createBeanInstance(String beanName, RootBeanDefinition mbd, @Nullable Object[] args) {
 		// Make sure bean class is actually resolved at this point.
+		// 确保bean的Class已经真正的完成解析（即已经加载）
 		Class<?> beanClass = resolveBeanClass(mbd, beanName);
-
+		//确保class不为空，并且访问权限为public
 		if (beanClass != null && !Modifier.isPublic(beanClass.getModifiers()) && !mbd.isNonPublicAccessAllowed()) {
 			throw new BeanCreationException(mbd.getResourceDescription(), beanName,
 					"Bean class isn't public, and non-public access not allowed: " + beanClass.getName());
 		}
-
+		//创建Bean方法之一（优先级最高）：配置的一种特殊的callback回调方法，通过这个callback创建bean。
 		Supplier<?> instanceSupplier = mbd.getInstanceSupplier();
 		if (instanceSupplier != null) {
+			//调用特殊函数完成Bean创建，不经过任何修饰增强
 			return obtainFromSupplier(instanceSupplier, beanName);
 		}
-
+		//创建Bean方法之二（优先级第二）：通过工厂方法（BeanFactory）创建Bean
 		if (mbd.getFactoryMethodName() != null)  {
 			return instantiateUsingFactoryMethod(beanName, mbd, args);
 		}
 
 		// Shortcut when re-creating the same bean...
+		// 一个类可能有多个构造器，所以Spring得根据参数个数、类型确定需要调用的构造器
+		// 在使用构造器创建实例后，Spring会将解析过后确定下来的构造器或工厂方法保存在缓存中，避免再次创建相同bean时再次解析
 		boolean resolved = false;
 		boolean autowireNecessary = false;
 		if (args == null) {
 			synchronized (mbd.constructorArgumentLock) {
 				if (mbd.resolvedConstructorOrFactoryMethod != null) {
+					//已经解析过class的构造器
 					resolved = true;
 					autowireNecessary = mbd.constructorArgumentsResolved;
 				}
 			}
 		}
 		if (resolved) {
+			//已经解析过class的构造器，使用已经解析好的构造器
 			if (autowireNecessary) {
+				//带参构造函数自动注入
 				return autowireConstructor(beanName, mbd, null, null);
 			}
 			else {
+				//使用默认构造器(重要入口，在此过程中调用策略模式完成相关的Proxy代理)
 				return instantiateBean(beanName, mbd);
 			}
 		}
 
 		// Need to determine the constructor...
+		// 需要根据参数解析、确定构造函数
 		Constructor<?>[] ctors = determineConstructorsFromBeanPostProcessors(beanClass, beanName);
+		// 解析的构造器不为空 || 注入类型为构造函数自动注入 || bean定义中有构造器参数 || 传入参数不为空
 		if (ctors != null ||
 				mbd.getResolvedAutowireMode() == RootBeanDefinition.AUTOWIRE_CONSTRUCTOR ||
 				mbd.hasConstructorArgumentValues() || !ObjectUtils.isEmpty(args))  {
+			//带参构造函数自动注入
 			return autowireConstructor(beanName, mbd, ctors, args);
 		}
 
 		// No special handling: simply use no-arg constructor.
 		/**
-		 * roboslyq--Bean创建入口
+		 * roboslyq-->使用默认构造器Bean创建入口
 		 */
 		return instantiateBean(beanName, mbd);
 	}
@@ -1240,6 +1287,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 	/**
 	 * Instantiate the given bean using its default constructor.
+	 * 使用默认的构造函数对Bean进行初始化
 	 * @param beanName the name of the bean
 	 * @param mbd the bean definition for the bean
 	 * @return a BeanWrapper for the new instance

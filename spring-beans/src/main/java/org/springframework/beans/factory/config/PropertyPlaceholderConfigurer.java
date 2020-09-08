@@ -222,6 +222,7 @@ public class PropertyPlaceholderConfigurer extends PlaceholderConfigurerSupport 
 			throws BeansException {
 
 		StringValueResolver valueResolver = new PlaceholderResolvingStringValueResolver(props);
+		//占位符处理核心入口
 		doProcessProperties(beanFactoryToProcess, valueResolver);
 	}
 

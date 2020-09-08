@@ -214,7 +214,9 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 					}
 					/**
 					 * ####十分关键重点######
-					 * roboslyq -----> 扩展点元素解析(aop:config等),故Spring AOP入口在此处实现
+					 * roboslyq -----> 扩展点元素解析(aop:config等),故Spring AOP/Dubbo 自定义标签等入口在此处实现
+					 * 				   主要是通过接口NamespaceHandler和BeanDefinitionParser这两个接口实现扩展。
+					 *
 					 */
 					else {
 						delegate.parseCustomElement(ele);

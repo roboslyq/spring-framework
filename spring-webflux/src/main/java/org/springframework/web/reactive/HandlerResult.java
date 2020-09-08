@@ -28,7 +28,7 @@ import org.springframework.util.Assert;
 
 /**
  * Represent the result of the invocation of a handler or a handler method.
- *
+ * 代表调用一个Handler或者Hanlder Method 返回的结果
  * @author Rossen Stoyanchev
  * @since 5.0
  */

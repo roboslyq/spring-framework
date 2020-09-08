@@ -538,7 +538,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * 完成SpringMVC的初始化工作
 	 */
 	protected void initStrategies(ApplicationContext context) {
-		/**
+		/*
 		 * 初始化 MultipartResolver
 		 * 内容类型( Content-Type )为 multipart/* 的请求的解析器接口。例如文件上传，，MultipartResolver
 		 * 会将 HttpServletRequest 封装成MultipartHttpServletRequest ，这样从 MultipartHttpServletRequest 中获得上传的文件
@@ -556,13 +556,13 @@ public class DispatcherServlet extends FrameworkServlet {
 		 * (2)当然可以设置请求所使用的主题。
 		 */
 		initThemeResolver(context);
-		/**
+		/*
 		 * 处理器匹配接口，根据请求( request )获得其的处理器( handler )和拦截器们( HandlerInterceptor 数组)
 		 * 返回对象类型是 HandlerExecutionChain ，它包含处理器( handler )和拦截器们( HandlerInterceptor 数组 )
 		 *
 		 */
 		initHandlerMappings(context);
-		/**
+		/*
 		 * 如果说HandlerMapping是一支笔，那么HandlerAdapter就是用笔的人。
 		 * 也就是说HandlerAdapter就是使用处理器干活的人
 		 */
@@ -571,7 +571,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		initHandlerExceptionResolvers(context);
 		//initHandlerExceptionResolvers(context);
 		initRequestToViewNameTranslator(context);
-		//用于将逻辑视图名传话为集体的视图名
+		//初始化视图解析器：根据视图逻辑名称，解析为具体的View(视图)
 		initViewResolvers(context);
 		//负责重定向时，保存参数到临时存储中
 		initFlashMapManager(context);
@@ -1167,8 +1167,11 @@ public class DispatcherServlet extends FrameworkServlet {
 					return;
 				}
 
-				// Actually invoke the handler.
-				//调用handler的handler方法, 4.实际的处理器处理请求,返回结果视图对象
+				// Actually invoke the handler（实际的处理器处理请求,返回结果视图对象）.
+				//1、调用handler<具体实现为RequestMappingHandlerAdapter>的handler方法,具体调用AbstractHandlerMethodAdapter类中的handler方法
+				//2、processedRequest = RequestFacade.java
+				// 	 mappedHandler = HandlerExecutionChain.java
+				//3、在Ha中实现请求的参数解析
 				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 
 				if (asyncManager.isConcurrentHandlingStarted()) {
