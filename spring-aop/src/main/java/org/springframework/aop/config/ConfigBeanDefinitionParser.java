@@ -59,6 +59,7 @@ import org.springframework.util.xml.DomUtils;
  * @author Ramnivas Laddad
  * @since 2.0
  */
+// aop config标签的解析类
 class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 	//AOP标签支持所有的属性配置
 	private static final String ASPECT = "aspect";

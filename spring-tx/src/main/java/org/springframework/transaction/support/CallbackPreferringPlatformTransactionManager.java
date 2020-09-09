@@ -40,6 +40,7 @@ import org.springframework.transaction.TransactionException;
  * @see TransactionTemplate
  * @see org.springframework.transaction.interceptor.TransactionInterceptor
  */
+// 带回调函数的PlatformTransactionManager(事务管理器)
 public interface CallbackPreferringPlatformTransactionManager extends PlatformTransactionManager {
 
 	/**

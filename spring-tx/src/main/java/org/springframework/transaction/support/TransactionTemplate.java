@@ -67,7 +67,7 @@ public class TransactionTemplate extends DefaultTransactionDefinition
 
 	/** Logger available to subclasses. */
 	protected final Log logger = LogFactory.getLog(getClass());
-
+	// 事务管理器
 	@Nullable
 	private PlatformTransactionManager transactionManager;
 
@@ -124,23 +124,50 @@ public class TransactionTemplate extends DefaultTransactionDefinition
 		}
 	}
 
-
+	/**
+	 * TransactionCallback事务包装,通常使用方式如下:
+	 * 方式一:普通方法
+	 * TransactionTemplate transactionTemplate=new TransactionTemplate();
+	 * transactionTemplate.setTransactionManager(platformTransactionManager);
+	 *         transactionTemplate.execute(new TransactionCallback<String>() {
+	 *             @Override
+	 *             public String doInTransaction(TransactionStatus status) {
+	 *                 //数据库操作1
+	 *                 //数据库操作2
+	 *                 return "success";
+	 *             }
+	 *         });
+	 * 方式二:匿名函数
+	 *  transactionTemplate.execute(new TransactionCallback() {
+	 *                  @ Override
+	 *                  public Object doInTransaction(TransactionStatus status) {
+	 *                    // 数据库相关操作
+	 *                  }
+	 *              });
+	 * @param action the callback object that specifies the transactional action
+	 * @param <T>
+	 * @return
+	 * @throws TransactionException
+	 */
 	@Override
 	@Nullable
 	public <T> T execute(TransactionCallback<T> action) throws TransactionException {
 		Assert.state(this.transactionManager != null, "No PlatformTransactionManager set");
-
+		// 如果是带回调函数的CallbackPreferringPlatformTransactionManager
 		if (this.transactionManager instanceof CallbackPreferringPlatformTransactionManager) {
 			return ((CallbackPreferringPlatformTransactionManager) this.transactionManager).execute(this, action);
 		}
 		else {
+			// 获取事务
 			TransactionStatus status = this.transactionManager.getTransaction(this);
 			T result;
 			try {
+				// 执行事务
 				result = action.doInTransaction(status);
 			}
 			catch (RuntimeException | Error ex) {
 				// Transactional code threw application exception -> rollback
+				// 回滚事务
 				rollbackOnException(status, ex);
 				throw ex;
 			}
@@ -149,6 +176,7 @@ public class TransactionTemplate extends DefaultTransactionDefinition
 				rollbackOnException(status, ex);
 				throw new UndeclaredThrowableException(ex, "TransactionCallback threw undeclared checked exception");
 			}
+			// 提交事务
 			this.transactionManager.commit(status);
 			return result;
 		}

@@ -437,6 +437,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		 * 循环调用BeanPostProcessor处理
 		 */
 		for (BeanPostProcessor beanProcessor : getBeanPostProcessors()) {
+			//获取所有的后置处理器对该bean进行操作 然后进入AbstractAutoProxyCreator的
+			//postProcessBeforeInitialization方法中
 			Object current = beanProcessor.postProcessBeforeInitialization(result, beanName);
 			if (current == null) {
 				return result;
@@ -1787,6 +1789,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @see #invokeInitMethods
 	 * @see #applyBeanPostProcessorsAfterInitialization
 	 */
+	// getBean()时，如果是第一次创建，对对Bean进行初始化
 	protected Object initializeBean(final String beanName, final Object bean, @Nullable RootBeanDefinition mbd) {
 		if (System.getSecurityManager() != null) {
 			AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
@@ -1804,7 +1807,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		if (mbd == null || !mbd.isSynthetic()) {
 			/**
 			 * 需要包装则进行包装
-			 * 对该bean调用所有后置处理器的postProcessBeforeInitialization方法
+			 * 对该bean调用所有后置处理器的postProcessBeforeInitialization方法。
+			 * AOP相关的功能增强器：AspectJAwareAdvisorAutoProxyCreator实现了PostProcessor相关接口，因此在此处此Bean的相关方法会被调用。
 			 */
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
 		}

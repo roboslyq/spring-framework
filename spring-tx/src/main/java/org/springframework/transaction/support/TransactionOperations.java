@@ -28,6 +28,8 @@ import org.springframework.transaction.TransactionException;
  * @author Juergen Hoeller
  * @since 2.0.4
  */
+
+// 事务执行器
 public interface TransactionOperations {
 
 	/**
