@@ -275,7 +275,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 				return this.singletonInstance.getClass();
 			}
 		}
-		Class<?>[] ifcs = getProxiedInterfaces();
+		Class<?>[] ifcs = EnableAspectJAutoProxy();
 		if (ifcs.length == 1) {
 			return ifcs[0];
 		}

@@ -1,8 +1,71 @@
 # Spring5.1.x之AOP
 
-# Spring Aop之BeanDefinition解析
+# 一、配置方式
 
-> 通过NamespaceHandler接口，实现自定义标签解析。即AOP相关配置，非Spring原生标签。与Dubbo类型，是一个扩展标签。
+## 1、ProxyFactoryBean
+
+```xml
+<bean name="myController" class="org.springframework.aop.framework.ProxyFactoryBean">  
+    <property name="interceptorNames">  
+        <list>  
+            <value>pointcut.advisor2</value>  
+            <value>pointcut.advisor1</value>  
+            <value>myRawController</value>  
+        </list>  
+    </property>  
+</bean>  
+```
+
+## 2、BeanNameAutoProxyCreator 
+
+```xml
+<bean id="userService" class="com.aop.service.UserService"/>  
+<bean id="beforeAdvice" class="com.aop.advice.BeforeAdvice"/>  
+<bean id="xxxxxx" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">  
+        <property value="beanNames">  
+               <list>  
+                      <value>*service</value>  
+               </list>  
+        </property>  
+        <property value="interceptorNames">  
+               <value>beforeAdvice</value>  
+        </property>  
+</bean>  
+```
+
+>  这个类实现了BeanPostProcessor接口的子接口：SmartInstantiationAwareBeanPostProcessor，
+>
+>    每个被这个类care的类在取得bean实例前，会调用以下方法：
+>
+>   **public** Object postProcessBeforeInstantiation(Class beanClass, String beanName) 
+
+## 3、AopNamespaceHandler
+
+```xml
+ <bean id="fooService" class="DefaultFooService"/>  
+  <!-- this is the actual advice itself -->  
+  <bean id="profiler" class="SimpleProfiler"/>  
+  <aop:config>  
+  	<aop:aspect ref="profiler">  
+ 		<aop:pointcut id="aopafterMethod"   expression="execution(* FooService.*(..))"/>  
+		<aop:after pointcut-ref="aopafterMethod"  method="afterMethod"/>  
+		<aop:pointcut id="aopBefore" expression="execution(* FooService.getBefore(String)) and args(myName)"/>  
+   		<aop:before pointcut-ref="aopBefore"  method="beforeMethod"/>  
+	</aop:aspect>  
+</aop:config>  
+```
+
+> 这种配置方式的原理则是在进行配置文件解析的时候，由AopNameSpaceHandler对此标签进行解析，然后
+>
+>   注册一个“org.springframework.aop.config.internalAutoProxyCreator” bean,这个bean的实现类是：
+>
+>   org/springframework/aop/aspectj/autoproxy/AspectJAwareAdvisorAutoProxyCreator，此类也实现了
+>
+>   BeanPostProcessor接口。
+
+
+
+通过NamespaceHandler接口，实现自定义标签解析。即AOP相关配置，非Spring原生标签。与Dubbo类型，是一个扩展标签。
 
 ```java
 // aop标签解析的handler
@@ -39,22 +102,32 @@ public class AopNamespaceHandler extends NamespaceHandlerSupport {
 }
 ```
 
-# 生成代理Bean
+	### ConfigBeanDefinitionParser
+
+### AspectJAutoProxyBeanDefinitionParser
+
+### ScopedProxyBeanDefinitionDecorator
+
+
+
+# 二、AOP启动配置
+
+
+
+## 注解@EnableAspectJAutoProxy
+
+@Import(AspectJAutoProxyRegistrar.class)
+
+AspectJAutoProxyRegistrar
+
+# 三、生成代理Bean
+
+> 在spring bean生命周期中，在后置处理器beanPostProcessor时进行增强，实现代理。
 
 ## **AspectJAwareAdvisorAutoProxyCreator**
 
 > AspectJAwareAdvisorAutoProxyCreator是一个后置处理器，它的作用是在bean对象实例化的前后可以进行一些操作。
 
-# AOP执行阶段
+# 四、AOP执行阶段
 
 https://www.cnblogs.com/51life/p/9482734.html
-
-
-
-# 配置入口
-
-## 1、@EnableAspectJAutoProxy
-
-## 2、@Import(AspectJAutoProxyRegistrar.class)
-
-## 3、AspectJAutoProxyRegistrar
