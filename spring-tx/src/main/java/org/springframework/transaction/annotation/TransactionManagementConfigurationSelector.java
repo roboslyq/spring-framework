@@ -38,6 +38,7 @@ import org.springframework.util.ClassUtils;
 public class TransactionManagementConfigurationSelector extends AdviceModeImportSelector<EnableTransactionManagement> {
 
 	/**
+	 *  应用启动时，事务初始化入口
 	 * {@inheritDoc}
 	 * @return {@link ProxyTransactionManagementConfiguration} or
 	 * {@code AspectJTransactionManagementConfiguration} for {@code PROXY} and
@@ -46,9 +47,9 @@ public class TransactionManagementConfigurationSelector extends AdviceModeImport
 	@Override
 	protected String[] selectImports(AdviceMode adviceMode) {
 		switch (adviceMode) {
-			case PROXY:
+			case PROXY: // JDK 代理模式
 				return new String[] {AutoProxyRegistrar.class.getName(), ProxyTransactionManagementConfiguration.class.getName()};
-			case ASPECTJ:
+			case ASPECTJ: // CGLIB字节码模式
 				return new String[] {determineTransactionAspectClass()};
 			default:
 				return null;

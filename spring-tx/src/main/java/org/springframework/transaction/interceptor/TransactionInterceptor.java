@@ -85,16 +85,24 @@ public class TransactionInterceptor extends TransactionAspectSupport implements 
 		setTransactionAttributeSource(tas);
 	}
 
-
+	/**
+	 * 代理实现注解事务的@Transactional的核心方法
+	 * @param invocation the method invocation joinpoint  切点
+	 *                   因为是切点，所以表明Spring 注解事务是通过AOP实现的
+	 * @return
+	 * @throws Throwable
+	 */
 	@Override
 	@Nullable
 	public Object invoke(final MethodInvocation invocation) throws Throwable {
 		// Work out the target class: may be {@code null}.
 		// The TransactionAttributeSource should be passed the target class
 		// as well as the method, which may be from an interface.
+		// 获取目标类
 		Class<?> targetClass = (invocation.getThis() != null ? AopUtils.getTargetClass(invocation.getThis()) : null);
 
 		// Adapt to TransactionAspectSupport's invokeWithinTransaction...
+		// 在事务中执行
 		return invokeWithinTransaction(invocation.getMethod(), targetClass, invocation::proceed);
 	}
 

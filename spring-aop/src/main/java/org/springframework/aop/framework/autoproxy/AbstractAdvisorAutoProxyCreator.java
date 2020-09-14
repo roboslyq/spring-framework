@@ -67,7 +67,13 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 		this.advisorRetrievalHelper = new BeanFactoryAdvisorRetrievalHelperAdapter(beanFactory);
 	}
 
-
+	/**
+	 * 获取beanClass对应的拦截器相关，从而实现AOP功能
+	 * @param beanClass the class of the bean to advise
+	 * @param beanName the name of the bean
+	 * @param targetSource
+	 * @return
+	 */
 	@Override
 	@Nullable
 	protected Object[] getAdvicesAndAdvisorsForBean(
