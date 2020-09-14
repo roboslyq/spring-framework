@@ -21,3 +21,9 @@ public @interface EnableTransactionManagement {
 
 ```
 
+`TransactionManagementConfigurationSelector`
+
+```java
+
+```
+

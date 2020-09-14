@@ -28,6 +28,7 @@ import org.springframework.lang.Nullable;
  * @since 2.0.7
  */
 @SuppressWarnings("serial")
+// 创建基础代理类(AOP功能实现)
 public class InfrastructureAdvisorAutoProxyCreator extends AbstractAdvisorAutoProxyCreator {
 
 	@Nullable

@@ -46,8 +46,9 @@ public class TransactionManagementConfigurationSelector extends AdviceModeImport
 	 */
 	@Override
 	protected String[] selectImports(AdviceMode adviceMode) {
+		// 通知模式
 		switch (adviceMode) {
-			case PROXY: // JDK 代理模式
+			case PROXY: // JDK 代理模式（默认模式）: Bean处理类AutoProxyRegistrar，配置相关类ProxyTransactionManagementConfiguration
 				return new String[] {AutoProxyRegistrar.class.getName(), ProxyTransactionManagementConfiguration.class.getName()};
 			case ASPECTJ: // CGLIB字节码模式
 				return new String[] {determineTransactionAspectClass()};

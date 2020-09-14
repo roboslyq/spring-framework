@@ -6,6 +6,8 @@
 >
 > (2) AOP切面技术
 
+因为事务是AOP技术最好的应用场景，所以spring aop很多东西与事务结合再一起。即，事务与AOP不分离
+
 ## 事务本身实现
 
 - ## **TransactionAspectSupport**
@@ -27,6 +29,108 @@ Spring事务采用AOP的方式实现，我们从- - TransactionAspectSupport这�
 - ## TransactionDefinition
 
   -  事务定义信息(事务隔离级别、传播行为、超时、只读、回滚规则)
+
+## 启用事务
+
+注解`@EnableTransactionManagement`
+
+```java
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Import(TransactionManagementConfigurationSelector.class)
+public @interface EnableTransactionManagement {
+
+	boolean proxyTargetClass() default false;
+
+	AdviceMode mode() default AdviceMode.PROXY;
+
+	int order() default Ordered.LOWEST_PRECEDENCE;
+
+}
+
+```
+
+### JDK代理
+
+- ## AutoProxyRegistrar.class
+
+  - ```
+    AutoProxyRegistrar
+    ProxyTransactionManagementConfiguration
+    AspectJJtaTransactionManagementConfiguration
+    internalTransactionalEventListenerFactory
+    ```
+
+    - ```
+      InfrastructureAdvisorAutoProxyCreator
+      BeanFactoryAdvisorRetrievalHelper
+      ```
+
+      
+
+- ## ProxyTransactionManagementConfiguration
+
+　###  CGLIB代理
+
+- ## AspectJJtaTransactionManagementConfiguration
+
+- ## internalTransactionalEventListenerFactory
+
+```
+AnnotationTransactionAspect
+JtaAnnotationTransactionAspect
+```
+
+### 与springBean生命周期集成
+
+> 上述通过@EnableTransactionManager注解 ，实现了相关的Bean的初化，其中InstantiationAwareBeanPostProcessor有一个Bean实现了`BeanPostProcessor`接口，因此在相关Bean的实现例化之前和之后，分别会调用如下两个方法：postProcessBeforeInstantiation(实例化前 )和postProcessAfterInitialization初始化。进而对相关的Bean进行增强，实现AOP相关功能 。
+
+事务增强器的实现：
+
+> 在`ProxyTransactionManagementConfiguration`中，加载了三个Bean，BeanFactoryTransactionAttributeSourceAdvisor，TransactionAttributeSource，TransactionInterceptor。
+
+```java
+@Configuration
+public class ProxyTransactionManagementConfiguration extends AbstractTransactionManagementConfiguration {
+	
+	@Bean(name = TransactionManagementConfigUtils.TRANSACTION_ADVISOR_BEAN_NAME)
+	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+    // 增强器，Bean的生命周期中，AOP时会调用
+	public BeanFactoryTransactionAttributeSourceAdvisor transactionAdvisor() {
+		BeanFactoryTransactionAttributeSourceAdvisor advisor = new BeanFactoryTransactionAttributeSourceAdvisor();
+		advisor.setTransactionAttributeSource(transactionAttributeSource());
+        // 对应的拦截器，即具体的事务实现
+		advisor.setAdvice(transactionInterceptor());
+        // 事务不可用
+		if (this.enableTx != null) {
+			advisor.setOrder(this.enableTx.<Integer>getNumber("order"));
+		}
+        // 返回advisor，Bean的生命周期中会扫描所有的advisor,选则合适的advisor进行增强
+		return advisor;
+	}
+
+	@Bean
+	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+	public TransactionAttributeSource transactionAttributeSource() {
+		return new AnnotationTransactionAttributeSource();
+	}
+
+	@Bean
+	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+	public TransactionInterceptor transactionInterceptor() {
+		TransactionInterceptor interceptor = new TransactionInterceptor();
+		interceptor.setTransactionAttributeSource(transactionAttributeSource());
+		if (this.txManager != null) {
+			interceptor.setTransactionManager(this.txManager);
+		}
+		return interceptor;
+	}
+
+}
+```
+
+
 
 ## 编码式事务
 
@@ -61,5 +165,7 @@ Spring事务采用AOP的方式实现，我们从- - TransactionAspectSupport这�
 
 
 # 参考资料
+
+https://www.cnblogs.com/dennyzhangdd/p/9602673.html
 
 https://www.cnblogs.com/dennyzhangdd/p/9602673.html
