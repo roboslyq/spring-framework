@@ -527,7 +527,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			/**
-			 * roboslyq-->创建Bean入口
+			 * roboslyq-->创建Bean入口(非AOP Bean ,因为AOP Bean在resolveBeforeInstantiation(beanName, mbdToUse)已经成功
+			 * 创建并返回，所以此处是普通的Bean。
+			 * )
 			 */
 			Object beanInstance = doCreateBean(beanName, mbdToUse, args);
 			if (logger.isDebugEnabled()) {

@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
  * @see org.springframework.beans.factory.support.RootBeanDefinition
  * @see org.springframework.beans.factory.support.ChildBeanDefinition
  */
+// BeanDefinition的包装，主要有3个变量：BeanDefinition，bean的名称和一个别名数组
 public class BeanDefinitionHolder implements BeanMetadataElement {
 
 	private final BeanDefinition beanDefinition;

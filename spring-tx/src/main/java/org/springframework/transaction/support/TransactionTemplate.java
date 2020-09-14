@@ -61,6 +61,7 @@ import org.springframework.util.Assert;
  * @see #setTransactionManager
  * @see org.springframework.transaction.PlatformTransactionManager
  */
+// 编码式事务管理器
 @SuppressWarnings("serial")
 public class TransactionTemplate extends DefaultTransactionDefinition
 		implements TransactionOperations, InitializingBean {

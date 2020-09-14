@@ -264,6 +264,7 @@ class CglibAopProxy implements AopProxy, Serializable {
 	/**
 	 * Checks for final methods on the given {@code Class}, as well as package-visible
 	 * methods across ClassLoaders, and writes warnings to the log for each one found.
+	 * 因为cglib通过继承的手段来实现代理，而final修饰的方法不能被继承，因此需要作一个记录用来提醒用户有方法不能被代理。
 	 */
 	private void doValidateClass(Class<?> proxySuperClass, @Nullable ClassLoader proxyClassLoader, Set<Class<?>> ifcs) {
 		if (proxySuperClass != Object.class) {
