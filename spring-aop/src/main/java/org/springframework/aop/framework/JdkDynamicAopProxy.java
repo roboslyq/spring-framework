@@ -226,6 +226,12 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 			 * chain.get(0)：ExposeInvocationInterceptor，这是一个默认的拦截器，对应的原Advisor为DefaultPointcutAdvisor
 			 * chain.get(1)：MethodBeforeAdviceInterceptor，用于在实际方法调用之前的拦截，对应的原Advisor为AspectJMethodBeforeAdvice
 			 * chain.get(2)：AspectJAfterAdvice，用于在实际方法调用之后的处理
+			 *
+			 * 如果是事务，则可能是
+			 * chain.get(0)：ExposeInvocationInterceptor，这是一个默认的拦截器，对应的原Advisor为DefaultPointcutAdvisor
+			 * chain.get(1)：TransactionInterceptor，用于在实际方法调用之前的拦截事务拦截
+			 *
+			 * 总之根据实际的情况，有不同的chain
 			 */
 			List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
 

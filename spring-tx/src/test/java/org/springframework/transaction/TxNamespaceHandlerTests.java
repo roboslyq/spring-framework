@@ -55,7 +55,12 @@ public class TxNamespaceHandlerTests {
 
 	@Test
 	public void isProxy() {
+		// 方便测试，将动态生成的类保存到class文件中
+		System.getProperties().put("sun.misc.ProxyGenerator.saveGeneratedFiles", "true"); //旧版本JDK,设置系统属性
+		System.getProperties().put("jdk.proxy.ProxyGenerator.saveGeneratedFiles", "true");// 新版本JDK
+
 		ITestBean bean = getTestBean();
+		bean.getName();
 		assertTrue("testBean is not a proxy", AopUtils.isAopProxy(bean));
 	}
 
