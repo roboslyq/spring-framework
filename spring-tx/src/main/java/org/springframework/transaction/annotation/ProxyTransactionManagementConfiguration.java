@@ -35,15 +35,22 @@ import org.springframework.transaction.interceptor.TransactionInterceptor;
  * @see TransactionManagementConfigurationSelector
  */
 @Configuration
+// 事务AOP配置相关
 public class ProxyTransactionManagementConfiguration extends AbstractTransactionManagementConfiguration {
-
+	/**
+	 * 关键方法，初始事务的 Advisor。即事务的增强器
+	 * @return
+	 */
 	@Bean(name = TransactionManagementConfigUtils.TRANSACTION_ADVISOR_BEAN_NAME)
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	public BeanFactoryTransactionAttributeSourceAdvisor transactionAdvisor() {
 		BeanFactoryTransactionAttributeSourceAdvisor advisor = new BeanFactoryTransactionAttributeSourceAdvisor();
+		// 设置(事务)切面的相关属性
 		advisor.setTransactionAttributeSource(transactionAttributeSource());
+		// 设置事务的interceptor，即具体的事务逻辑实现
 		advisor.setAdvice(transactionInterceptor());
 		if (this.enableTx != null) {
+			// 如果事务启动了，不为空，获取排序信息
 			advisor.setOrder(this.enableTx.<Integer>getNumber("order"));
 		}
 		return advisor;
@@ -55,6 +62,10 @@ public class ProxyTransactionManagementConfiguration extends AbstractTransaction
 		return new AnnotationTransactionAttributeSource();
 	}
 
+	/**
+	 * 具体事务拦截器
+	 * @return
+	 */
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	public TransactionInterceptor transactionInterceptor() {

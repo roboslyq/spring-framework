@@ -48,12 +48,15 @@ public abstract class AopConfigUtils {
 
 	/**
 	 * The bean name of the internally managed auto-proxy creator.
+	 * spring内部管理的auto-proxy创建者的Bean名称。
+	 * 即auto-proxy的创建者对应一个Bean，并且有多种实现，这个Bean的名称指定为org.springframework.aop.config.internalAutoProxyCreator
 	 */
 	public static final String AUTO_PROXY_CREATOR_BEAN_NAME =
 			"org.springframework.aop.config.internalAutoProxyCreator";
 
 	/**
 	 * Stores the auto proxy creator classes in escalation order.
+	 * 默认的auto proxy 创建者实现，并且有序
 	 */
 	private static final List<Class<?>> APC_PRIORITY_LIST = new ArrayList<>();
 
@@ -61,6 +64,7 @@ public abstract class AopConfigUtils {
 	 * Setup the escalation list.
 	 */
 	static {
+		//创建者，优先级最高的是InfrastructureAdvisorAutoProxyCreator
 		APC_PRIORITY_LIST.add(InfrastructureAdvisorAutoProxyCreator.class);
 		APC_PRIORITY_LIST.add(AspectJAwareAdvisorAutoProxyCreator.class);
 		APC_PRIORITY_LIST.add(AnnotationAwareAspectJAutoProxyCreator.class);
@@ -117,29 +121,40 @@ public abstract class AopConfigUtils {
 		}
 	}
 
+	/**
+	 * 将字节码增强器生成BeanDefinition中，其中AnnotationAwareAspectJAutoProxyCreator实现了BeanPostProcessor接口。
+	 * 因此可以在具体的事务Bean(业务相关的，比如用@Transactional注解标的)初始化前后进行增加，从而通过AOP实现业务功能。
+	 * @param cls  AnnotationAwareAspectJAutoProxyCreator
+	 * @param registry   BeanDefinitionRegistry
+	 * @param source  null
+	 * @return
+	 */
 	@Nullable
 	private static BeanDefinition registerOrEscalateApcAsRequired(Class<?> cls, BeanDefinitionRegistry registry,
 			@Nullable Object source) {
 
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
-		//如果当前注册器包含internalAutoProxyCreator
+		// 如果当前注册器包含internalAutoProxyCreator，证明已经初始化过，进入if流程。
 		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
+			// 获取已经初始化好的Auto proxy BeanDefinition
 			BeanDefinition apcDefinition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);
 			if (!cls.getName().equals(apcDefinition.getBeanClassName())) { //如果当前类不是internalAutoProxyCreator
 				int currentPriority = findPriorityForClass(apcDefinition.getBeanClassName());
 				int requiredPriority = findPriorityForClass(cls);
+				// 优先级判断,从而决定对应的具体的Bean的名称
 				if (currentPriority < requiredPriority) {
 					apcDefinition.setBeanClassName(cls.getName());
 				}
 			}
 			return null;
 		}
-		//如果当前注册器不包含internalAutoProxyCreator，则把当前类作为根定义
+		//如果当前注册器不包含internalAutoProxyCreator，则把当前类作为根定义。
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(cls);
 		beanDefinition.setSource(source);
 		//优先级最高
 		beanDefinition.getPropertyValues().add("order", Ordered.HIGHEST_PRECEDENCE);
 		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		// 设置对应的BeanDefinition
 		registry.registerBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME, beanDefinition);
 		return beanDefinition;
 	}
