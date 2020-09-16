@@ -1,0 +1,6 @@
+1、spring boot是通过ConfigurationClassPostProcessor这个BeanFactoryPostProcessor类来处理。
+2、AnnotationConfigApplicationContext入口类
+3、ConfigurationClassPostProcessor
+
+
+https://blog.csdn.net/mapleleafforest/article/details/86623578

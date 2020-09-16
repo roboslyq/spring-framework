@@ -93,8 +93,10 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * in the given packages and automatically refreshing the context.
 	 * @param basePackages the packages to check for annotated classes
 	 */
+	// 注解配置applicationContext
 	public AnnotationConfigApplicationContext(String... basePackages) {
 		this();
+		// ======> 扫描整个项目（对应注解@ComponentScan）
 		scan(basePackages);
 		refresh();
 	}
@@ -166,6 +168,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * @see #register(Class...)
 	 * @see #refresh()
 	 */
+	// 包扫描
 	public void scan(String... basePackages) {
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
 		this.scanner.scan(basePackages);
