@@ -577,6 +577,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				 *     就在这里调用PropertyResourceConfigurer相应实现完成。
 				 *     BeanFactoryPostProcessor：BeanFactory的后置处理器。在BeanFactory标准初始化之后执行的；
 				 * 	 (3)相关接口定义：PropertyResourceConfigurer，BeanFactoryPostProcessor及其子接口BeanDefinitionRegistryPostProcessor等
+				 *	 (4) 如果底层实现是AnnotationConfigApplicationContext，则会调用相关Processor进行@ComponentScan相关注解处理
 				 */
 
 				invokeBeanFactoryPostProcessors(beanFactory);
