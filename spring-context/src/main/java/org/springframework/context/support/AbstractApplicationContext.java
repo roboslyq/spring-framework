@@ -705,7 +705,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see #refreshBeanFactory()
 	 * @see #getBeanFactory()
 	 */
-	protected ConfigurableListableBeanFactory 	obtainFreshBeanFactory() {
+	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
 		/**
 		 * roboslyq-刷新Bean工厂。在子类AbstractRefreshableApplicationContext类中有具体实现
 		 * 此时，已经实现了BeanDefinition的装载。

@@ -121,6 +121,7 @@ public abstract class BeanUtils {
 		try {
 			Constructor<T> ctor = (KotlinDetector.isKotlinType(clazz) ?
 					KotlinDelegate.getPrimaryConstructor(clazz) : clazz.getDeclaredConstructor());
+			// 实例化
 			return instantiateClass(ctor);
 		}
 		catch (NoSuchMethodException ex) {

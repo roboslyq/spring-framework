@@ -510,6 +510,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
+			// 给BeanPostProcessor一个返回目标bean的代理(Proxy)代理实例，用来替代目标Bean
 			/*
 			  *1、InstantiationAwareBeanPostProcessor的执行入口，InstantiationAwareBeanPostProcessor是BeanPostProcessor的一种
 			 *    可以用来完成Bean的初始化工作（是一个扩展点）。
