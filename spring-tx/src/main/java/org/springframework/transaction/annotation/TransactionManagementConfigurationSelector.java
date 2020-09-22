@@ -38,7 +38,7 @@ import org.springframework.util.ClassUtils;
 public class TransactionManagementConfigurationSelector extends AdviceModeImportSelector<EnableTransactionManagement> {
 
 	/**
-	 *  应用启动时，事务初始化入口
+	 *  应用启动时，事务初始化入口,具体真实入口在父类AdviceModeImportSelector#selectImports(AnnotationMetadata importingClassMetadata)方法中。
 	 * {@inheritDoc}
 	 * @return {@link ProxyTransactionManagementConfiguration} or
 	 * {@code AspectJTransactionManagementConfiguration} for {@code PROXY} and

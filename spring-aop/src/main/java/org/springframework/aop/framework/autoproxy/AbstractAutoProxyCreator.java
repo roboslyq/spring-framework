@@ -261,6 +261,11 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		// Create proxy here if we have a custom TargetSource.
 		// Suppresses unnecessary default instantiation of the target bean:
 		// The TargetSource will handle target instances in a custom fashion.
+		// 获取targetSource配置，如果有指定TargetSource配置，则此处不返回对应的Bean代理类，即在postProcessBeforeInstantiation方法中，没有使用代理类替换
+		// 原始的Bean。但如果没有指定TargetSource，那么，此处将会生成代理类。
+		// 此方法的调用入口：DefaultListAbleBeanFactory#getBean(name) -> AbstractBeanFactory#doGetBean(name) -> AbstractAutowireCapableBeanFactory#createBean
+		// -> AbstractAutowireCapableBeanFactory#resolveBeforeInstantiation->AbstractAutowireCapableBeanFactory#applyBeanPostProcessorsBeforeInstantiation
+		//
 		TargetSource targetSource = getCustomTargetSource(beanClass, beanName);
 		if (targetSource != null) {
 			if (StringUtils.hasLength(beanName)) {
@@ -297,7 +302,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 */
 	@Override
 	/**
-	 * 在Bean完成初始化之后调用
+	 * 在Bean完成实例化之后调用，比如AOP实现。
+	 * 注意：因为AbstractAutoProxyCreator继承自InstantiationAwareBeanPostProcessor，因此生命周期在Bean实例化前后，而不是普通的BeanPostProcessor，
+	 * 普通的BeanPostProcessor作用于Bean的初始化前后。
 	 */
 	public Object postProcessAfterInitialization(@Nullable Object bean, String beanName) {
 		if (bean != null) {

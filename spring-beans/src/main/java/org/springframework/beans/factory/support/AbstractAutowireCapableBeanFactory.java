@@ -512,7 +512,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
 			// 给BeanPostProcessor一个返回目标bean的代理(Proxy)代理实例，用来替代目标Bean
 			/*
-			  *1、InstantiationAwareBeanPostProcessor的执行入口，InstantiationAwareBeanPostProcessor是BeanPostProcessor的一种
+			 * ======>InstantiationAwareBeanPostProcessor入口，Bean生命周期中的第一个BeanPostProcessor。其实InstantiationAwareBeanPostProcessor本质是一个BeanPostProcessor
+			 * 但相对于其它BeanPostProcessor作用于Bean的初始化前后，此PostProcessor作用于Bean实例化前后
+			 * 1、InstantiationAwareBeanPostProcessor的执行入口，InstantiationAwareBeanPostProcessor是BeanPostProcessor的一种
 			 *    可以用来完成Bean的初始化工作（是一个扩展点）。
 			 * 2、如果此处获取的Bean为空，则继承Bean的创建流程
 			 */
@@ -1096,9 +1098,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 				Class<?> targetType = determineTargetType(beanName, mbd);
 				if (targetType != null) {
+					// ======>一般情况下是在postProcessAfterInitialization替换代理类，但如果自定义了TargetSource的情况下在postProcessBeforeInstantiation替换代理类。
+					// 	具体逻辑在AbstractAutoProxyCreator类中。
+
 					// 调用BeanPostProcessor相关,比如AOP实现的后置处理器:AspectJAwareAdvisorAutoProxyCreator
 					bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
 					if (bean != null) {
+						// 继承调用后置处理器
 						bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
 					}
 				}
@@ -1122,9 +1128,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	@Nullable
 	protected Object applyBeanPostProcessorsBeforeInstantiation(Class<?> beanClass, String beanName) {
 		for (BeanPostProcessor bp : getBeanPostProcessors()) {
+			// 因此此方法是在Bean实例化前调用的，所以仅调用InstantiationAwareBeanPostProcessor类型。此BeanPostProcessor作用于Bean的实例化之前和之后
+			// 其它BeanPostProcessor作用于Bean的初始化前后
 			if (bp instanceof InstantiationAwareBeanPostProcessor) {
 				InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
-				// 调用具体的beanPostprocessor对相关Bean进行增强
+				// 调用具体的beanPostprocessor对相关Bean进行增强，常见的如AbstractAutoProxyCreator
 				Object result = ibp.postProcessBeforeInstantiation(beanClass, beanName);
 				if (result != null) {
 					return result;

@@ -73,8 +73,10 @@ public abstract class AdviceModeImportSelector<A extends Annotation> implements 
 				"@%s is not present on importing class '%s' as expected",
 				annType.getSimpleName(), importingClassMetadata.getClassName()));
 		}
-
+		// 获取注解@EnableTransactionManagement中的mode属性
 		AdviceMode adviceMode = attributes.getEnum(this.getAdviceModeAttributeName());
+		// 根据mode获取，获取对应的代理实现
+		// 如果是事务，则对应TransactionManagementConfigurationSelector实现
 		String[] imports = selectImports(adviceMode);
 		if (imports == null) {
 			throw new IllegalArgumentException(String.format("Unknown AdviceMode: '%s'", adviceMode));

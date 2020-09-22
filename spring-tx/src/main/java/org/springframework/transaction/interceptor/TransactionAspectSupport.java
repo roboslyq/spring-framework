@@ -280,11 +280,12 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			final InvocationCallback invocation) throws Throwable {
 
 		// If the transaction attribute is null, the method is non-transactional.
+		//  如果transaction attribute为空,该方法就是非事务（非编程式事务）
 		TransactionAttributeSource tas = getTransactionAttributeSource();
 		final TransactionAttribute txAttr = (tas != null ? tas.getTransactionAttribute(method, targetClass) : null);
 		final PlatformTransactionManager tm = determineTransactionManager(txAttr);
 		final String joinpointIdentification = methodIdentification(method, targetClass, txAttr);
-
+		// 分支一： 声明式事务（如果事务属性为空 或者 非回调偏向的事务管理器）
 		if (txAttr == null || !(tm instanceof CallbackPreferringPlatformTransactionManager)) {
 			// Standard transaction demarcation with getTransaction and commit/rollback calls.
 			// 如果有需要就创建事务
@@ -293,6 +294,9 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			try {
 				// This is an around advice: Invoke the next interceptor in the chain.
 				// This will normally result in a target object being invoked.
+				// InvocationCallback的proceedWithInvocation()：
+				// 		InvocationCallback是父类的内部回调接口，子类中实现该接口供父类调用，
+				// 		子类TransactionInterceptor中invocation.proceed()。回调方法执行
 				retVal = invocation.proceedWithInvocation();
 			}
 			catch (Throwable ex) {
@@ -306,7 +310,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			commitTransactionAfterReturning(txInfo);
 			return retVal;
 		}
-
+		// 分支二：编程式事务
 		else {
 			final ThrowableHolder throwableHolder = new ThrowableHolder();
 

@@ -131,6 +131,12 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 		 * （1）获取接口/类对应的代理对象，Proxy是JDK原生支持的生成代理的方式
 		 * （2）this，指当前类Proxy中的内部类JdkDynamicAopProxy，即实现了JDK原生代理的InvocationHandler
 		 * （3）返回的对象是proxiedInterfaces类型，所以JDK代理必须实现接口
+		 *
+		 *  Proxy.newProxyInstance()是JDK的原生方法，此方法生成的代理类继承于java.lang.reflect.Proxy.java类
+		 *   classLoader： 类加载器
+		 *   proxiedInterfaces: 接口列表，即被代理类必须实现这些接口中的所有方法
+		 *   this: 是一个InvocationHandler对象，所有的方法执行都是通过InvocationHandler进行的。
+		 *
 		 */
 		return Proxy.newProxyInstance(classLoader, proxiedInterfaces, this);
 	}
