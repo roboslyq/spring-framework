@@ -279,9 +279,8 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 		Set<BeanDefinitionHolder> beanDefinitions = new LinkedHashSet<>();
 		for (String basePackage : basePackages) {
 			/**
-			 **对每个基础包都进行扫描寻找并且对基础包下的所有class都注册为BeanDefinition
+			 * ======>对每个基础包都进行扫描寻找并且对基础包下的所有class都注册为BeanDefinition
 			 **并对得到的candidates集合进行过滤，此处便用到include-filters和exclude-filters
-			 *
 			 */
 			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
 			for (BeanDefinition candidate : candidates) {

@@ -435,7 +435,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 					try {
 						//生成MetadataReader对象->SimpleMetadataReader，内部包含AnnotationMetadataReadingVisitor注解访问处理类
 						MetadataReader metadataReader = getMetadataReaderFactory().getMetadataReader(resource);
-						//判断class是否不属于excludeFilters集合内但至少符合一个includeFilters集合
+						//======>判断class是否不属于excludeFilters集合内但至少符合一个includeFilters集合
 						if (isCandidateComponent(metadataReader)) {
 							//将MetadataReader包装成BeanDefinition
 							ScannedGenericBeanDefinition sbd = new ScannedGenericBeanDefinition(metadataReader);

@@ -90,6 +90,11 @@ final class AnnotationAttributesReadingVisitor extends RecursiveAnnotationAttrib
 		}
 	}
 
+	/**
+	 * 递归调用，是@Compnent实现多层次派生性的关键
+	 * @param visited
+	 * @param annotation
+	 */
 	private void recursivelyCollectMetaAnnotations(Set<Annotation> visited, Annotation annotation) {
 		Class<? extends Annotation> annotationType = annotation.annotationType();
 		String annotationName = annotationType.getName();

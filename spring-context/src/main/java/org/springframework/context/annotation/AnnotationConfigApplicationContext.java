@@ -53,7 +53,9 @@ import org.springframework.util.Assert;
 public class AnnotationConfigApplicationContext extends GenericApplicationContext implements AnnotationConfigRegistry {
 
 	private final AnnotatedBeanDefinitionReader reader;
-
+	/**
+	 * 与xml配置<context:component-scan>底层原理一致，均使用了ClassPathBeanDefinitionScanner来实现@ComponentScan注解扫描
+	 * */
 	private final ClassPathBeanDefinitionScanner scanner;
 
 

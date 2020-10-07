@@ -48,6 +48,7 @@ import org.springframework.util.MultiValueMap;
  * @author Sam Brannen
  * @since 2.5
  */
+// 继承了ClassMetadataReadingVisitor，同时又实现了AnnotationMetadata
 public class AnnotationMetadataReadingVisitor extends ClassMetadataReadingVisitor implements AnnotationMetadata {
 
 	@Nullable
@@ -83,10 +84,17 @@ public class AnnotationMetadataReadingVisitor extends ClassMetadataReadingVisito
 				Type.getReturnType(desc).getClassName(), this.classLoader, this.methodMetadataSet);
 	}
 
+	/**
+	 * 注解@component派生实现的关键
+	 * @param desc
+	 * @param visible
+	 * @return
+	 */
 	@Override
 	public AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
 		String className = Type.getType(desc).getClassName();
 		this.annotationSet.add(className);
+		// 注解@component派生实现的关键
 		return new AnnotationAttributesReadingVisitor(
 				className, this.attributesMap, this.metaAnnotationMap, this.classLoader);
 	}
