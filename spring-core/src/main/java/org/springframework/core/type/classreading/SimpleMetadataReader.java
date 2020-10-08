@@ -62,6 +62,7 @@ final class SimpleMetadataReader implements MetadataReader {
 		}
 		// componentScan扫描识别@Componet等注解的关键实现
 		AnnotationMetadataReadingVisitor visitor = new AnnotationMetadataReadingVisitor(classLoader);
+		// 给visitor进行初始化，赋相关的值
 		classReader.accept(visitor, ClassReader.SKIP_DEBUG);
 
 		this.annotationMetadata = visitor;

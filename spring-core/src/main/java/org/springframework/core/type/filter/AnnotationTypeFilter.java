@@ -88,8 +88,15 @@ public class AnnotationTypeFilter extends AbstractTypeHierarchyTraversingFilter 
 		return this.annotationType;
 	}
 
+	/**
+	 * 检查当前类是否包含相关Bean定义注解
+	 * @param metadataReader
+	 * @return
+	 */
 	@Override
 	protected boolean matchSelf(MetadataReader metadataReader) {
+		// AnnotationMetadata，通常实现有两种AnnotationMetadataReadingVisitor和StandardAnnotationMetadata
+		// 此处是AnnotationMetadataReadingVisitor
 		AnnotationMetadata metadata = metadataReader.getAnnotationMetadata();
 		return metadata.hasAnnotation(this.annotationType.getName()) ||
 				(this.considerMetaAnnotations && metadata.hasMetaAnnotation(this.annotationType.getName()));

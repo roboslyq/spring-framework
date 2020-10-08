@@ -53,7 +53,7 @@ public class AnnotationMetadataReadingVisitor extends ClassMetadataReadingVisito
 
 	@Nullable
 	protected final ClassLoader classLoader;
-
+	// 在visitAnnotation()方法中完成 初始化
 	protected final Set<String> annotationSet = new LinkedHashSet<>(4);
 
 	protected final Map<String, Set<String>> metaAnnotationMap = new LinkedHashMap<>(4);
@@ -111,6 +111,12 @@ public class AnnotationMetadataReadingVisitor extends ClassMetadataReadingVisito
 		return (metaAnnotationTypes != null ? metaAnnotationTypes : Collections.emptySet());
 	}
 
+	/**
+	 * 判断是否是spring bean相关注解
+	 * @param annotationName the fully qualified class name of the annotation
+	 * type to look for
+	 * @return
+	 */
 	@Override
 	public boolean hasAnnotation(String annotationName) {
 		return this.annotationSet.contains(annotationName);

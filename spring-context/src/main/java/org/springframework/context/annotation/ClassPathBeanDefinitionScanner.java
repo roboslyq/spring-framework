@@ -281,6 +281,8 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 			/**
 			 * ======>对每个基础包都进行扫描寻找并且对基础包下的所有class都注册为BeanDefinition
 			 **并对得到的candidates集合进行过滤，此处便用到include-filters和exclude-filters
+			 * (1)此处扫描@Components，@Repository，@Service等注解
+			 * (2)也是实现@Component的“派生性”的入口
 			 */
 			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
 			for (BeanDefinition candidate : candidates) {

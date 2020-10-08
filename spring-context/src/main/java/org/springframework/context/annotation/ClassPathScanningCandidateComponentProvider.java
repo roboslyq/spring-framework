@@ -309,14 +309,17 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 
 	/**
 	 * Scan the class path for candidate components.
+	 * 扫描指定的包路径basePackage,然后找出合适的component组件(即合适的spring Bean)
 	 * @param basePackage the package to check for annotated classes
 	 * @return a corresponding Set of autodetected bean definitions
 	 */
 	public Set<BeanDefinition> findCandidateComponents(String basePackage) {
 		if (this.componentsIndex != null && indexSupportsIncludeFilters()) {
+			// 有使用索引扫描
 			return addCandidateComponentsFromIndex(this.componentsIndex, basePackage);
 		}
 		else {
+			// 没有索引扫描
 			return scanCandidateComponents(basePackage);
 		}
 	}
@@ -417,6 +420,11 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 		return candidates;
 	}
 
+	/**
+	 * 找出对应的basePackage包下的所有组件，将其定义为BeanDefinition
+	 * @param basePackage
+	 * @return
+	 */
 	private Set<BeanDefinition> scanCandidateComponents(String basePackage) {
 		Set<BeanDefinition> candidates = new LinkedHashSet<>();
 		try {
@@ -434,6 +442,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 				if (resource.isReadable()) {
 					try {
 						//生成MetadataReader对象->SimpleMetadataReader，内部包含AnnotationMetadataReadingVisitor注解访问处理类
+						// MetadataReader是spring 对 class元数据读取的抽象
 						MetadataReader metadataReader = getMetadataReaderFactory().getMetadataReader(resource);
 						//======>判断class是否不属于excludeFilters集合内但至少符合一个includeFilters集合
 						if (isCandidateComponent(metadataReader)) {
@@ -506,8 +515,9 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 				return false;
 			}
 		}
+		// includeFilters初始化见registerDefaultFilters() 方法
 		for (TypeFilter tf : this.includeFilters) {
-			//首先满足其中includeFilter集合中的一个
+			//首先满足其中includeFilter集合中的一个，如果是注解，则对应AnnotationTypeFilter，其父类为AbstractTypeHierarchyTraversingFilter
 			if (tf.match(metadataReader, getMetadataReaderFactory())) {
 				//判断对应的beanDifinition不存在@Conditional注解或者满足@Conditional中指定的条件，则返回true
 				//@Conditional注解的使用可自行查看相关资料
