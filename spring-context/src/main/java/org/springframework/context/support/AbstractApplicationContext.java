@@ -525,6 +525,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			 *  (1)启动前准备操作（在父类AbstractRefreshableApplicationContext中实现）
 			 *  (2)记录spring容器上下文的启动(刷新)时间和标记
 			 *  (3)将容器激活状态active设为true，初始化一些容器启动必要的资源
+			 *  (4)创建了Environment对象，即Spring体系的环境变量
 			 */
 			prepareRefresh();
 
@@ -772,7 +773,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// Register default environment beans.
 		// 这里个属性都是系统属性，我们前面看到过，但是都是单独存在的并没有注入到容器中
-		//这里把系统属性注入到容器中ss
+		//这里把系统属性注入到容器中
 		if (!beanFactory.containsLocalBean(ENVIRONMENT_BEAN_NAME)) {
 			beanFactory.registerSingleton(ENVIRONMENT_BEAN_NAME, getEnvironment());
 		}

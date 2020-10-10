@@ -35,6 +35,7 @@ import org.springframework.lang.Nullable;
  * @author Costin Leau
  * @since 2.5
  */
+// 注意，此处CachingMetadataReaderFactory继承了SimpleMetadataReaderFactory
 public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 
 	/** Default maximum number of entries for a local MetadataReader cache: 256. */
