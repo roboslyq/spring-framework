@@ -303,7 +303,8 @@ public class ContextLoader {
 					configureAndRefreshWebApplicationContext(cwac, servletContext);
 				}
 			}
-			//将初始化的WebApplicationContext设置到servletContext中
+			//将初始化的WebApplicationContext设置到servletContext中，即作为MVC的Context父容器。
+			// 可以通过servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE)获取
 			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 
 			ClassLoader ccl = Thread.currentThread().getContextClassLoader();
