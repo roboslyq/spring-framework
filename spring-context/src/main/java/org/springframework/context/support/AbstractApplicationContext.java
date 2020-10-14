@@ -992,7 +992,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.freezeConfiguration();
 
 		// Instantiate all remaining (non-lazy-init) singletons.
-		/**
+		// 实例化所有仍需要处理的单例Bean(非lazy)
+		/*
 		 * roboslyq-->初始化加载非延迟Bean，会调用doGetBean()方法。具体实现在DefaultListableBeanFactory实现
 		 * AOP 织入
 		 */

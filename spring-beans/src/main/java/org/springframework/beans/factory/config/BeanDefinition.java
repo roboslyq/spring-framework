@@ -26,11 +26,19 @@ import org.springframework.lang.Nullable;
  * constructor argument values, and further information supplied by
  * concrete implementations.
  * roboslyq--> 一个BeanDefinition描述了一个bean的实例，包括属性值，构造方法参数值和继承自它的类的更多信息。
+ * 具体实现有RootBeanDefinition，ChildBeanDefinition，还有GenericBeanDefinition，AnnotatedGenericBeanDefinition,ScannedGenericBeanDefinition等等。
+ * 这些概念模型抽象了不同的关注点。
+ * 关于这些概念模型，除了有概念，也有相应的Java建模模型，甚至还有通用的实现部分AbstractBeanDefinition。
+ * 但事实上，关于BeanDefinition，还有一个概念也很重要，这就是MergedBeanDefinition(中文也许应该翻译成"合并了的bean定义"?),
+ * 但这个概念并没有相应的Java模型对应。但是它确实存在，并且Spring专门为它提供了一个生命周期回调定义接口
+ * MergedBeanDefinitionPostProcessor用于扩展
  * <p>This is just a minimal interface: The main intention is to allow a
  * {@link BeanFactoryPostProcessor} such as {@link PropertyPlaceholderConfigurer}
  * to introspect and modify property values and other bean metadata.
  * BeanDefinition仅仅是一个最简单的接口，主要功能是允许BeanFactoryPostProcessor (例如PropertyPlaceHolderConfigure )
  * 能够检索并修改属性值和别的bean的元数据。
+ *
+ *
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @since 19.03.2004
