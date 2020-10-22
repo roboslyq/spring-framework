@@ -42,7 +42,6 @@ import org.springframework.util.StringUtils;
 
 /**
  * General purpose factory loading mechanism for internal use within the framework.
- *
  * <p>{@code SpringFactoriesLoader} {@linkplain #loadFactories loads} and instantiates
  * factories of a given type from {@value #FACTORIES_RESOURCE_LOCATION} files which
  * may be present in multiple JAR files in the classpath. The {@code spring.factories}
@@ -54,7 +53,11 @@ import org.springframework.util.StringUtils;
  *
  * where {@code example.MyService} is the name of the interface, and {@code MyServiceImpl1}
  * and {@code MyServiceImpl2} are two implementations.
- *
+ * 1、mechanism: (/ˈmekənɪzəm/ ) 机制原理
+ * 		框架内部用来加载"factory"的机制实现。即spring boot最常见的外部化配置spring.factories加载实现
+ * 2、加载文件的路径 	FACTORIES_RESOURCE_LOCATION = "META-INF/spring.factories";
+ * 3、内容格式：k-v形式，其中k为对应接口或者抽象类的全限定名称(比如org.springframework.core.io.support.SpringFactoriesLoader)
+ * 				内容使用逗号分割
  * @author Arjen Poutsma
  * @author Juergen Hoeller
  * @author Sam Brannen
@@ -148,12 +151,12 @@ public final class SpringFactoriesLoader {
 	 * 加载当前classLoader下所有Jar中spring.factories配置文件（所有Key，未过滤）
 	 */
 	private static Map<String, List<String>> loadSpringFactories(@Nullable ClassLoader classLoader) {
-		//检查缓存
+		//检查缓存，如果缓存存在则表明所有的spring.factories已经加载过，不需要重新加载
 		MultiValueMap<String, String> result = cache.get(classLoader);
 		if (result != null) {
 			return result;
 		}
-		//
+		//如果缓存不存在，则表示没有factories被加载，执行第一次加载操作
 		try {
 			Enumeration<URL> urls = (classLoader != null ?
 					//使用classLoader.getResources可以获取Jar包里面的文件内容
