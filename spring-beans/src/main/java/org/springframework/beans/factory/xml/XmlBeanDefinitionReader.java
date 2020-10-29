@@ -402,7 +402,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 			 */
 			Document doc = doLoadDocument(inputSource, resource);
 			/**
-			 * roboslyq-->注册BeanDefinition。怕里是启动对Bean定义解析的详细过程，该解析过程 会用到Spring的Bean配置规则
+			 * roboslyq-->注册BeanDefinition。这里是启动对Bean定义解析的详细过程，该解析过程 会用到Spring的Bean配置规则
 			 */
 			return registerBeanDefinitions(doc, resource);
 		}

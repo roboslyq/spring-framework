@@ -105,7 +105,7 @@ final class PostProcessorRegistrationDelegate {
 			 * 遍历所有参数传递进来的 BeanFactoryPostProcessor(它们并没有作为bean注册在容器中)
 			 * 将所有参数传入的 BeanFactoryPostProcessor 分成两组 :
 			 * 			BeanDefinitionRegistryPostProcessor 和常规 BeanFactoryPostProcessor
-			 * 			1.如果是BeanDefinitionRegistryPostProcessor，现在执行postProcessBeanDefinitionRegistry()，
+			 * 			1.如果是BeanDefinitionRegistryPostProcessor，现在执行postProcessBeanDefinitionRegistry()，最常见的实现是ConfigurationClassPostProcessor
 			 * 			2.否则记录为一个常规 BeanFactoryPostProcessor，现在不执行处理
 			 */
 			for (BeanFactoryPostProcessor postProcessor : beanFactoryPostProcessors) {

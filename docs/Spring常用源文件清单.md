@@ -1,24 +1,55 @@
 # Spring常用源文件清单
 
-## 1、spring-aop
+## 1、spring-core
 
-org/springframework/aop/aspectj/annotation/AnnotationAwareAspectJAutoProxyCreator.java
-org/springframework/aop/aspectj/autoproxy/AspectJAwareAdvisorAutoProxyCreator.java
-org/springframework/aop/config/AopConfigUtils.java
-org/springframework/aop/config/**AopNamespaceHandler.java**
-org/springframework/aop/config/AopNamespaceUtils.java
-org/springframework/aop/config/AspectJAutoProxyBeanDefinitionParser.java
-org/springframework/aop/config/**ConfigBeanDefinitionParser.java**
-org/springframework/aop/framework/autoproxy/AbstractAdvisorAutoProxyCreator.java
-org/springframework/aop/framework/autoproxy/AbstractAutoProxyCreator.java
-org/springframework/aop/framework/autoproxy/InfrastructureAdvisorAutoProxyCreator.java
-org/springframework/aop/framework/**CglibAopProxy.java**
-org/springframework/aop/framework/DefaultAopProxyFactory.java
-org/springframework/aop/framework/**JdkDynamicAopProxy.java**
-org/springframework/aop/framework/ProxyCreatorSupport.java
-org/springframework/aop/framework/ProxyFactory.java
-org/springframework/aop/framework/ProxyFactoryBean.java
-org/springframework/aop/support/AopUtils.java
+### Class文件访问器
+
+org/springframework/asm/ClassReader.java
+org/springframework/asm/ClassVisitor.java
+org/springframework/core/AttributeAccessor.java
+
+### ENV抽象
+
+org/springframework/core/env/ConfigurablePropertyResolver.java
+org/springframework/core/env/ConfigurableEnvironment.java
+org/springframework/core/env/Environment.java
+org/springframework/core/env/StandardEnvironment.java
+
+### Resource抽象
+
+org/springframework/core/env/AbstractPropertyResolver.java
+org/springframework/core/env/CompositePropertySource.java
+org/springframework/core/env/MutablePropertySources.java
+org/springframework/core/env/PropertyResolver.java
+org/springframework/core/env/PropertySource.java
+
+- org/springframework/core/env/PropertySourcesPropertyResolver.java
+  - 解析Property配置文件
+
+org/springframework/core/io/Resource.java
+org/springframework/core/io/support/PathMatchingResourcePatternResolver.java
+org/springframework/core/io/support/ResourcePropertySource.java
+org/springframework/core/SimpleAliasRegistry.java
+
+### spring.factories文件加载 
+
+org/springframework/core/io/support/SpringFactoriesLoader.java
+
+### class-meta抽象
+
+org/springframework/core/type/classreading/AnnotationAttributesReadingVisitor.java
+org/springframework/core/type/classreading/AnnotationMetadataReadingVisitor.java
+org/springframework/core/type/classreading/CachingMetadataReaderFactory.java
+org/springframework/core/type/classreading/MetadataReader.java
+org/springframework/core/type/classreading/SimpleMetadataReader.java
+org/springframework/core/type/filter/AbstractTypeHierarchyTraversingFilter.java
+org/springframework/core/type/filter/AnnotationTypeFilter.java
+
+### Util工具包
+
+org/springframework/util/ClassUtils.java
+org/springframework/util/PropertyPlaceholderHelper.java
+org/springframework/util/StringUtils.java
 
 ## 2、spring-beans
 
@@ -64,7 +95,10 @@ org/springframework/beans/factory/xml/DefaultDocumentLoader.java
 org/springframework/beans/factory/xml/DefaultNamespaceHandlerResolver.java
 org/springframework/beans/factory/xml/NamespaceHandlerSupport.java
 org/springframework/beans/factory/xml/ParserContext.java
-org/springframework/beans/factory/xml/XmlBeanDefinitionReader.java
+
+- org/springframework/beans/factory/xml/XmlBeanDefinitionReader.java
+  - BeanFactory通过此类进行xml配置Bean加载
+
 org/springframework/beans/factory/xml/XmlReaderContext.java
 
 ## 3、spring-context
@@ -77,12 +111,16 @@ org/springframework/context/annotation/AnnotationConfigApplicationContext.java
 org/springframework/context/annotation/AutoProxyRegistrar.java
 org/springframework/context/annotation/ClassPathBeanDefinitionScanner.java
 org/springframework/context/annotation/ClassPathScanningCandidateComponentProvider.java
-org/springframework/context/annotation/ComponentScanAnnotationParser.java
+org/springframework/context/annotation/**ComponentScanAnnotationParser.java**
 org/springframework/context/annotation/ComponentScanBeanDefinitionParser.java
 org/springframework/context/annotation/ConfigurationClassBeanDefinitionReader.java
-org/springframework/context/annotation/ConfigurationClassParser.java
-org/springframework/context/annotation/ConfigurationClassPostProcessor.java
+org/springframework/context/annotation/**ConfigurationClassParser.java**
+org/springframework/context/annotation/**ConfigurationClassPostProcessor.java**
 org/springframework/context/annotation/ImportSelector.java
+
+调用过程：
+
+BeanFactoryPostProcessor ->  ConfigurationClassPostProcessor ->  ConfigurationClassParser --> ComponentScanAnnotationParser
 
 
 
@@ -91,7 +129,10 @@ org/springframework/context/annotation/ImportSelector.java
 org/springframework/context/config/AbstractPropertyLoadingBeanDefinitionParser.java
 org/springframework/context/config/**ContextNamespaceHandler.java**
 org/springframework/context/config/PropertyPlaceholderBeanDefinitionParser.java
-org/springframework/context/support/AbstractApplicationContext.java
+
+- org/springframework/context/support/AbstractApplicationContext.java
+  - refresh()方法所在
+
 org/springframework/context/support/AbstractRefreshableApplicationContext.java
 org/springframework/context/support/AbstractRefreshableConfigApplicationContext.java
 org/springframework/context/support/AbstractXmlApplicationContext.java
@@ -100,55 +141,25 @@ org/springframework/context/support/ClassPathXmlApplicationContext.java
 org/springframework/context/support/PostProcessorRegistrationDelegate.java
 org/springframework/context/support/PropertySourcesPlaceholderConfigurer.java
 
-## 4、spring-core
+## 4、spring-aop
 
-### Class文件访问器
-
-org/springframework/asm/ClassReader.java
-
-org/springframework/asm/ClassVisitor.java
-org/springframework/core/AttributeAccessor.java
-
-### ENV抽象
-
-org/springframework/core/env/ConfigurablePropertyResolver.java
-
-org/springframework/core/env/ConfigurableEnvironment.java
-
-org/springframework/core/env/Environment.java
-
-org/springframework/core/env/StandardEnvironment.java
-
-### Resource抽象
-
-org/springframework/core/env/AbstractPropertyResolver.java
-org/springframework/core/env/CompositePropertySource.java
-
-org/springframework/core/env/MutablePropertySources.java
-org/springframework/core/env/PropertyResolver.java
-org/springframework/core/env/PropertySource.java
-org/springframework/core/env/PropertySourcesPropertyResolver.java
-
-org/springframework/core/io/Resource.java
-org/springframework/core/io/support/PathMatchingResourcePatternResolver.java
-org/springframework/core/io/support/ResourcePropertySource.java
-org/springframework/core/io/support/SpringFactoriesLoader.java
-
-org/springframework/core/SimpleAliasRegistry.java
-org/springframework/core/SimpleAliasRegistry.java
-
-### class-meta抽象
-
-org/springframework/core/type/classreading/AnnotationAttributesReadingVisitor.java
-org/springframework/core/type/classreading/AnnotationMetadataReadingVisitor.java
-org/springframework/core/type/classreading/CachingMetadataReaderFactory.java
-org/springframework/core/type/classreading/MetadataReader.java
-org/springframework/core/type/classreading/SimpleMetadataReader.java
-org/springframework/core/type/filter/AbstractTypeHierarchyTraversingFilter.java
-org/springframework/core/type/filter/AnnotationTypeFilter.java
-org/springframework/util/ClassUtils.java
-org/springframework/util/PropertyPlaceholderHelper.java
-org/springframework/util/StringUtils.java
+org/springframework/aop/aspectj/annotation/AnnotationAwareAspectJAutoProxyCreator.java
+org/springframework/aop/aspectj/autoproxy/AspectJAwareAdvisorAutoProxyCreator.java
+org/springframework/aop/config/AopConfigUtils.java
+org/springframework/aop/config/**AopNamespaceHandler.java**
+org/springframework/aop/config/AopNamespaceUtils.java
+org/springframework/aop/config/AspectJAutoProxyBeanDefinitionParser.java
+org/springframework/aop/config/**ConfigBeanDefinitionParser.java**
+org/springframework/aop/framework/autoproxy/AbstractAdvisorAutoProxyCreator.java
+org/springframework/aop/framework/autoproxy/AbstractAutoProxyCreator.java
+org/springframework/aop/framework/autoproxy/InfrastructureAdvisorAutoProxyCreator.java
+org/springframework/aop/framework/**CglibAopProxy.java**
+org/springframework/aop/framework/DefaultAopProxyFactory.java
+org/springframework/aop/framework/**JdkDynamicAopProxy.java**
+org/springframework/aop/framework/ProxyCreatorSupport.java
+org/springframework/aop/framework/ProxyFactory.java
+org/springframework/aop/framework/ProxyFactoryBean.java
+org/springframework/aop/support/AopUtils.java
 
 ## 5、spring-tx
 
