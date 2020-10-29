@@ -84,8 +84,10 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * @param annotatedClasses one or more annotated classes,
 	 * e.g. {@link Configuration @Configuration} classes
 	 */
+	// 指定配置类启动，不需要ComponentScan扫描
 	public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
 		this();
+		// 生成BeanDefinition
 		register(annotatedClasses);
 		refresh();
 	}

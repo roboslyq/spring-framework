@@ -38,10 +38,13 @@ org/springframework/core/io/support/SpringFactoriesLoader.java
 ### class-meta抽象
 
 org/springframework/core/type/classreading/AnnotationAttributesReadingVisitor.java
-org/springframework/core/type/classreading/AnnotationMetadataReadingVisitor.java
+org/springframework/core/type/classreading/**AnnotationMetadataReadingVisitor.java**
 org/springframework/core/type/classreading/CachingMetadataReaderFactory.java
 org/springframework/core/type/classreading/MetadataReader.java
-org/springframework/core/type/classreading/SimpleMetadataReader.java
+
+- org/springframework/core/type/classreading/SimpleMetadataReader.java
+  - 注解扫描底层实现，通过此类读取class相关信息。
+
 org/springframework/core/type/filter/AbstractTypeHierarchyTraversingFilter.java
 org/springframework/core/type/filter/AnnotationTypeFilter.java
 
@@ -109,7 +112,10 @@ org/springframework/context/annotation/AdviceModeImportSelector.java
 org/springframework/context/annotation/AnnotationConfigApplicationContext.java
 org/springframework/context/annotation/AnnotationConfigApplicationContext.java
 org/springframework/context/annotation/AutoProxyRegistrar.java
-org/springframework/context/annotation/ClassPathBeanDefinitionScanner.java
+
+- org/springframework/context/annotation/ClassPathBeanDefinitionScanner.java
+  - 扫描@ComponetScan的底层实现，被`ComponentScanAnnotationParser`调用。
+
 org/springframework/context/annotation/ClassPathScanningCandidateComponentProvider.java
 org/springframework/context/annotation/**ComponentScanAnnotationParser.java**
 org/springframework/context/annotation/ComponentScanBeanDefinitionParser.java

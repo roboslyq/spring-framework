@@ -1197,6 +1197,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			return obtainFromSupplier(instanceSupplier, beanName);
 		}
 		//创建Bean方法之二（优先级第二）：通过工厂方法（BeanFactory）创建Bean
+		// @Configuration标记的类，如果有@Bean标记的方法，那么对应的@Configuration标记的类也为Factory类
 		if (mbd.getFactoryMethodName() != null)  {
 			return instantiateUsingFactoryMethod(beanName, mbd, args);
 		}
