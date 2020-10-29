@@ -109,8 +109,7 @@ org/springframework/beans/factory/xml/XmlReaderContext.java
 ### 注解处理
 
 org/springframework/context/annotation/AdviceModeImportSelector.java
-org/springframework/context/annotation/AnnotationConfigApplicationContext.java
-org/springframework/context/annotation/AnnotationConfigApplicationContext.java
+org/springframework/context/annotation/**AnnotationConfigApplicationContext.java**
 org/springframework/context/annotation/AutoProxyRegistrar.java
 
 - org/springframework/context/annotation/ClassPathBeanDefinitionScanner.java
@@ -124,11 +123,13 @@ org/springframework/context/annotation/**ConfigurationClassParser.java**
 org/springframework/context/annotation/**ConfigurationClassPostProcessor.java**
 org/springframework/context/annotation/ImportSelector.java
 
-调用过程：
+ClassPathXmlApplicationContext调用过程：
 
-BeanFactoryPostProcessor ->  ConfigurationClassPostProcessor ->  ConfigurationClassParser --> ComponentScanAnnotationParser
+XML解析为BeanDefinition--->BeanFactoryPostProcessor ->  ConfigurationClassPostProcessor ->  ConfigurationClassParser --> ComponentScanAnnotationParser-->ClassPathBeanDefinitionScanner
 
+AnnotationConfigApplicationContext调用过程：
 
+ClassPathBeanDefinitionScanner ->SimpleMetadataReader(加载为BeanDefinition)->BeanFactoryPostProcessor ->  ConfigurationClassPostProcessor ->  ConfigurationClassParser --> ComponentScanAnnotationParser
 
 ###　工具相关
 
