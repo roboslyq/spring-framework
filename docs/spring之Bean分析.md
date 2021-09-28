@@ -1,6 +1,6 @@
 # Spring之Bean分析
 
-## Bean属性
+# BeanDefinition
 
 | Property                 | Explained in…                                                |
 | :----------------------- | :----------------------------------------------------------- |
@@ -14,21 +14,42 @@
 | Initialization method    | [Initialization Callbacks](https://docs.spring.io/spring-framework/docs/5.1.18.RELEASE/spring-framework-reference/core.html#beans-factory-lifecycle-initializingbean) |
 | Destruction method       | [Destruction Callbacks](https://docs.spring.io/spring-framework/docs/5.1.18.RELEASE/spring-framework-reference/core.html#beans-factory-lifecycle-disposablebean) |
 
-## Bean初始化方式
+# Bean名称(Naming Beans)
 
-### Constructor
+- BeanNameGenerator
 
-### Factory
+![DefaultBeanNameGenerator](images/spring之Bean分析/DefaultBeanNameGenerator.png)
 
-#### Static method factory
-
-#### Instance factory
+## Bean别名
 
 
 
-## Bean 依赖注入
+# Bean初始化方式
 
-##### Constructor-based Dependency Injection
+## Constructor
 
-##### Setter-based Dependency Injection
+> [Instantiation with a Constructor](https://docs.spring.io/spring-framework/docs/5.1.18.RELEASE/spring-framework-reference/core.html#beans-factory-class-ctor)
+
+## Static method factory
+
+> [Instantiation with a Static Factory Method](https://docs.spring.io/spring-framework/docs/5.1.18.RELEASE/spring-framework-reference/core.html#beans-factory-class-static-factory-method)
+
+## Instance factory
+
+> [Instantiation by Using an Instance Factory Method](https://docs.spring.io/spring-framework/docs/5.1.18.RELEASE/spring-framework-reference/core.html#beans-factory-class-instance-factory-method)
+
+# Bean依赖(Dependencies)
+
+- Constructor-based Dependency Injection
+- Setter-based Dependency Injection
+
+# Bean作用域(Scopes)
+
+# 自定义Bean属性
+
+- [Lifecycle Callbacks](https://docs.spring.io/spring-framework/docs/5.1.18.RELEASE/spring-framework-reference/core.html#beans-factory-lifecycle)
+- [`ApplicationContextAware` and `BeanNameAware`](https://docs.spring.io/spring-framework/docs/5.1.18.RELEASE/spring-framework-reference/core.html#beans-factory-aware)
+- [Other `Aware` Interfaces](https://docs.spring.io/spring-framework/docs/5.1.18.RELEASE/spring-framework-reference/core.html#aware-list)
+
+# BeanDefinition继承
 
