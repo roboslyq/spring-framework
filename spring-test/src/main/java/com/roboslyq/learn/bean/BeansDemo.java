@@ -21,7 +21,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class BeansDemo {
 	public static void main(String[] args) {
-		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath://META-INF/beans.xml");
+		System.out.println(BeansDemo.class.getResource("/"));
+		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:/META-INF/beans.xml");
 		User user = context.getBean("user",User.class);
 		System.out.println(user.getClass());
 	}

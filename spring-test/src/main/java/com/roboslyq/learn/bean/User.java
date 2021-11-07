@@ -10,6 +10,8 @@
  */
 package com.roboslyq.learn.bean;
 
+import org.springframework.context.annotation.Profile;
+
 /**
  *
  * 〈〉
