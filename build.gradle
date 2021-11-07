@@ -150,8 +150,10 @@ configure(allprojects) { project ->
 	}
 
 	repositories {
-		maven { url "https://repo.spring.io/libs-release" }
+		// 20211107 repo.spring.io需要身份认证，无法下载相关Jar包
+//		maven { url "https://repo.spring.io/libs-release" }
 		maven { url "https://repo.spring.io/snapshot" }  // for Reactor
+		maven { url "https://maven.aliyun.com/repository/public" }
 	}
 
 	dependencies {
