@@ -53,3 +53,65 @@ Bean别名
 
 # BeanDefinition继承
 
+# Bean生命周期
+
+## 1)-BeanDefinition阶段
+
+### 元信息配置
+
+> XML配置
+>
+> Properties配置
+>
+> Anntation注解配置
+>
+> 使用BeanDefinition来保存元信息
+
+### 元信息解析
+
+### BeanDefinition注册阶段
+
+将BeanDefinition注册到BeanFactory中
+
+### BeanDefinition合并阶段
+
+> Bean有Parent关系，当前Bean需要将Parent Bean相关属性和配置进行合并。在Java中，可以通过继承来实现，但在Bean配置中，仅是元信息，没有继续，需要一种合并的过程。
+
+## 
+
+## 2)-Bean阶段
+
+### 2-1)-加载Bean
+
+> 根据BeanDefinition中beanClassName的信息，将Class加载到JVM中
+
+### 2-2)-实例化Bean
+
+> 将Bean的Class实例为一个具体的对象
+
+#### 实例化前
+
+#### 实例化
+
+#### 实例化后
+
+BeanPostProcessor
+
+### 2-3)-初始化Bean
+
+#### 初始化化前
+
+#### 初始化
+
+#### 初始化后
+
+BeanPostProcessor
+
+### 2-4)-初始化完成
+
+## 3)-使用
+
+## 4)-销毁
+
+
+
