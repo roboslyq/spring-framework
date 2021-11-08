@@ -115,3 +115,6 @@ BeanPostProcessor
 
 
 
+## 生命周期中的扩展点
+
+![img](images/spring之Bean分析/webp.webp)
