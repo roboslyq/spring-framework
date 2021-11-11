@@ -19,13 +19,13 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @date 2021/11/6
  * @since 1.0.0
  */
-public class BeansDemo {
+public class PropertyPlaceHolderBeansDemo {
 	public static void main(String[] args) {
-		System.out.println(BeansDemo.class.getResource("/"));
-		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:/META-INF/beans.xml");
+		System.out.println(PropertyPlaceHolderBeansDemo.class.getResource("/"));
+		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:/META-INF/beans-placeholder.xml");
 		User user = context.getBean("user",User.class);
 		System.out.println(user.getClass());
 		System.out.println(user);
 	}
-
 }
+

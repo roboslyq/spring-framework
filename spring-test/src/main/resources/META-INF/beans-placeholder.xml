@@ -5,6 +5,16 @@
 
 	<bean id="user" class="com.roboslyq.learn.bean.User">
 		<property name="name" value="${name}"/>
+		<property name="password" value="${password}"/>
 	</bean>
-
+	<bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<value>
+				classpath:/META-INF/application.properties
+			</value>
+			<value>
+				classpath:/META-INF/application-1.properties
+			</value>
+		</property>
+	</bean>
 </beans>
