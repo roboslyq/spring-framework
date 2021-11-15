@@ -40,6 +40,7 @@ import org.springframework.web.reactive.socket.WebSocketSession;
  * @author Rossen Stoyanchev
  * @since 5.0
  */
+@SuppressWarnings("ALL")
 public class ReactorNettyWebSocketSession
 		extends NettyWebSocketSessionSupport<ReactorNettyWebSocketSession.WebSocketConnection> {
 
@@ -74,7 +75,7 @@ public class ReactorNettyWebSocketSession
 				})
 				.map(this::toFrame);
 		return getDelegate().getOutbound()
-				.options(NettyPipeline.SendOptions::flushOnEach)
+//				.options(NettyPipeline.SendOptions::flushOnEach)
 				.sendObject(frames)
 				.then();
 	}

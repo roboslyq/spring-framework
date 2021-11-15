@@ -18,11 +18,9 @@
 
 - BeanNameGenerator
 
-![DefaultBeanNameGenerator](images/spring之Bean分析/DefaultBeanNameGenerator.png)
-
 Bean别名
 
-
+![BeanNameGenerator](images/spring之Bean分析/BeanNameGenerator.png)
 
 # Bean初始化方式
 
