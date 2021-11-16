@@ -10,6 +10,10 @@
  */
 package com.roboslyq.learn.bean;
 
+import org.springframework.beans.factory.InitializingBean;
+
+import javax.annotation.PostConstruct;
+
 /**
  *
  * 〈〉
@@ -19,7 +23,7 @@ package com.roboslyq.learn.bean;
  */
 
 
-public class User {
+public class User implements InitializingBean {
 	private String name;
 	private String password;
 
@@ -47,4 +51,21 @@ public class User {
 				'}';
 	}
 
+	@PostConstruct
+	public void post(){
+		this.setName("6");
+		P.print(this);
+	}
+
+
+	public void init(){
+		this.setName("5");
+		P.print(this);
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.setName("4");
+		P.print(this);
+	}
 }

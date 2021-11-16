@@ -240,7 +240,7 @@ final class PostProcessorRegistrationDelegate {
 		}
 
 		// First, invoke the BeanFactoryPostProcessors that implement PriorityOrdered.
-		// 1. 执行Bean形式 BeanFactoryPostProcessor + PriorityOrdered
+		// 1. 执行Bean形式 BeanFactoryPostProcessor + PriorityOrdered。例如常见的PropertyPlaceHolderConfigurar占位符处理
 		sortPostProcessors(priorityOrderedPostProcessors, beanFactory);
 		invokeBeanFactoryPostProcessors(priorityOrderedPostProcessors, beanFactory);
 

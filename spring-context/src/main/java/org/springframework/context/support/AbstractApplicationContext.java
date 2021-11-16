@@ -740,7 +740,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));
 
 		// Configure the bean factory with context callbacks.
-		//添加后置处理器
+		//添加后置处理器<调用相关的xxxAware接口>
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
 		//忽略自动装配，前面已经看到过
 		beanFactory.ignoreDependencyInterface(EnvironmentAware.class);
@@ -775,6 +775,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// 这里个属性都是系统属性，我们前面看到过，但是都是单独存在的并没有注入到容器中
 		//这里把系统属性注入到容器中
 		if (!beanFactory.containsLocalBean(ENVIRONMENT_BEAN_NAME)) {
+			// 注入Enviroment到容器中，因此，通过依赖注入或者主动查找到的EnviromentBean是同一个。都是来自于ApplicationConext中
 			beanFactory.registerSingleton(ENVIRONMENT_BEAN_NAME, getEnvironment());
 		}
 		if (!beanFactory.containsLocalBean(SYSTEM_PROPERTIES_BEAN_NAME)) {

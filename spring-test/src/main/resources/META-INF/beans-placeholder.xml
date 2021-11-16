@@ -7,14 +7,31 @@
 		<property name="name" value="${name}"/>
 		<property name="password" value="${password}"/>
 	</bean>
-	<bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	<!-- 旧版本 -->
+	<!--<bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">-->
+		<!--<property name="locations">-->
+			<!--<list>-->
+				<!--<value>-->
+					<!--classpath:/META-INF/application.properties-->
+				<!--</value>-->
+				<!--<value>-->
+					<!--classpath:/META-INF/application-1.properties-->
+				<!--</value>-->
+			<!--</list>-->
+		<!--</property>-->
+	<!--</bean>-->
+
+	<!-- 新版本 -->
+	<bean id="propertySourcesPlaceholderConfigurer" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
 		<property name="locations">
-			<value>
-				classpath:/META-INF/application.properties
-			</value>
-			<value>
-				classpath:/META-INF/application-1.properties
-			</value>
+			<list>
+				<value>
+					classpath:/META-INF/application.properties
+				</value>
+				<value>
+					classpath:/META-INF/application-1.properties
+				</value>
+			</list>
 		</property>
 	</bean>
 </beans>

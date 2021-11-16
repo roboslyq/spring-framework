@@ -60,7 +60,8 @@ import org.springframework.util.StringValueResolver;
  * @see org.springframework.core.env.ConfigurableEnvironment
  * @see org.springframework.beans.factory.config.PlaceholderConfigurerSupport
  * @see org.springframework.beans.factory.config.PropertyPlaceholderConfigurer
- * PropertySourcePalceholderConfigurer,实现了EnvironmentAware接口，因为enviroment会自动注入
+ * PropertySourcesPalceholderConfigurer,实现了EnvironmentAware接口，因为enviroment会自动注入。
+ * 是对PropertyPalceholderConfigurer的替代品。具有更广域的使用范围。
  */
 public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerSupport implements EnvironmentAware {
 
