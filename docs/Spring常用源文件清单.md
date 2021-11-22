@@ -2,20 +2,20 @@
 
 ## 1、spring-core
 
-### Class文件访问器
+### 1.1 Class文件访问器
 
 org/springframework/asm/ClassReader.java
 org/springframework/asm/ClassVisitor.java
 org/springframework/core/AttributeAccessor.java
 
-### ENV抽象
+### 1.2 抽象
 
 org/springframework/core/env/ConfigurablePropertyResolver.java
 org/springframework/core/env/ConfigurableEnvironment.java
 org/springframework/core/env/Environment.java
 org/springframework/core/env/StandardEnvironment.java
 
-### Resource抽象
+### 1.3 Resource抽象
 
 org/springframework/core/env/AbstractPropertyResolver.java
 org/springframework/core/env/CompositePropertySource.java
@@ -31,11 +31,11 @@ org/springframework/core/io/support/PathMatchingResourcePatternResolver.java
 org/springframework/core/io/support/ResourcePropertySource.java
 org/springframework/core/SimpleAliasRegistry.java
 
-### spring.factories文件加载 
+### 1.4 spring.factories文件加载 
 
 org/springframework/core/io/support/SpringFactoriesLoader.java
 
-### class-meta抽象
+### 1.5 class-meta抽象
 
 org/springframework/core/type/classreading/AnnotationAttributesReadingVisitor.java
 org/springframework/core/type/classreading/**AnnotationMetadataReadingVisitor.java**
@@ -48,7 +48,7 @@ org/springframework/core/type/classreading/MetadataReader.java
 org/springframework/core/type/filter/AbstractTypeHierarchyTraversingFilter.java
 org/springframework/core/type/filter/AnnotationTypeFilter.java
 
-### Util工具包
+### 1.6 Util工具包
 
 org/springframework/util/ClassUtils.java
 org/springframework/util/PropertyPlaceholderHelper.java
@@ -106,32 +106,33 @@ org/springframework/beans/factory/xml/XmlReaderContext.java
 
 ## 3、spring-context
 
-### 注解处理
+### 3.1 注解处理
 
-org/springframework/context/annotation/AdviceModeImportSelector.java
-org/springframework/context/annotation/**AnnotationConfigApplicationContext.java**
-org/springframework/context/annotation/AutoProxyRegistrar.java
+- org/springframework/context/annotation/AdviceModeImportSelector.java
+- org/springframework/context/annotation/**AnnotationConfigApplicationContext.java**
+  - 注解驱动的应用上下文
+- org/springframework/context/annotation/AutoProxyRegistrar.java
 
 - org/springframework/context/annotation/ClassPathBeanDefinitionScanner.java
   - 扫描@ComponetScan的底层实现，被`ComponentScanAnnotationParser`调用。
 
-org/springframework/context/annotation/ClassPathScanningCandidateComponentProvider.java
-org/springframework/context/annotation/**ComponentScanAnnotationParser.java**
-org/springframework/context/annotation/ComponentScanBeanDefinitionParser.java
-org/springframework/context/annotation/ConfigurationClassBeanDefinitionReader.java
-org/springframework/context/annotation/**ConfigurationClassParser.java**
-org/springframework/context/annotation/**ConfigurationClassPostProcessor.java**
-org/springframework/context/annotation/ImportSelector.java
+- org/springframework/context/annotation/ClassPathScanningCandidateComponentProvider.java
+- org/springframework/context/annotation/**ComponentScanAnnotationParser.java**
+- org/springframework/context/annotation/ComponentScanBeanDefinitionParser.java
+  org/springframework/context/annotation/ConfigurationClassBeanDefinitionReader.java
+  org/springframework/context/annotation/**ConfigurationClassParser.java**
+  org/springframework/context/annotation/**ConfigurationClassPostProcessor.java**
+  org/springframework/context/annotation/ImportSelector.java
 
-ClassPathXmlApplicationContext调用过程：
+### 3.2 ClassPathXmlApplicationContext调用过程
 
 XML解析为BeanDefinition--->BeanFactoryPostProcessor ->  ConfigurationClassPostProcessor ->  ConfigurationClassParser --> ComponentScanAnnotationParser-->ClassPathBeanDefinitionScanner
 
-AnnotationConfigApplicationContext调用过程：
+### 3.3 AnnotationConfigApplicationContext调用过程：
 
 ClassPathBeanDefinitionScanner ->SimpleMetadataReader(加载为BeanDefinition)->BeanFactoryPostProcessor ->  ConfigurationClassPostProcessor ->  ConfigurationClassParser --> ComponentScanAnnotationParser
 
-###　工具相关
+###　3.2 工具相关
 
 org/springframework/context/config/AbstractPropertyLoadingBeanDefinitionParser.java
 org/springframework/context/config/**ContextNamespaceHandler.java**

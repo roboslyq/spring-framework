@@ -125,12 +125,12 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 */
 	@Override
 	protected final void refreshBeanFactory() throws BeansException {
-		/**
+		/*
 		 * roboslyq-->Bean工厂是否存在。正常一般情况为false
 		 */
 		if (hasBeanFactory()) {
-			destroyBeans();//销毁
-			closeBeanFactory();//关闭
+			destroyBeans();//如果已经存在BeanFactory，则先销毁Bean实例
+			closeBeanFactory();//关闭BeanFactory
 		}
 		try {
 			//roboslyq-->创建Bean工厂,直接new 一个 DefaultListableBeanFactory类进行干活
@@ -140,12 +140,12 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 			beanFactory.setSerializationId(getId());
 			//可对Bean工厂进行定制，一个扩展点
 			customizeBeanFactory(beanFactory);
-			/**
+			/*
 			 * 	roboslyq-->初始化XmlBeanDefinitionReader用来读取xml，并加载解析。装载BeanDefinition核心入口。
 			 * 	在AbstractXmlApplicationContext中有具体实现
 			 */
 			loadBeanDefinitions(beanFactory);
-			//设置为全局变量，AbstractRefreshableApplicationContext持有DefaultListableBeanFactory引用
+			//设置为全局变量，关联新建BeanFactory到Spring应用上下文AbstractRefreshableApplicationContext持有DefaultListableBeanFactory引用
 			synchronized (this.beanFactoryMonitor) {
 				this.beanFactory = beanFactory;
 			}
@@ -240,10 +240,11 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * @see DefaultListableBeanFactory#setAllowEagerClassLoading
 	 */
 	protected void customizeBeanFactory(DefaultListableBeanFactory beanFactory) {
+		// 设置容器是否允许Bean重复定义
 		if (this.allowBeanDefinitionOverriding != null) {
 			beanFactory.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
 		}
-
+		// 是否允许循环依赖
 		if (this.allowCircularReferences != null) {
 			beanFactory.setAllowCircularReferences(this.allowCircularReferences);
 		}

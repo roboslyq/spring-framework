@@ -269,6 +269,11 @@ final class PostProcessorRegistrationDelegate {
 
 	/**
 	 * 注册后置处理器
+	 * 	•   注册 PriorityOrdered 类型的 BeanPostProcessor Beans
+	 * 	•   注册 Ordered 类型的 BeanPostProcessor Beans
+	 * 	•   注册普通 BeanPostProcessor Beans
+	 * 	•   注册 MergedBeanDefinitionPostProcessor Beans
+	 * 	•   注册 ApplicationListenerDetector 对象
 	 * @param beanFactory
 	 * @param applicationContext
 	 */

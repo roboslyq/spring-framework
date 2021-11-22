@@ -621,7 +621,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				logger.debug("Eagerly caching bean '" + beanName +
 						"' to allow for resolving potential circular references");
 			}
-			// roboslyq-->lambda表达式，需要提前暴露（支持循环依赖），就注册一个ObjectFactory到三级缓存，解决循环依赖
+			// roboslyq-->lambda表达式，需要提前暴露（支持循环依赖），就注册一个ObjectFactory到三级缓存，解决循环依赖。通过
+			// lambda实现了singletonFactory，可以获取正在创建的Bean的引用。从而可以供后续Bean进行注入。
+			// 比如BeanA <->BeanB相互通过setter注入循环依赖。此时创建BeanA时，将BeanA通过一个ObjectFactory存入到singletonFactories
+			// 中，那么在BeanB创建时，就可以从singletonFacotories中取到BeanA,同时BeanB也会存入到singletonFactories。那么BeanA也可以注入BeanB
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
 

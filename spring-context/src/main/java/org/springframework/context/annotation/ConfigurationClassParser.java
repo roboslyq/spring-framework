@@ -82,6 +82,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
+import sun.tools.javac.SourceClass;
 
 /**
  * Parses a {@link Configuration} class definition, populating a collection of
@@ -103,7 +104,7 @@ import org.springframework.util.StringUtils;
  * @author Sam Brannen
  * @author Stephane Nicoll
  * @since 3.0
- * @see ConfigurationClassBeanDefinitionReader
+ * @see
  */
 class ConfigurationClassParser {
 
@@ -343,21 +344,22 @@ class ConfigurationClassParser {
 		}
 
 		// Process individual @Bean methods
-		// 处理@Bean修饰的方法
-
+		// 处理@Bean修饰的方法,先解析@Bean注解对应的方法，使用MethodMetadata对象来包装。
+		// 1、即MethodMetadata对应@Bean注解的元信息
 		Set<MethodMetadata> beanMethods = retrieveBeanMethodMetadata(sourceClass);
-		// 遍历@Bean注释的方法,添加到configClass
+
+		// 遍历解析得到的beanMethods集合，将其通过BeanMethod再次进行包装，然后存入到configClass中。
 		for (MethodMetadata methodMetadata : beanMethods) {
+			// 2、即BeanMethod对应@Bean注解的方法信息
 			configClass.addBeanMethod(new BeanMethod(methodMetadata, configClass));
 		}
 
 		// Process default methods on interfaces
-		// 处理接口定义的方法
+		// 3、处理配置的父接口(因为Java8+之后，接口中允许有默认的实现方法，所以需要处理)
 		processInterfaces(configClass, sourceClass);
 
 		// Process superclass, if any
-		// 处理父类
-
+		// 4、处理配置类的父类，递归循环
 		if (sourceClass.getMetadata().hasSuperClass()) {
 			String superclass = sourceClass.getMetadata().getSuperClassName();
 			if (superclass != null && !superclass.startsWith("java") &&
@@ -405,6 +407,7 @@ class ConfigurationClassParser {
 
 	/**
 	 * Register default methods on interfaces implemented by the configuration class.
+	 * 处理Java8之后 ，接口中的默认方法实现
 	 */
 	private void processInterfaces(ConfigurationClass configClass, SourceClass sourceClass) throws IOException {
 		for (SourceClass ifc : sourceClass.getInterfaces()) {
@@ -415,6 +418,7 @@ class ConfigurationClassParser {
 					configClass.addBeanMethod(new BeanMethod(methodMetadata, configClass));
 				}
 			}
+			// 递归调用，循环处理
 			processInterfaces(configClass, ifc);
 		}
 	}
@@ -424,6 +428,14 @@ class ConfigurationClassParser {
 	 */
 	private Set<MethodMetadata> retrieveBeanMethodMetadata(SourceClass sourceClass) {
 		AnnotationMetadata original = sourceClass.getMetadata();
+		// 获取@Configuration注解类中对应的@Bean修饰方法
+		/*
+		*
+		*		@Bean
+		*		public Sdemo init(){
+		*			return  new Sdemo();
+		*		}
+		*/
 		Set<MethodMetadata> beanMethods = original.getAnnotatedMethods(Bean.class.getName());
 		if (beanMethods.size() > 1 && original instanceof StandardAnnotationMetadata) {
 			// Try reading the class file via ASM for deterministic declaration order...

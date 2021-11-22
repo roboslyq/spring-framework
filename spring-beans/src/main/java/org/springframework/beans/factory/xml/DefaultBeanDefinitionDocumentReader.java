@@ -163,17 +163,13 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 				}
 			}
 		}
-		/**
-		 * 解析前处理。需要扩展，默认为空实现不做处理
-		 */
+//		解析前处理。需要扩展，默认为空实现不做处理
 		preProcessXml(root);
-		/**
-		 * 解析BeanDefinition
-		 */
+
+//		解析BeanDefinition
 		parseBeanDefinitions(root, this.delegate);
-		/**
-		 * 解析后处理，需要扩展，默认为空实现不做处理
-		 */
+
+//		解析后处理，需要扩展，默认为空实现不做处理
 		postProcessXml(root);
 
 		this.delegate = parent;

@@ -62,7 +62,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 * @see #setConfigLocation
 	 * @see #setConfigLocations
 	 * @see #afterPropertiesSet()
-	 * roboslyq --> 不带任何参数的ClassPathXmlApplicationContext
+	 * roboslyq --> 不带任何参数的ClassPathXmlApplicationContext。不传资源位置，表示不需要启动容器，后面手动调用refresh方法启动容器
 	 */
 	public ClassPathXmlApplicationContext() {
 	}
@@ -73,7 +73,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 * @see #setConfigLocation
 	 * @see #setConfigLocations
 	 * @see #afterPropertiesSet()
-	 * roboslyq --> 传入parent Context
+	 * roboslyq --> 传入parent Context。从而可以说明，Context支持父子关系，即父容器和子容器。
 	 */
 	public ClassPathXmlApplicationContext(ApplicationContext parent) {
 		super(parent);
@@ -85,7 +85,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 * @param configLocation resource location
 	 * @throws BeansException if context creation failed
 	 *
-	 * roboslyq-->Bean工厂构造函数入口,传入单个资源位置(支持占位符)。并且refresh默认为true
+	 * roboslyq-->Bean工厂构造函数入口,传入单个资源位置(支持占位符)。并且refresh默认为true。传入了配置文件，表示需要自动启动容器。
 	 *
 	 */
 	public ClassPathXmlApplicationContext(String configLocation) throws BeansException {
@@ -154,13 +154,13 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	public ClassPathXmlApplicationContext(
 			String[] configLocations, boolean refresh, @Nullable ApplicationContext parent)
 			throws BeansException {
-		/**
+		/*
 		 * roboslyq--使用new方法创建PathMatchingResourcePatternResolver，可以用来解析资源文件，主要是用来解析类路径下的资源文件。
 		 * 当然它也可以用来解析其它资源文件，如基于文件系统的本地资源文件。
 		 * 使用方式为PathMatchingResourcePatternResolver.getResource("file:pom.xml");
 		 */
 		super(parent);
-		/**
+		/*
 		 * roboslyq-->
 		 *   (1)设置父类AbstractRefreshableApplicationContext资源位置，后续解析时会使用此值
 		 * 	 (2)将String形式的资源转换为String数组

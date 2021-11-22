@@ -273,7 +273,8 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 					logger.debug("Bean definition has already been processed as a configuration class: " + beanDef);
 				}
 			}
-			// 判断该bean是否为配置类（通常最终加到配置类候选的只有启动类）
+			// 判断该bean是否为配置类（添加了@Configuration注解的类或者添加了传统的@Component或@ComponentScanner都可以）
+			// 默认情况，启动类不管有没有加注解都是配置类
 			else if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDef, this.metadataReaderFactory)) {
 				configCandidates.add(new BeanDefinitionHolder(beanDef, beanName));
 			}
@@ -327,11 +328,13 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			configClasses.removeAll(alreadyParsed);
 
 			// Read the model and create bean definitions based on its content
+			// 初始化XXXXReader，从具体的配置中读取BeanDefinition信息
 			if (this.reader == null) {
 				this.reader = new ConfigurationClassBeanDefinitionReader(
 						registry, this.sourceExtractor, this.resourceLoader, this.environment,
 						this.importBeanNameGenerator, parser.getImportRegistry());
 			}
+			// 通过xxReader将注解中的信息转换成BeanDefinition
 			// 将ConfigurationClass定义转换为BeanDefinition
 			// 这个方法主要是把前面解析出来的配置类的beanDefinition都注册到容器中
 			this.reader.loadBeanDefinitions(configClasses);

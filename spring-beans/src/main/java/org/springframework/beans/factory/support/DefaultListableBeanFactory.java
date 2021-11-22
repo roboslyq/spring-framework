@@ -733,7 +733,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	@Override
 	public void freezeConfiguration() {
+		// 仅设计一个标识位
 		this.configurationFrozen = true;
+		// 将this.beanDefinitionNames克隆到frozenBeanDefinitionNames数组中
 		this.frozenBeanDefinitionNames = StringUtils.toStringArray(this.beanDefinitionNames);
 	}
 

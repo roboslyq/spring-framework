@@ -157,8 +157,10 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	protected void addSingletonFactory(String beanName, ObjectFactory<?> singletonFactory) {
 		Assert.notNull(singletonFactory, "Singleton factory must not be null");
 		synchronized (this.singletonObjects) {
+			// 如果一级缓存里没有,则进入三级缓存。一级缓存保存正常已经完成初始化的Bean
 			if (!this.singletonObjects.containsKey(beanName)) {
-				// 将beanFactory存入到三级缓存中
+				// 将beanFactory存入到三级缓存中：三级缓存里key 是 beanName，value 就是这个lambda匿名类的返回值，对象工厂 singletonFactory
+				// 而 singletonFactory.getObject() 的返回值就是是 getEarlyBeanReference 的返回值
 				this.singletonFactories.put(beanName, singletonFactory);
 				// 移除二级缓存
 				this.earlySingletonObjects.remove(beanName);
