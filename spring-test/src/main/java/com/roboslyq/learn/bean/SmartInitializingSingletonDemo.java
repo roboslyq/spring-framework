@@ -34,7 +34,6 @@ public class SmartInitializingSingletonDemo {
 		context.register(SmartInitializingSingletonDemo.class);
 		context.refresh();
 		context.start();
-		context.stop();
 		System.in.read();
 		context.close();
 

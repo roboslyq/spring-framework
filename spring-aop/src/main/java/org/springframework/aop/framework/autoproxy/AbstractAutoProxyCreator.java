@@ -271,9 +271,13 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			if (StringUtils.hasLength(beanName)) {
 				this.targetSourcedBeans.add(beanName);
 			}
+			// 获取当前Bean上的Advices 和 Advisors，返回一个数组。
 			Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(beanClass, beanName, targetSource);
+			// 创建代理
 			Object proxy = createProxy(beanClass, beanName, specificInterceptors, targetSource);
+			// 存入缓存
 			this.proxyTypes.put(cacheKey, proxy.getClass());
+			// 返回代理
 			return proxy;
 		}
 
@@ -367,9 +371,10 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		/**
 		 * 为目标bean查找匹配的通知器
 		 * 1、获取需要生成代理的Bean对象 ，在getAdvicesAndAdvisorsForBean中实现。
-		 * 2、通过获取Bendifinition中的List<Advisor>来判断
+		 * 2、通过获取Bendifinition中的List<Advisor>来判断,找出符合当前beanName的对应的@PointCut注解修饰的方法。即切点。
 		 */
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
+		// 如果存在切点，则需要AOP代理
 		if (specificInterceptors != DO_NOT_PROXY) {
 			this.advisedBeans.put(cacheKey, Boolean.TRUE);
 			/**
@@ -382,7 +387,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			//返回代理对象，此时容器中的beanName对应的对象不再是目标对象，而是代理对象。
 			return proxy;
 		}
-
+		// 如果不存在切点，表示不需要代理，直接返回
 		this.advisedBeans.put(cacheKey, Boolean.FALSE);
 		return bean;
 	}
