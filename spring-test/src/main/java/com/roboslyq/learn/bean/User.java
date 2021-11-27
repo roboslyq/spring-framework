@@ -13,6 +13,7 @@ package com.roboslyq.learn.bean;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.annotation.PostConstruct;
+import java.util.Date;
 
 /**
  *
@@ -27,6 +28,15 @@ public class User implements InitializingBean {
 	private String name;
 	private String password;
 
+	public Date getBirthday() {
+		return birthday;
+	}
+
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
+
+	private Date birthday;
 	public String getName() {
 		return name;
 	}
@@ -48,6 +58,7 @@ public class User implements InitializingBean {
 		return "User{" +
 				"name='" + name + '\'' +
 				", password='" + password + '\'' +
+				", birthday=" + birthday +
 				'}';
 	}
 

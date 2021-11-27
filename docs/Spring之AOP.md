@@ -4,6 +4,22 @@
 >
 > Java是一种静态语言，在运行时不方便修改Class，这在OOP编程中是一大缺陷。Spring提供了AOP功能，可以在运行时通过字节码提升(enhancher)来实现一些通用的功能，比如日志，监控，统计，事务，鉴权等公共功能。
 
+1、Spring Aop是基于spring bean ,context等基础组件之上，提供的一种额外的面向aop的编程能力。方便应用开发AOP编程的一种模式。
+
+2、Spring Aop不是必须的，是可选的。但目前应用大多开启了这一特性，尤其是spring boot，因为这一特性用的实在是太普遍了。
+
+3、AspectJ是java AOP界最强的，也是最完善最完美的，同时也是最复杂的。Spring Aop借鉴了此设计，并且直接引用了其部分功能实现。比如AspectJ编程风格，但仅仅是引用了这种编程风格(注解)，底层完全不依赖于AspectJ。
+
+4、Spring实现AOP也引用[aopalliance](https://sourceforge.net/projects/aopalliance/)框架的实现，Aop Alliance项目是许多对Aop和java有浓厚兴趣的软件开发人员联合成立的开源项目，其提供的源码都是完全免费的(Public Domain).官方网站http://aopalliance.sourceforge.net/。
+
+5、Spring中，如果Bean不需要切面功能，则直接是原始的Bean对像。
+
+如果Bean实现了接口，并且符合切面条件，则是使用Jdk动态代理生成的对象
+
+如果Bean没有实现接口，并且符合切面条件，则是使用cglib动态代理生成的对象。
+
+![image-20211125091610484](images/Spring之AOP/image-20211125091610484.png)
+
 # 一、配置方式
 
 ## 1、ProxyFactoryBean
@@ -217,7 +233,7 @@ main:30, AopDemo (com.roboslyq.learn.aop)
 
               
 
-# 相关类
+# 六、相关类
 
 - AnnotationAwareAspectJAutoProxyCreator
   - 此类为BeanPostProcessor类
@@ -235,3 +251,1334 @@ main:30, AopDemo (com.roboslyq.learn.aop)
   - 通过DefaultAopProxyFactory创建，主要有两种实现JdkDynamicAopProxy和ObjenesisCglibAopProxy
 
   
+
+# 七、动态生成的类
+
+## Jdk动态生成的类
+
+> 关键的Class签名信息：`class $Proxy24 extends Proxy implements BeanNameAware, BeanFactoryAware, ITestBean, IOther, Comparable, SpringProxy, Advised, DecoratingProxy `
+>
+> 即代理类是通过实现业务`ITestBean`接口，然后继承JDK中的Proxy接口，来完成代理功能的。
+
+```java
+public final class $Proxy24 extends Proxy implements BeanNameAware, BeanFactoryAware, ITestBean, IOther, Comparable, SpringProxy, Advised, DecoratingProxy {
+    private static Method m1;
+    private static Method m48;
+    private static Method m15;
+    private static Method m22;
+    private static Method m40;
+     // ......省略其它方法
+    public $Proxy24(InvocationHandler var1) throws  {
+        super(var1);
+    }
+    // ...... 省略其它方法
+    public final int getAge() throws  {
+        try {
+            return (Integer)super.h.invoke(this, m29, (Object[])null);
+        } catch (RuntimeException | Error var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+    public final int age() throws  {
+        try {
+            return (Integer)super.h.invoke(this, m27, (Object[])null);
+        } catch (RuntimeException | Error var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+    
+    static {
+        try {
+            m1 = Class.forName("java.lang.Object").getMethod("equals", Class.forName("java.lang.Object"));
+            m48 = Class.forName("org.springframework.aop.framework.Advised").getMethod("isExposeProxy");
+            m15 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("getLawyer");
+            m22 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("setNestedIntArray", Class.forName("[[I"));
+            m40 = Class.forName("org.springframework.aop.framework.Advised").getMethod("removeAdvisor", Integer.TYPE);
+            m35 = Class.forName("org.springframework.aop.framework.Advised").getMethod("getProxiedInterfaces");
+            m8 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("getSpouse");
+            m4 = Class.forName("org.springframework.beans.factory.BeanFactoryAware").getMethod("setBeanFactory", Class.forName("org.springframework.beans.factory.BeanFactory"));
+            m12 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("getSomeIntArray");
+            m37 = Class.forName("org.springframework.aop.framework.Advised").getMethod("isInterfaceProxied", Class.forName("java.lang.Class"));
+            m42 = Class.forName("org.springframework.aop.framework.Advised").getMethod("removeAdvice", Class.forName("org.aopalliance.aop.Advice"));
+            m23 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("getNestedIntegerArray");
+            m5 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("getName");
+            m21 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("setNestedIntegerArray", Class.forName("[[Ljava.lang.Integer;"));
+            m52 = Class.forName("org.springframework.aop.framework.Advised").getMethod("setExposeProxy", Boolean.TYPE);
+            m2 = Class.forName("java.lang.Object").getMethod("toString");
+            m11 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("setSpouse", Class.forName("org.springframework.tests.sample.beans.ITestBean"));
+            m32 = Class.forName("org.springframework.aop.framework.Advised").getMethod("indexOf", Class.forName("org.aopalliance.aop.Advice"));
+            m34 = Class.forName("org.springframework.aop.framework.Advised").getMethod("isFrozen");
+            m24 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("getNestedIntArray");
+            m29 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("getAge");
+            m43 = Class.forName("org.springframework.aop.framework.Advised").getMethod("replaceAdvisor", Class.forName("org.springframework.aop.Advisor"), Class.forName("org.springframework.aop.Advisor"));
+            m50 = Class.forName("org.springframework.aop.framework.Advised").getMethod("setPreFiltered", Boolean.TYPE);
+            m7 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("getStringArray");
+            m17 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("unreliableFileOperation");
+            m44 = Class.forName("org.springframework.aop.framework.Advised").getMethod("addAdvisor", Class.forName("org.springframework.aop.Advisor"));
+            m53 = Class.forName("org.springframework.aop.framework.Advised").getMethod("isProxyTargetClass");
+            m19 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("getSomeIntegerArray");
+            m27 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("age");
+            m14 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("returnsThis");
+            m33 = Class.forName("org.springframework.aop.framework.Advised").getMethod("indexOf", Class.forName("org.springframework.aop.Advisor"));
+            m49 = Class.forName("org.springframework.aop.framework.Advised").getMethod("getTargetSource");
+            m39 = Class.forName("org.springframework.aop.framework.Advised").getMethod("addAdvice", Integer.TYPE, Class.forName("org.aopalliance.aop.Advice"));
+            m38 = Class.forName("org.springframework.aop.framework.Advised").getMethod("addAdvice", Class.forName("org.aopalliance.aop.Advice"));
+            m0 = Class.forName("java.lang.Object").getMethod("hashCode");
+            m18 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("getNestedIndexedBean");
+            m26 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("exceptional", Class.forName("java.lang.Throwable"));
+            m25 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("haveBirthday");
+            m51 = Class.forName("org.springframework.aop.framework.Advised").getMethod("setTargetSource", Class.forName("org.springframework.aop.TargetSource"));
+            m6 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("setName", Class.forName("java.lang.String"));
+            m3 = Class.forName("org.springframework.beans.factory.BeanNameAware").getMethod("setBeanName", Class.forName("java.lang.String"));
+            m9 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("getSpouses");
+            m20 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("setSomeIntegerArray", Class.forName("[Ljava.lang.Integer;"));
+            m54 = Class.forName("org.springframework.aop.framework.Advised").getMethod("getTargetClass");
+            m28 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("setAge", Integer.TYPE);
+            m45 = Class.forName("org.springframework.aop.framework.Advised").getMethod("addAdvisor", Integer.TYPE, Class.forName("org.springframework.aop.Advisor"));
+            m55 = Class.forName("org.springframework.core.DecoratingProxy").getMethod("getDecoratedClass");
+            m41 = Class.forName("org.springframework.aop.framework.Advised").getMethod("removeAdvisor", Class.forName("org.springframework.aop.Advisor"));
+            m13 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("setSomeIntArray", Class.forName("[I"));
+            m31 = Class.forName("java.lang.Comparable").getMethod("compareTo", Class.forName("java.lang.Object"));
+            m10 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("setStringArray", Class.forName("[Ljava.lang.String;"));
+            m30 = Class.forName("org.springframework.tests.sample.beans.IOther").getMethod("absquatulate");
+            m36 = Class.forName("org.springframework.aop.framework.Advised").getMethod("toProxyConfigString");
+            m16 = Class.forName("org.springframework.tests.sample.beans.ITestBean").getMethod("getDoctor");
+            m47 = Class.forName("org.springframework.aop.framework.Advised").getMethod("getAdvisors");
+            m46 = Class.forName("org.springframework.aop.framework.Advised").getMethod("isPreFiltered");
+        } catch (NoSuchMethodException var2) {
+            throw new NoSuchMethodError(var2.getMessage());
+        } catch (ClassNotFoundException var3) {
+            throw new NoClassDefFoundError(var3.getMessage());
+        }
+    }
+}
+```
+
+总体来说，所有的方法均是通过`super.h.invoke(this, m29, (Object[])null);`来实现。
+
+> Proxy是JDK中的Proxy类，其中有 protected InvocationHandler h;引用
+
+```java
+package java.lang.reflect;
+
+import java.lang.ref.WeakReference;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.Arrays;
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BiFunction;
+import sun.misc.ProxyGenerator;
+import sun.misc.VM;
+import sun.reflect.CallerSensitive;
+import sun.reflect.Reflection;
+import sun.reflect.misc.ReflectUtil;
+import sun.security.util.SecurityConstants;
+
+public class Proxy implements java.io.Serializable {
+
+    private static final long serialVersionUID = -2222568056686623797L;
+
+    /** parameter types of a proxy class constructor */
+    private static final Class<?>[] constructorParams =
+        { InvocationHandler.class };
+    private static final WeakCache<ClassLoader, Class<?>[], Class<?>>
+        proxyClassCache = new WeakCache<>(new KeyFactory(), new ProxyClassFactory());
+    protected InvocationHandler h;
+    private Proxy() {
+    }
+    protected Proxy(InvocationHandler h) {
+        Objects.requireNonNull(h);
+        this.h = h;
+    }
+    @CallerSensitive
+    public static Class<?> getProxyClass(ClassLoader loader,
+                                         Class<?>... interfaces)
+        throws IllegalArgumentException
+    {
+        final Class<?>[] intfs = interfaces.clone();
+        final SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+            checkProxyAccess(Reflection.getCallerClass(), loader, intfs);
+        }
+        return getProxyClass0(loader, intfs);
+    }
+    private static void checkProxyAccess(Class<?> caller,
+                                         ClassLoader loader,
+                                         Class<?>... interfaces)
+    {
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+            ClassLoader ccl = caller.getClassLoader();
+            if (VM.isSystemDomainLoader(loader) && !VM.isSystemDomainLoader(ccl)) {
+                sm.checkPermission(SecurityConstants.GET_CLASSLOADER_PERMISSION);
+            }
+            ReflectUtil.checkProxyPackageAccess(ccl, interfaces);
+        }
+    }
+    private static Class<?> getProxyClass0(ClassLoader loader,
+                                           Class<?>... interfaces) {
+        if (interfaces.length > 65535) {
+            throw new IllegalArgumentException("interface limit exceeded");
+        }
+
+        return proxyClassCache.get(loader, interfaces);
+    }
+
+    /*
+     * a key used for proxy class with 0 implemented interfaces
+     */
+    private static final Object key0 = new Object();
+
+    /*
+     * Key1 and Key2 are optimized for the common use of dynamic proxies
+     * that implement 1 or 2 interfaces.
+     */
+
+    /*
+     * a key used for proxy class with 1 implemented interface
+     */
+    private static final class Key1 extends WeakReference<Class<?>> {
+        private final int hash;
+
+        Key1(Class<?> intf) {
+            super(intf);
+            this.hash = intf.hashCode();
+        }
+
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            Class<?> intf;
+            return this == obj ||
+                   obj != null &&
+                   obj.getClass() == Key1.class &&
+                   (intf = get()) != null &&
+                   intf == ((Key1) obj).get();
+        }
+    }
+
+    /*
+     * a key used for proxy class with 2 implemented interfaces
+     */
+    private static final class Key2 extends WeakReference<Class<?>> {
+        private final int hash;
+        private final WeakReference<Class<?>> ref2;
+
+        Key2(Class<?> intf1, Class<?> intf2) {
+            super(intf1);
+            hash = 31 * intf1.hashCode() + intf2.hashCode();
+            ref2 = new WeakReference<Class<?>>(intf2);
+        }
+
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            Class<?> intf1, intf2;
+            return this == obj ||
+                   obj != null &&
+                   obj.getClass() == Key2.class &&
+                   (intf1 = get()) != null &&
+                   intf1 == ((Key2) obj).get() &&
+                   (intf2 = ref2.get()) != null &&
+                   intf2 == ((Key2) obj).ref2.get();
+        }
+    }
+
+    /*
+     * a key used for proxy class with any number of implemented interfaces
+     * (used here for 3 or more only)
+     */
+    private static final class KeyX {
+        private final int hash;
+        private final WeakReference<Class<?>>[] refs;
+
+        @SuppressWarnings("unchecked")
+        KeyX(Class<?>[] interfaces) {
+            hash = Arrays.hashCode(interfaces);
+            refs = (WeakReference<Class<?>>[])new WeakReference<?>[interfaces.length];
+            for (int i = 0; i < interfaces.length; i++) {
+                refs[i] = new WeakReference<>(interfaces[i]);
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return this == obj ||
+                   obj != null &&
+                   obj.getClass() == KeyX.class &&
+                   equals(refs, ((KeyX) obj).refs);
+        }
+
+        private static boolean equals(WeakReference<Class<?>>[] refs1,
+                                      WeakReference<Class<?>>[] refs2) {
+            if (refs1.length != refs2.length) {
+                return false;
+            }
+            for (int i = 0; i < refs1.length; i++) {
+                Class<?> intf = refs1[i].get();
+                if (intf == null || intf != refs2[i].get()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    /**
+     * A function that maps an array of interfaces to an optimal key where
+     * Class objects representing interfaces are weakly referenced.
+     */
+    private static final class KeyFactory
+        implements BiFunction<ClassLoader, Class<?>[], Object>
+    {
+        @Override
+        public Object apply(ClassLoader classLoader, Class<?>[] interfaces) {
+            switch (interfaces.length) {
+                case 1: return new Key1(interfaces[0]); // the most frequent
+                case 2: return new Key2(interfaces[0], interfaces[1]);
+                case 0: return key0;
+                default: return new KeyX(interfaces);
+            }
+        }
+    }
+
+    /**
+     * A factory function that generates, defines and returns the proxy class given
+     * the ClassLoader and array of interfaces.
+     */
+    private static final class ProxyClassFactory
+        implements BiFunction<ClassLoader, Class<?>[], Class<?>>
+    {
+        // prefix for all proxy class names
+        private static final String proxyClassNamePrefix = "$Proxy";
+
+        // next number to use for generation of unique proxy class names
+        private static final AtomicLong nextUniqueNumber = new AtomicLong();
+
+        @Override
+        public Class<?> apply(ClassLoader loader, Class<?>[] interfaces) {
+
+            Map<Class<?>, Boolean> interfaceSet = new IdentityHashMap<>(interfaces.length);
+            for (Class<?> intf : interfaces) {
+                /*
+                 * Verify that the class loader resolves the name of this
+                 * interface to the same Class object.
+                 */
+                Class<?> interfaceClass = null;
+                try {
+                    interfaceClass = Class.forName(intf.getName(), false, loader);
+                } catch (ClassNotFoundException e) {
+                }
+                if (interfaceClass != intf) {
+                    throw new IllegalArgumentException(
+                        intf + " is not visible from class loader");
+                }
+                /*
+                 * Verify that the Class object actually represents an
+                 * interface.
+                 */
+                if (!interfaceClass.isInterface()) {
+                    throw new IllegalArgumentException(
+                        interfaceClass.getName() + " is not an interface");
+                }
+                /*
+                 * Verify that this interface is not a duplicate.
+                 */
+                if (interfaceSet.put(interfaceClass, Boolean.TRUE) != null) {
+                    throw new IllegalArgumentException(
+                        "repeated interface: " + interfaceClass.getName());
+                }
+            }
+
+            String proxyPkg = null;     // package to define proxy class in
+            int accessFlags = Modifier.PUBLIC | Modifier.FINAL;
+
+
+            for (Class<?> intf : interfaces) {
+                int flags = intf.getModifiers();
+                if (!Modifier.isPublic(flags)) {
+                    accessFlags = Modifier.FINAL;
+                    String name = intf.getName();
+                    int n = name.lastIndexOf('.');
+                    String pkg = ((n == -1) ? "" : name.substring(0, n + 1));
+                    if (proxyPkg == null) {
+                        proxyPkg = pkg;
+                    } else if (!pkg.equals(proxyPkg)) {
+                        throw new IllegalArgumentException(
+                            "non-public interfaces from different packages");
+                    }
+                }
+            }
+
+            if (proxyPkg == null) {
+                // if no non-public proxy interfaces, use com.sun.proxy package
+                proxyPkg = ReflectUtil.PROXY_PACKAGE + ".";
+            }
+
+            /*
+             * Choose a name for the proxy class to generate.
+             */
+            long num = nextUniqueNumber.getAndIncrement();
+            String proxyName = proxyPkg + proxyClassNamePrefix + num;
+
+            /*
+             * Generate the specified proxy class.
+             */
+            byte[] proxyClassFile = ProxyGenerator.generateProxyClass(
+                proxyName, interfaces, accessFlags);
+            try {
+                return defineClass0(loader, proxyName,
+                                    proxyClassFile, 0, proxyClassFile.length);
+            } catch (ClassFormatError e) {
+                throw new IllegalArgumentException(e.toString());
+            }
+        }
+    }
+
+    @CallerSensitive
+    public static Object newProxyInstance(ClassLoader loader,
+                                          Class<?>[] interfaces,
+                                          InvocationHandler h)
+        throws IllegalArgumentException
+    {
+        Objects.requireNonNull(h);
+
+        final Class<?>[] intfs = interfaces.clone();
+        final SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+            checkProxyAccess(Reflection.getCallerClass(), loader, intfs);
+        }
+
+        /*
+         * Look up or generate the designated proxy class.
+         */
+        Class<?> cl = getProxyClass0(loader, intfs);
+
+        /*
+         * Invoke its constructor with the designated invocation handler.
+         */
+        try {
+            if (sm != null) {
+                checkNewProxyPermission(Reflection.getCallerClass(), cl);
+            }
+
+            final Constructor<?> cons = cl.getConstructor(constructorParams);
+            final InvocationHandler ih = h;
+            if (!Modifier.isPublic(cl.getModifiers())) {
+                AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                    public Void run() {
+                        cons.setAccessible(true);
+                        return null;
+                    }
+                });
+            }
+            return cons.newInstance(new Object[]{h});
+        } catch (IllegalAccessException|InstantiationException e) {
+            throw new InternalError(e.toString(), e);
+        } catch (InvocationTargetException e) {
+            Throwable t = e.getCause();
+            if (t instanceof RuntimeException) {
+                throw (RuntimeException) t;
+            } else {
+                throw new InternalError(t.toString(), t);
+            }
+        } catch (NoSuchMethodException e) {
+            throw new InternalError(e.toString(), e);
+        }
+    }
+
+    private static void checkNewProxyPermission(Class<?> caller, Class<?> proxyClass) {
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+            if (ReflectUtil.isNonPublicProxyClass(proxyClass)) {
+                ClassLoader ccl = caller.getClassLoader();
+                ClassLoader pcl = proxyClass.getClassLoader();
+
+                // do permission check if the caller is in a different runtime package
+                // of the proxy class
+                int n = proxyClass.getName().lastIndexOf('.');
+                String pkg = (n == -1) ? "" : proxyClass.getName().substring(0, n);
+
+                n = caller.getName().lastIndexOf('.');
+                String callerPkg = (n == -1) ? "" : caller.getName().substring(0, n);
+
+                if (pcl != ccl || !pkg.equals(callerPkg)) {
+                    sm.checkPermission(new ReflectPermission("newProxyInPackage." + pkg));
+                }
+            }
+        }
+    }
+
+    public static boolean isProxyClass(Class<?> cl) {
+        return Proxy.class.isAssignableFrom(cl) && proxyClassCache.containsValue(cl);
+    }
+
+    @CallerSensitive
+    public static InvocationHandler getInvocationHandler(Object proxy)
+        throws IllegalArgumentException
+    {
+        /*
+         * Verify that the object is actually a proxy instance.
+         */
+        if (!isProxyClass(proxy.getClass())) {
+            throw new IllegalArgumentException("not a proxy instance");
+        }
+
+        final Proxy p = (Proxy) proxy;
+        final InvocationHandler ih = p.h;
+        if (System.getSecurityManager() != null) {
+            Class<?> ihClass = ih.getClass();
+            Class<?> caller = Reflection.getCallerClass();
+            if (ReflectUtil.needsPackageAccessCheck(caller.getClassLoader(),
+                                                    ihClass.getClassLoader()))
+            {
+                ReflectUtil.checkPackageAccess(ihClass);
+            }
+        }
+
+        return ih;
+    }
+
+    private static native Class<?> defineClass0(ClassLoader loader, String name,
+                                                byte[] b, int off, int len);
+}
+```
+
+## Cglib生成的类
+
+> 关签名信息，当前业务UserDaoNoInterface没有实现接口，因此只能通过继承其来实现代理扩展。完成与JDK的代理无关。
+
+```java
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
+package com.roboslyq.learn.aop;
+import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
+import org.aopalliance.aop.Advice;
+import org.springframework.aop.Advisor;
+import org.springframework.aop.SpringProxy;
+import org.springframework.aop.TargetClassAware;
+import org.springframework.aop.TargetSource;
+import org.springframework.aop.framework.Advised;
+import org.springframework.aop.framework.AopConfigException;
+import org.springframework.cglib.core.ReflectUtils;
+import org.springframework.cglib.core.Signature;
+import org.springframework.cglib.proxy.Callback;
+import org.springframework.cglib.proxy.Dispatcher;
+import org.springframework.cglib.proxy.Factory;
+import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.MethodProxy;
+import org.springframework.cglib.proxy.NoOp;
+
+public class UserDaoNoInterface$$EnhancerBySpringCGLIB$$ee13cb35 extends UserDaoNoInterface implements SpringProxy, Advised, Factory {
+    private boolean CGLIB$BOUND;
+    public static Object CGLIB$FACTORY_DATA;
+    private static final ThreadLocal CGLIB$THREAD_CALLBACKS;
+    private static final Callback[] CGLIB$STATIC_CALLBACKS;
+    private MethodInterceptor CGLIB$CALLBACK_0;
+    private MethodInterceptor CGLIB$CALLBACK_1;
+    private NoOp CGLIB$CALLBACK_2;
+    private Dispatcher CGLIB$CALLBACK_3;
+    private Dispatcher CGLIB$CALLBACK_4;
+    private MethodInterceptor CGLIB$CALLBACK_5;
+    private MethodInterceptor CGLIB$CALLBACK_6;
+    private static Object CGLIB$CALLBACK_FILTER;
+    private static final Method CGLIB$deleteUser$0$Method;
+    private static final MethodProxy CGLIB$deleteUser$0$Proxy;
+    private static final Object[] CGLIB$emptyArgs;
+    private static final Method CGLIB$addUser$1$Method;
+    private static final MethodProxy CGLIB$addUser$1$Proxy;
+    private static final Method CGLIB$equals$2$Method;
+    private static final MethodProxy CGLIB$equals$2$Proxy;
+    private static final Method CGLIB$toString$3$Method;
+    private static final MethodProxy CGLIB$toString$3$Proxy;
+    private static final Method CGLIB$hashCode$4$Method;
+    private static final MethodProxy CGLIB$hashCode$4$Proxy;
+    private static final Method CGLIB$clone$5$Method;
+    private static final MethodProxy CGLIB$clone$5$Proxy;
+
+    public UserDaoNoInterface$$EnhancerBySpringCGLIB$$ee13cb35() {
+        try {
+            super();
+            CGLIB$BIND_CALLBACKS(this);
+        } catch (Error | RuntimeException var1) {
+            throw var1;
+        } catch (Throwable var2) {
+            throw new UndeclaredThrowableException(var2);
+        }
+    }
+
+    static {
+        CGLIB$STATICHOOK2();
+        CGLIB$STATICHOOK1();
+    }
+
+    public final boolean equals(Object var1) {
+        try {
+            MethodInterceptor var10000 = this.CGLIB$CALLBACK_5;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_5;
+            }
+
+            if (var10000 != null) {
+                Object var4 = var10000.intercept(this, CGLIB$equals$2$Method, new Object[]{var1}, CGLIB$equals$2$Proxy);
+                return var4 == null ? false : (Boolean)var4;
+            } else {
+                return super.equals(var1);
+            }
+        } catch (Error | RuntimeException var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public final String toString() {
+        try {
+            MethodInterceptor var10000 = this.CGLIB$CALLBACK_0;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_0;
+            }
+
+            return var10000 != null ? (String)var10000.intercept(this, CGLIB$toString$3$Method, CGLIB$emptyArgs, CGLIB$toString$3$Proxy) : super.toString();
+        } catch (Error | RuntimeException var1) {
+            throw var1;
+        } catch (Throwable var2) {
+            throw new UndeclaredThrowableException(var2);
+        }
+    }
+
+    public final int hashCode() {
+        try {
+            MethodInterceptor var10000 = this.CGLIB$CALLBACK_6;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_6;
+            }
+
+            if (var10000 != null) {
+                Object var3 = var10000.intercept(this, CGLIB$hashCode$4$Method, CGLIB$emptyArgs, CGLIB$hashCode$4$Proxy);
+                return var3 == null ? 0 : ((Number)var3).intValue();
+            } else {
+                return super.hashCode();
+            }
+        } catch (Error | RuntimeException var1) {
+            throw var1;
+        } catch (Throwable var2) {
+            throw new UndeclaredThrowableException(var2);
+        }
+    }
+
+    protected final Object clone() throws CloneNotSupportedException {
+        try {
+            MethodInterceptor var10000 = this.CGLIB$CALLBACK_0;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_0;
+            }
+
+            return var10000 != null ? var10000.intercept(this, CGLIB$clone$5$Method, CGLIB$emptyArgs, CGLIB$clone$5$Proxy) : super.clone();
+        } catch (Error | CloneNotSupportedException | RuntimeException var1) {
+            throw var1;
+        } catch (Throwable var2) {
+            throw new UndeclaredThrowableException(var2);
+        }
+    }
+
+    public final int indexOf(Advice var1) {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            return ((Advised)var10000.loadObject()).indexOf(var1);
+        } catch (Error | RuntimeException var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public final int indexOf(Advisor var1) {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            return ((Advised)var10000.loadObject()).indexOf(var1);
+        } catch (Error | RuntimeException var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public Object newInstance(Callback[] var1) {
+        try {
+            CGLIB$SET_THREAD_CALLBACKS(var1);
+            UserDaoNoInterface$$EnhancerBySpringCGLIB$$ee13cb35 var10000 = new UserDaoNoInterface$$EnhancerBySpringCGLIB$$ee13cb35();
+            CGLIB$SET_THREAD_CALLBACKS((Callback[])null);
+            return var10000;
+        } catch (Error | RuntimeException var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public Object newInstance(Callback var1) {
+        try {
+            throw new IllegalStateException("More than one callback object required");
+        } catch (Error | RuntimeException var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public Object newInstance(Class[] var1, Object[] var2, Callback[] var3) {
+        try {
+            CGLIB$SET_THREAD_CALLBACKS(var3);
+            UserDaoNoInterface$$EnhancerBySpringCGLIB$$ee13cb35 var10000 = new UserDaoNoInterface$$EnhancerBySpringCGLIB$$ee13cb35;
+            switch(var1.length) {
+            case 0:
+                var10000.<init>();
+                CGLIB$SET_THREAD_CALLBACKS((Callback[])null);
+                return var10000;
+            default:
+                throw new IllegalArgumentException("Constructor not found");
+            }
+        } catch (Error | RuntimeException var4) {
+            throw var4;
+        } catch (Throwable var5) {
+            throw new UndeclaredThrowableException(var5);
+        }
+    }
+
+    public final boolean isFrozen() {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            return ((Advised)var10000.loadObject()).isFrozen();
+        } catch (Error | RuntimeException var1) {
+            throw var1;
+        } catch (Throwable var2) {
+            throw new UndeclaredThrowableException(var2);
+        }
+    }
+
+    public final void deleteUser() {
+        try {
+            MethodInterceptor var10000 = this.CGLIB$CALLBACK_0;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_0;
+            }
+
+            if (var10000 != null) {
+                var10000.intercept(this, CGLIB$deleteUser$0$Method, CGLIB$emptyArgs, CGLIB$deleteUser$0$Proxy);
+            } else {
+                super.deleteUser();
+            }
+        } catch (Error | RuntimeException var1) {
+            throw var1;
+        } catch (Throwable var2) {
+            throw new UndeclaredThrowableException(var2);
+        }
+    }
+
+    public final void addUser() {
+        try {
+            MethodInterceptor var10000 = this.CGLIB$CALLBACK_0;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_0;
+            }
+
+            if (var10000 != null) {
+                var10000.intercept(this, CGLIB$addUser$1$Method, CGLIB$emptyArgs, CGLIB$addUser$1$Proxy);
+            } else {
+                super.addUser();
+            }
+        } catch (Error | RuntimeException var1) {
+            throw var1;
+        } catch (Throwable var2) {
+            throw new UndeclaredThrowableException(var2);
+        }
+    }
+
+    public final boolean isProxyTargetClass() {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            return ((Advised)var10000.loadObject()).isProxyTargetClass();
+        } catch (Error | RuntimeException var1) {
+            throw var1;
+        } catch (Throwable var2) {
+            throw new UndeclaredThrowableException(var2);
+        }
+    }
+
+    public final void setTargetSource(TargetSource var1) {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            ((Advised)var10000.loadObject()).setTargetSource(var1);
+        } catch (Error | RuntimeException var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public final TargetSource getTargetSource() {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            return ((Advised)var10000.loadObject()).getTargetSource();
+        } catch (Error | RuntimeException var1) {
+            throw var1;
+        } catch (Throwable var2) {
+            throw new UndeclaredThrowableException(var2);
+        }
+    }
+
+    public final void setPreFiltered(boolean var1) {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            ((Advised)var10000.loadObject()).setPreFiltered(var1);
+        } catch (Error | RuntimeException var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public final boolean isExposeProxy() {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            return ((Advised)var10000.loadObject()).isExposeProxy();
+        } catch (Error | RuntimeException var1) {
+            throw var1;
+        } catch (Throwable var2) {
+            throw new UndeclaredThrowableException(var2);
+        }
+    }
+
+    public final void setExposeProxy(boolean var1) {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            ((Advised)var10000.loadObject()).setExposeProxy(var1);
+        } catch (Error | RuntimeException var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public final Advisor[] getAdvisors() {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            return ((Advised)var10000.loadObject()).getAdvisors();
+        } catch (Error | RuntimeException var1) {
+            throw var1;
+        } catch (Throwable var2) {
+            throw new UndeclaredThrowableException(var2);
+        }
+    }
+
+    public static void CGLIB$SET_THREAD_CALLBACKS(Callback[] var0) {
+        CGLIB$THREAD_CALLBACKS.set(var0);
+    }
+
+    public static void CGLIB$SET_STATIC_CALLBACKS(Callback[] var0) {
+        CGLIB$STATIC_CALLBACKS = var0;
+    }
+
+    public void setCallbacks(Callback[] var1) {
+        try {
+            this.CGLIB$CALLBACK_0 = (MethodInterceptor)var1[0];
+            this.CGLIB$CALLBACK_1 = (MethodInterceptor)var1[1];
+            this.CGLIB$CALLBACK_2 = (NoOp)var1[2];
+            this.CGLIB$CALLBACK_3 = (Dispatcher)var1[3];
+            this.CGLIB$CALLBACK_4 = (Dispatcher)var1[4];
+            this.CGLIB$CALLBACK_5 = (MethodInterceptor)var1[5];
+            this.CGLIB$CALLBACK_6 = (MethodInterceptor)var1[6];
+        } catch (Error | RuntimeException var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public Callback[] getCallbacks() {
+        try {
+            CGLIB$BIND_CALLBACKS(this);
+            return new Callback[]{this.CGLIB$CALLBACK_0, this.CGLIB$CALLBACK_1, this.CGLIB$CALLBACK_2, this.CGLIB$CALLBACK_3, this.CGLIB$CALLBACK_4, this.CGLIB$CALLBACK_5, this.CGLIB$CALLBACK_6};
+        } catch (Error | RuntimeException var1) {
+            throw var1;
+        } catch (Throwable var2) {
+            throw new UndeclaredThrowableException(var2);
+        }
+    }
+
+    public void setCallback(int var1, Callback var2) {
+        try {
+            switch(var1) {
+            case 0:
+                this.CGLIB$CALLBACK_0 = (MethodInterceptor)var2;
+                break;
+            case 1:
+                this.CGLIB$CALLBACK_1 = (MethodInterceptor)var2;
+                break;
+            case 2:
+                this.CGLIB$CALLBACK_2 = (NoOp)var2;
+                break;
+            case 3:
+                this.CGLIB$CALLBACK_3 = (Dispatcher)var2;
+                break;
+            case 4:
+                this.CGLIB$CALLBACK_4 = (Dispatcher)var2;
+                break;
+            case 5:
+                this.CGLIB$CALLBACK_5 = (MethodInterceptor)var2;
+                break;
+            case 6:
+                this.CGLIB$CALLBACK_6 = (MethodInterceptor)var2;
+            }
+
+        } catch (Error | RuntimeException var3) {
+            throw var3;
+        } catch (Throwable var4) {
+            throw new UndeclaredThrowableException(var4);
+        }
+    }
+
+    public Callback getCallback(int var1) {
+        try {
+            CGLIB$BIND_CALLBACKS(this);
+            Object var10000;
+            switch(var1) {
+            case 0:
+                var10000 = this.CGLIB$CALLBACK_0;
+                break;
+            case 1:
+                var10000 = this.CGLIB$CALLBACK_1;
+                break;
+            case 2:
+                var10000 = this.CGLIB$CALLBACK_2;
+                break;
+            case 3:
+                var10000 = this.CGLIB$CALLBACK_3;
+                break;
+            case 4:
+                var10000 = this.CGLIB$CALLBACK_4;
+                break;
+            case 5:
+                var10000 = this.CGLIB$CALLBACK_5;
+                break;
+            case 6:
+                var10000 = this.CGLIB$CALLBACK_6;
+                break;
+            default:
+                var10000 = null;
+            }
+
+            return (Callback)var10000;
+        } catch (Error | RuntimeException var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    final void CGLIB$addUser$1() {
+        super.addUser();
+    }
+
+    final int CGLIB$hashCode$4() {
+        return super.hashCode();
+    }
+
+    final boolean CGLIB$equals$2(Object var1) {
+        return super.equals(var1);
+    }
+
+    final String CGLIB$toString$3() {
+        return super.toString();
+    }
+
+    final Object CGLIB$clone$5() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    final void CGLIB$deleteUser$0() {
+        super.deleteUser();
+    }
+
+    private static final void CGLIB$BIND_CALLBACKS(Object var0) {
+        UserDaoNoInterface$$EnhancerBySpringCGLIB$$ee13cb35 var1 = (UserDaoNoInterface$$EnhancerBySpringCGLIB$$ee13cb35)var0;
+        if (!var1.CGLIB$BOUND) {
+            var1.CGLIB$BOUND = true;
+            Object var10000 = CGLIB$THREAD_CALLBACKS.get();
+            if (var10000 == null) {
+                var10000 = CGLIB$STATIC_CALLBACKS;
+                if (var10000 == null) {
+                    return;
+                }
+            }
+
+            Callback[] var10001 = (Callback[])var10000;
+            var1.CGLIB$CALLBACK_6 = (MethodInterceptor)((Callback[])var10000)[6];
+            var1.CGLIB$CALLBACK_5 = (MethodInterceptor)var10001[5];
+            var1.CGLIB$CALLBACK_4 = (Dispatcher)var10001[4];
+            var1.CGLIB$CALLBACK_3 = (Dispatcher)var10001[3];
+            var1.CGLIB$CALLBACK_2 = (NoOp)var10001[2];
+            var1.CGLIB$CALLBACK_1 = (MethodInterceptor)var10001[1];
+            var1.CGLIB$CALLBACK_0 = (MethodInterceptor)var10001[0];
+        }
+
+    }
+
+    static void CGLIB$STATICHOOK1() {
+        CGLIB$THREAD_CALLBACKS = new ThreadLocal();
+        CGLIB$emptyArgs = new Object[0];
+        Class var0 = Class.forName("com.roboslyq.learn.aop.UserDaoNoInterface$$EnhancerBySpringCGLIB$$ee13cb35");
+        Class var1;
+        Method[] var10000 = ReflectUtils.findMethods(new String[]{"equals", "(Ljava/lang/Object;)Z", "toString", "()Ljava/lang/String;", "hashCode", "()I", "clone", "()Ljava/lang/Object;"}, (var1 = Class.forName("java.lang.Object")).getDeclaredMethods());
+        CGLIB$equals$2$Method = var10000[0];
+        CGLIB$equals$2$Proxy = MethodProxy.create(var1, var0, "(Ljava/lang/Object;)Z", "equals", "CGLIB$equals$2");
+        CGLIB$toString$3$Method = var10000[1];
+        CGLIB$toString$3$Proxy = MethodProxy.create(var1, var0, "()Ljava/lang/String;", "toString", "CGLIB$toString$3");
+        CGLIB$hashCode$4$Method = var10000[2];
+        CGLIB$hashCode$4$Proxy = MethodProxy.create(var1, var0, "()I", "hashCode", "CGLIB$hashCode$4");
+        CGLIB$clone$5$Method = var10000[3];
+        CGLIB$clone$5$Proxy = MethodProxy.create(var1, var0, "()Ljava/lang/Object;", "clone", "CGLIB$clone$5");
+        var10000 = ReflectUtils.findMethods(new String[]{"deleteUser", "()V", "addUser", "()V"}, (var1 = Class.forName("com.roboslyq.learn.aop.UserDaoNoInterface")).getDeclaredMethods());
+        CGLIB$deleteUser$0$Method = var10000[0];
+        CGLIB$deleteUser$0$Proxy = MethodProxy.create(var1, var0, "()V", "deleteUser", "CGLIB$deleteUser$0");
+        CGLIB$addUser$1$Method = var10000[1];
+        CGLIB$addUser$1$Proxy = MethodProxy.create(var1, var0, "()V", "addUser", "CGLIB$addUser$1");
+    }
+
+    static void CGLIB$STATICHOOK2() {
+        try {
+            ;
+        } catch (Error | RuntimeException var0) {
+            throw var0;
+        } catch (Throwable var1) {
+            throw new UndeclaredThrowableException(var1);
+        }
+    }
+
+    public final void addAdvice(Advice var1) throws AopConfigException {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            ((Advised)var10000.loadObject()).addAdvice(var1);
+        } catch (Error | AopConfigException | RuntimeException var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public final void addAdvice(int var1, Advice var2) throws AopConfigException {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            ((Advised)var10000.loadObject()).addAdvice(var1, var2);
+        } catch (Error | AopConfigException | RuntimeException var3) {
+            throw var3;
+        } catch (Throwable var4) {
+            throw new UndeclaredThrowableException(var4);
+        }
+    }
+
+    public final boolean isPreFiltered() {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            return ((Advised)var10000.loadObject()).isPreFiltered();
+        } catch (Error | RuntimeException var1) {
+            throw var1;
+        } catch (Throwable var2) {
+            throw new UndeclaredThrowableException(var2);
+        }
+    }
+
+    public final void addAdvisor(int var1, Advisor var2) throws AopConfigException {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            ((Advised)var10000.loadObject()).addAdvisor(var1, var2);
+        } catch (Error | AopConfigException | RuntimeException var3) {
+            throw var3;
+        } catch (Throwable var4) {
+            throw new UndeclaredThrowableException(var4);
+        }
+    }
+
+    public final void addAdvisor(Advisor var1) throws AopConfigException {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            ((Advised)var10000.loadObject()).addAdvisor(var1);
+        } catch (Error | AopConfigException | RuntimeException var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public final boolean removeAdvice(Advice var1) {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            return ((Advised)var10000.loadObject()).removeAdvice(var1);
+        } catch (Error | RuntimeException var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public final boolean removeAdvisor(Advisor var1) {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            return ((Advised)var10000.loadObject()).removeAdvisor(var1);
+        } catch (Error | RuntimeException var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public final void removeAdvisor(int var1) throws AopConfigException {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            ((Advised)var10000.loadObject()).removeAdvisor(var1);
+        } catch (Error | AopConfigException | RuntimeException var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public final boolean replaceAdvisor(Advisor var1, Advisor var2) throws AopConfigException {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            return ((Advised)var10000.loadObject()).replaceAdvisor(var1, var2);
+        } catch (Error | AopConfigException | RuntimeException var3) {
+            throw var3;
+        } catch (Throwable var4) {
+            throw new UndeclaredThrowableException(var4);
+        }
+    }
+
+    public final String toProxyConfigString() {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            return ((Advised)var10000.loadObject()).toProxyConfigString();
+        } catch (Error | RuntimeException var1) {
+            throw var1;
+        } catch (Throwable var2) {
+            throw new UndeclaredThrowableException(var2);
+        }
+    }
+
+    public final Class[] getProxiedInterfaces() {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            return ((Advised)var10000.loadObject()).getProxiedInterfaces();
+        } catch (Error | RuntimeException var1) {
+            throw var1;
+        } catch (Throwable var2) {
+            throw new UndeclaredThrowableException(var2);
+        }
+    }
+
+    public final boolean isInterfaceProxied(Class var1) {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            return ((Advised)var10000.loadObject()).isInterfaceProxied(var1);
+        } catch (Error | RuntimeException var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public static MethodProxy CGLIB$findMethodProxy(Signature var0) {
+        String var10000 = var0.toString();
+        switch(var10000.hashCode()) {
+        case -508378822:
+            if (var10000.equals("clone()Ljava/lang/Object;")) {
+                return CGLIB$clone$5$Proxy;
+            }
+            break;
+        case -351960161:
+            if (var10000.equals("deleteUser()V")) {
+                return CGLIB$deleteUser$0$Proxy;
+            }
+            break;
+        case 1761046505:
+            if (var10000.equals("addUser()V")) {
+                return CGLIB$addUser$1$Proxy;
+            }
+            break;
+        case 1826985398:
+            if (var10000.equals("equals(Ljava/lang/Object;)Z")) {
+                return CGLIB$equals$2$Proxy;
+            }
+            break;
+        case 1913648695:
+            if (var10000.equals("toString()Ljava/lang/String;")) {
+                return CGLIB$toString$3$Proxy;
+            }
+            break;
+        case 1984935277:
+            if (var10000.equals("hashCode()I")) {
+                return CGLIB$hashCode$4$Proxy;
+            }
+        }
+
+        return null;
+    }
+
+    public final Class getTargetClass() {
+        try {
+            Dispatcher var10000 = this.CGLIB$CALLBACK_4;
+            if (var10000 == null) {
+                CGLIB$BIND_CALLBACKS(this);
+                var10000 = this.CGLIB$CALLBACK_4;
+            }
+
+            return ((TargetClassAware)var10000.loadObject()).getTargetClass();
+        } catch (Error | RuntimeException var1) {
+            throw var1;
+        } catch (Throwable var2) {
+            throw new UndeclaredThrowableException(var2);
+        }
+    }
+}
+```

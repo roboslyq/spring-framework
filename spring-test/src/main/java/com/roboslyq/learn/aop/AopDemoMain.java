@@ -10,7 +10,6 @@
  */
 package com.roboslyq.learn.aop;
 
-import com.roboslyq.learn.bean.User;
 import org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -24,12 +23,15 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  * @since 1.0.0
  */
 @EnableAspectJAutoProxy
-public class AopDemo {
+public class AopDemoMain {
 
 	public static void main(String[] args) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AopDemo.class);
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AopDemoMain.class);
 		UserDao userDao = context.getBean(UserDao.class);
 		userDao.addUser();
+
+		UserDaoNoInterface userDaoNoInterface = context.getBean(UserDaoNoInterface.class);
+		userDaoNoInterface.addUser();
 	}
 
 	@Bean
@@ -40,6 +42,11 @@ public class AopDemo {
 	@Bean
 	public UserDao userDao(){
 		return new UserDaoImpl();
+	}
+
+	@Bean
+	public UserDaoNoInterface userDaoNoInterface(){
+		return new UserDaoNoInterface();
 	}
 	@Bean
 	public Logger logger(){
