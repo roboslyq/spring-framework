@@ -437,7 +437,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		 * 循环调用BeanPostProcessor处理
 		 */
 		for (BeanPostProcessor beanProcessor : getBeanPostProcessors()) {
-			//获取所有的后置处理器对该bean进行操作 然后进入AbstractAutoProxyCreator的
+			//获取所有的前置处理器对该bean进行操作 然后进入AbstractAutoProxyCreator的
 			//postProcessBeforeInitialization方法中
 			Object current = beanProcessor.postProcessBeforeInitialization(result, beanName);
 			if (current == null) {
@@ -531,8 +531,6 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		try {
 			/*
 			 * roboslyq-->创建Bean入口
-			 * 非AOP Bean ,因为AOP Bean在resolveBeforeInstantiation(beanName, mbdToUse)已经成功创建并返回，
-			 * 所以此处是普通的Bean。
 			 */
 			Object beanInstance = doCreateBean(beanName, mbdToUse, args);
 			if (logger.isDebugEnabled()) {
@@ -1873,7 +1871,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					beanName, "Invocation of init method failed", ex);
 		}
 		if (mbd == null || !mbd.isSynthetic()) {
-			//代理对象的生成在这个方法中进行的
+			//AOP 代理对象的生成在这个方法中进行的
 			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
 		}
 

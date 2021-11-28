@@ -385,7 +385,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				// ===================开始创建bean==================
 				//情况一: 单例情况
 				if (mbd.isSingleton()) {
-					//这里使用了一个匿名内部类，创建Bean实例对象，并且注册给所依赖的对象
+					//这里使用了一个匿名内部类，创建Bean实例对象，并且注册给所依赖的对象。如果此处的Bean符合切面条件，则将返回是一个Proxy。
 					sharedInstance = getSingleton(beanName, () -> {
 						try {
 							// roboslyq-->真正创建bean的入口,创建一个指定Bean实例对象，如果有父级继承，则合并子类和父类的定义

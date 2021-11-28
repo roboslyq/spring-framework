@@ -28,10 +28,9 @@ public class AopDemoMain {
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AopDemoMain.class);
 		UserDao userDao = context.getBean(UserDao.class);
+		System.out.println(userDao.getClass().getSuperclass());
 		userDao.addUser();
-
-		UserDaoNoInterface userDaoNoInterface = context.getBean(UserDaoNoInterface.class);
-		userDaoNoInterface.addUser();
+		context.close();
 	}
 
 	@Bean
@@ -44,10 +43,6 @@ public class AopDemoMain {
 		return new UserDaoImpl();
 	}
 
-	@Bean
-	public UserDaoNoInterface userDaoNoInterface(){
-		return new UserDaoNoInterface();
-	}
 	@Bean
 	public Logger logger(){
 		return new Logger();

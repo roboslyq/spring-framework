@@ -1,8 +1,10 @@
 # Spring5.1.x之AOP
 
-> **AOP**：面向切面编程,是Spring在OOP基础上，提供的另一种编程能力。是可选项，不是必选项。在spring boot中，默认是开启此功能的。
->
-> Java是一种静态语言，在运行时不方便修改Class，这在OOP编程中是一大缺陷。Spring提供了AOP功能，可以在运行时通过字节码提升(enhancher)来实现一些通用的功能，比如日志，监控，统计，事务，鉴权等公共功能。
+# 前言
+
+​	Java是一种静态语言，在运行时不方便修改Class，这在OOP编程中是一大缺陷。Spring提供了AOP功能，可以在运行时通过字节码提升(enhancher)来实现一些通用的功能，比如日志，监控，统计，事务，鉴权等公共功能。
+
+​	**AOP**：面向切面编程,是Spring在OOP基础上，提供的另一种编程能力，通过这种能力，我们很容易开发出通用的比如日志，监控，统计，事务，鉴权等公共功能，而且代码不重复。但此功能是可选项，不是必选项。在spring boot中，默认是开启此功能的。
 
 1、Spring Aop是基于spring bean ,context等基础组件之上，提供的一种额外的面向aop的编程能力。方便应用开发AOP编程的一种模式。
 
@@ -12,17 +14,25 @@
 
 4、Spring实现AOP也引用[aopalliance](https://sourceforge.net/projects/aopalliance/)框架的实现，Aop Alliance项目是许多对Aop和java有浓厚兴趣的软件开发人员联合成立的开源项目，其提供的源码都是完全免费的(Public Domain).官方网站http://aopalliance.sourceforge.net/。
 
-5、Spring中，如果Bean不需要切面功能，则直接是原始的Bean对像。
+![image-20211125091610484](Spring%E4%B9%8BAOP/image-20211125091610484.png)
 
-如果Bean实现了接口，并且符合切面条件，则是使用Jdk动态代理生成的对象
+5、Spring AOP底层也使用了Objenesis技术，Objenesis是一款轻量级的Java类库。主要用来创建特定的对象。由于不是所有的类都有无参构造器又或者类构造器是private，在这样的情况下，如果我们还想实例化对象，class.newInstance是无法满足的。
 
-如果Bean没有实现接口，并且符合切面条件，则是使用cglib动态代理生成的对象。
+其官网地址：http://objenesis.org/，github地址：https://github.com/easymock/objenesis
 
-![image-20211125091610484](images/Spring之AOP/image-20211125091610484.png)
+![image-20211128085709583](Spring%E4%B9%8BAOP/image-20211128085709583.png)
 
-# 一、配置方式
+6、Spring中，如果Bean不需要切面功能，则直接是原始的Bean对像。
 
-## 1、ProxyFactoryBean
+​	如果Bean实现了接口，并且符合切面条件，则是使用Jdk动态代理生成的对象
+
+​	如果Bean没有实现接口，并且符合切面条件，则是使用cglib动态代理生成的对象。
+
+
+
+# 一、XML配置方式
+
+## 1、配置ProxyFactoryBean
 
 ```xml
 <bean name="myController" class="org.springframework.aop.framework.ProxyFactoryBean">  
@@ -36,7 +46,7 @@
 </bean>  
 ```
 
-## 2、BeanNameAutoProxyCreator 
+## 2、配置BeanNameAutoProxyCreator 
 
 ```xml
 <bean id="userService" class="com.aop.service.UserService"/>  
@@ -59,7 +69,7 @@
 >
 >   **public** Object postProcessBeforeInstantiation(Class beanClass, String beanName) 
 
-## 3、AopNamespaceHandler
+## 3、配置AopNamespaceHandler
 
 ```xml
  <bean id="fooService" class="DefaultFooService"/>  
@@ -79,7 +89,7 @@
 >
 >   注册一个“org.springframework.aop.config.internalAutoProxyCreator” bean,这个bean的实现类是：
 >
->   org/springframework/aop/aspectj/autoproxy/AspectJAwareAdvisorAutoProxyCreator，此类也实现了
+>   org/springframework/aop/aspectj/autoproxy/**AspectJAwareAdvisorAutoProxyCreator**，此类也实现了
 >
 >   BeanPostProcessor接口。
 
@@ -90,12 +100,7 @@
 ```java
 // aop标签解析的handler
 public class AopNamespaceHandler extends NamespaceHandlerSupport {
-
 	/**
-	 * Register the {@link BeanDefinitionParser BeanDefinitionParsers} for the
-	 * '{@code config}', '{@code spring-configured}', '{@code aspectj-autoproxy}'
-	 * and '{@code scoped-proxy}' tags.
-	 *
 	 * roboslyq --> AOP配置解析阶段，将配置文件转换成BeanDefinition
 	 */
 	@Override
@@ -122,17 +127,136 @@ public class AopNamespaceHandler extends NamespaceHandlerSupport {
 }
 ```
 
-	### ConfigBeanDefinitionParser
+## 4、运行
 
-### AspectJAutoProxyBeanDefinitionParser
-
-### ScopedProxyBeanDefinitionDecorator
+TODO
 
 
 
-# 二、AOP启动配置
+# 二、注解模式
 
+## 2.1 定义接口
 
+```java
+package com.roboslyq.learn.aop;
+
+/**
+ *
+ * 〈〉
+ * @author roboslyq
+ * @date 2021/11/23
+ * @since 1.0.0
+ */
+public interface UserDao {
+   void addUser();
+   void deleteUser();
+}
+```
+
+## 2.2 定义实现
+
+```java
+package com.roboslyq.learn.aop;
+
+/**
+ *
+ * 〈〉
+ * @author roboslyq
+ * @date 2021/11/23
+ * @since 1.0.0
+ */
+public class UserDaoImpl implements UserDao{
+
+   public void addUser() {
+      System.out.println("add user ");
+   }
+
+   public void deleteUser() {
+      System.out.println("delete user ");
+   }
+
+}
+```
+
+## 2.3 定义切面
+
+```java
+/**
+ *
+ * 〈〉
+ * @author roboslyq
+ * @date 2021/11/23
+ * @since 1.0.0
+ */
+@Aspect
+public class Logger {
+   @Pointcut("execution(* com.roboslyq.learn.aop..*.*(..))" )
+   public void pointCut(){}
+
+   @Before(value ="pointCut()")
+   public void recordBefore(){
+      System.out.println("recordBefore");
+   }
+
+   @After(value ="pointCut()")
+   public void recordAfter(){
+      System.out.println("recordAfter");
+   }
+
+}
+```
+
+## 2.4 测试
+
+```java
+package com.roboslyq.learn.aop;
+
+import org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+
+/**
+ *
+ * 〈切面编程〉
+ * @author roboslyq
+ * @date 2021/11/8
+ * @since 1.0.0
+ */
+@EnableAspectJAutoProxy
+public class AopDemoMain {
+
+	public static void main(String[] args) {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AopDemoMain.class);
+		UserDao userDao = context.getBean(UserDao.class);
+		System.out.println(userDao.getClass().getSuperclass());
+		userDao.addUser();
+		context.close();
+	}
+
+	@Bean
+	public AspectJAwareAdvisorAutoProxyCreator initAspect(){
+		return new AspectJAwareAdvisorAutoProxyCreator();
+	}
+
+	@Bean
+	public UserDao userDao(){
+		return new UserDaoImpl();
+	}
+	
+	@Bean
+	public Logger logger(){
+		return new Logger();
+	}
+
+}
+```
+
+打印结果：
+
+![image-20211128091011206](Spring%E4%B9%8BAOP/image-20211128091011206.png)
+
+# 三、AOP启动配置
 
 ## 注解@EnableAspectJAutoProxy
 
@@ -147,6 +271,10 @@ AspectJAutoProxyRegistrar
 ## **AspectJAwareAdvisorAutoProxyCreator**
 
 > AspectJAwareAdvisorAutoProxyCreator是一个后置处理器，它的作用是在bean对象实例化的前后可以进行一些操作。其是底层是依赖于JDK动态代理或者Cglib动态代理。
+
+## AnnotationAwareAspectJAutoProxyCreator(注解时)
+
+> 当存在此注解上，类`class org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator`不生效，因为`AnnotationAwareAspectJAutoProxyCreator`的优先级高于AspectJAwareAdvisorAutoProxyCreator。
 
 # 四、AOP执行阶段
 
