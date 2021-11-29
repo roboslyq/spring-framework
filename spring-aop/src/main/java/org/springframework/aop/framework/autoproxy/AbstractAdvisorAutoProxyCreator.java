@@ -68,7 +68,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	}
 
 	/**
-	 * 获取beanClass对应的拦截器相关，从而实现AOP功能
+	 * 获取beanClass对应的Advice通知和拦截器相关，从而实现AOP功能
 	 * @param beanClass the class of the bean to advise
 	 * @param beanName the name of the bean
 	 * @param targetSource

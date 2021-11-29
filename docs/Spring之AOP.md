@@ -28,8 +28,6 @@
 
 ​	如果Bean没有实现接口，并且符合切面条件，则是使用cglib动态代理生成的对象。
 
-
-
 # 一、XML配置方式
 
 ## 1、配置ProxyFactoryBean
@@ -256,29 +254,186 @@ public class AopDemoMain {
 
 ![image-20211128091011206](Spring%E4%B9%8BAOP/image-20211128091011206.png)
 
-# 三、AOP启动配置
+- 注解@EnableAspectJAutoProxy
+  - @Import(AspectJAutoProxyRegistrar.class)
+  - AspectJAutoProxyRegistrar
 
-## 注解@EnableAspectJAutoProxy
+- 生成代理Bean
 
-@Import(AspectJAutoProxyRegistrar.class)
+  - 在spring bean生命周期中，在后置处理器org/springframework/aop/aspectj/autoproxy/AspectJAwareAdvisorAutoProxyCreator时进行增强，实现代理。
 
-AspectJAutoProxyRegistrar
+- **AspectJAwareAdvisorAutoProxyCreator**
 
-# 三、生成代理Bean
+  AspectJAwareAdvisorAutoProxyCreator是一个后置处理器，它的作用是在bean对象实例化的前后可以进行一些操作。其是底层是依赖于JDK动态代理或者Cglib动态代理。
 
-> 在spring bean生命周期中，在后置处理器org/springframework/aop/aspectj/autoproxy/AspectJAwareAdvisorAutoProxyCreator时进行增强，实现代理。
+- AnnotationAwareAspectJAutoProxyCreator(注解时)
 
-## **AspectJAwareAdvisorAutoProxyCreator**
+  当存在此注解上，类`class org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator`不生效，因为`AnnotationAwareAspectJAutoProxyCreator`的优先级高于AspectJAwareAdvisorAutoProxyCreator。
 
-> AspectJAwareAdvisorAutoProxyCreator是一个后置处理器，它的作用是在bean对象实例化的前后可以进行一些操作。其是底层是依赖于JDK动态代理或者Cglib动态代理。
+# 三、设计模式
 
-## AnnotationAwareAspectJAutoProxyCreator(注解时)
+## 代理模式
 
-> 当存在此注解上，类`class org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator`不生效，因为`AnnotationAwareAspectJAutoProxyCreator`的优先级高于AspectJAwareAdvisorAutoProxyCreator。
+- Java 动态代理
+  - JDK 动态代理
+  - 字节码提升，如 CGLIB
+- 静态代理 
+  - 常用 OOP 继承和组合相结合
 
-# 四、AOP执行阶段
+## 拦截器模式
 
-https://www.cnblogs.com/51life/p/9482734.html
+在代理模式下，实现拦截器。在目标方法执行前后进行相关操作。
+
+- 拦截类型
+  - 前置拦截（Before）
+  - 后置拦截（After）
+  - 异常拦截（Exception）
+
+## 判断模式
+
+- 判断来源
+  - 类型（Class）
+  - 方法（Method）
+  - 注解（Annotation）
+  - 参数（Parameter）
+  - 异常（Exception）
+
+> 判断模式主要是通过反射获取类型，方法，注解等信息，来判断是否符合代理相关条件。主要类为`ReflectionUtils`
+
+# 四、基本概念
+
+## 核心特性
+
+- 纯 Java 实现、无编译时特殊处理、不修改和控制 ClassLoader。与AspectJ编译时增强不一样。
+- 仅支持方法级别的 Join Points
+- 非完整 AOP 实现框架
+- Spring IoC 容器整合•AspectJ 注解驱动整合（非竞争关系）
+
+## 基本概念
+
+**二、AOP核心概念**
+
+**1、横切关注点**
+
+对哪些方法进行拦截，拦截后怎么处理，这些关注点称之为横切关注点
+
+**2、切面（aspect）**
+
+类是对物体特征的抽象，切面就是对横切关注点的抽象
+
+**3、连接点（joinpoint）**
+
+被拦截到的点，因为Spring只支持方法类型的连接点，所以在Spring中连接点指的就是被拦截到的方法，实际上连接点还可以是字段或者构造器。
+
+- Interceptor 执行上下文 - Invocation
+  - 方法拦截器执行上下文 - MethodInvocation
+  - 构造器拦截器执行上下文 - ConstructorInvocation
+- MethodInvocation 实现
+  - 基于反射 - ReflectiveMethodInvocation 
+  - 基于 CGLIB - CglibMethodInvocation
+
+**4、切入点（pointcut）**
+
+对连接点进行拦截的定义
+
+- XML 配置: <aop:pointcut />
+- 核心 API - org.springframework.aop.Pointcut
+  - org.springframework.aop.**ClassFilter**
+  - org.springframework.aop.**MethodMatcher**
+
+- 适配实现 - DefaultPointcutAdvisor
+- 组合实现 - org.springframework.aop.support.ComposablePointcut
+- 工具类
+  - ClassFilter 工具类 -ClassFilters
+  - MethodMatcher 工具类 - MethodMatchers
+  - Pointcut 工具类 - Pointcuts
+- 常见便利实现
+  - 静态 Pointcut - StaticMethodMatcherPointcut
+  - 正则表达式 Pointcut - JdkRegexpMethodPointcut
+  - 控制流 Pointcut - ControlFlowPointcut
+  - AspectJ 实现 - org.springframework.aop.aspectj.AspectJExpressionPointcut
+
+**5、通知（advice）**
+
+所谓通知指的就是指拦截到连接点之后要执行的代码，通知分为前置、后置、异常、最终、环绕通知五类
+
+- Around Advice - Interceptor
+
+  - 方法拦截器 - MethodInterceptor
+  - 构造器拦截器 - ConstructorInterceptor
+
+- 前置动作
+
+  - 标准接口 - org.springframework.aop.BeforeAdvice
+  - 方法级别 - org.springframework.aop.MethodBeforeAdvice
+  - 实现：org.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor
+  - 实现：org.springframework.aop.aspectj.AspectJMethodBeforeAdvice
+
+- 后置动作
+
+  - org.springframework.aop.AfterAdvice
+  - org.springframework.aop.AfterReturningAdvice
+  - org.springframework.aop.ThrowsAdvice
+
+  标准实现：
+
+  org.springframework.aop.framework.adapter.ThrowsAdviceInterceptor
+
+  org.springframework.aop.framework.adapter.AfterReturningAdviceInterceptor
+
+  Aspectj实现：
+
+  org.springframework.aop.aspectj.AspectJAfterAdvice
+
+  org.springframework.aop.aspectj.AspectJAfterReturningAdvice
+
+  org.springframework.aop.aspectj.AspectJAfterThrowingAdvice
+
+**6、目标对象**
+
+代理的目标对象
+
+**7、织入（weave）**
+
+将切面应用到目标对象并导致代理对象创建的过程
+
+**8、引入（introduction）**
+
+在不修改代码的前提下，引入可以在运行期为类动态地添加一些方法或字段
+
+**9、Advice容器(Advisor)**
+
+- 接口 - org.springframework.aop.Advisor
+  - 通用实现 - org.springframework.aop.support.DefaultPointcutAdvisor
+
+**10、Pointcut 与 Advice 连接器 - PointcutAdvisor**
+
+- 接口 - org.springframework.aop.PointcutAdvisor
+  - 通用实现
+    - org.springframework.aop.support.DefaultPointcutAdvisor
+  - AspectJ 实现
+    - org.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor
+    - org.springframework.aop.aspectj.AspectJPointcutAdvisor
+  - 静态方法实现
+    - org.springframework.aop.support.StaticMethodMatcherPointcutAdvisor
+  - IoC 容器实现
+    - org.springframework.aop.support.AbstractBeanFactoryPointcutAdvisor
+
+**11、Advisor 的 Interceptor 适配器**
+
+接口 - org.springframework.aop.framework.adapter.AdvisorAdapter
+
+MethodBeforeAdvice 实现
+
+​	•org.springframework.aop.framework.adapter.MethodBeforeAdviceAdapter
+
+•AfterReturningAdvice 实现
+
+​	•org.springframework.aop.framework.adapter.AfterReturningAdviceAdapter
+
+•ThrowsAdvice 实现
+
+​	•org.springframework.aop.framework.adapter.ThrowsAdviceAdapter
 
 # 五、注解驱动栈分析
 
@@ -1710,3 +1865,7 @@ public class UserDaoNoInterface$$EnhancerBySpringCGLIB$$ee13cb35 extends UserDao
     }
 }
 ```
+
+# 八、参考资料
+
+https://www.cnblogs.com/51life/p/9482734.html

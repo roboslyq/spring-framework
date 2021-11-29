@@ -36,7 +36,10 @@ public class TestListener implements ApplicationListener<ApplicationEvent> {
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent e) {
+		System.out.println("触发了事件... ...");
 		++eventCount;
+		System.out.println(this.getClass());
+		System.out.println(eventCount);
 	}
 
 }

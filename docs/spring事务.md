@@ -27,3 +27,13 @@ public @interface EnableTransactionManagement {
 
 ```
 
+
+
+
+
+
+
+# 参考资料
+
+https://zhuanlan.zhihu.com/p/54067384
+

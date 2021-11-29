@@ -22,7 +22,8 @@ package org.springframework.aop;
  * <p>A pointcut is composed of a {@link ClassFilter} and a {@link MethodMatcher}.
  * Both these basic terms and a Pointcut itself can be combined to build up combinations
  * (e.g. through {@link org.springframework.aop.support.ComposablePointcut}).
- *
+ * spring的切点定义，定义了符合条件的连接点。
+ * 目前主要有两类：类和方法，ClassFilter和MethodMatcher。最常见的是MethodMatcher，因此Spring只实现了方法级别的AOP。
  * @author Rod Johnson
  * @see ClassFilter
  * @see MethodMatcher

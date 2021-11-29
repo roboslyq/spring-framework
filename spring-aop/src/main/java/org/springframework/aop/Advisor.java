@@ -29,7 +29,7 @@ import org.aopalliance.aop.Advice;
  * The Advisor interface allows support for different types of advice,
  * such as <b>before</b> and <b>after</b> advice, which need not be
  * implemented using interception.
- *
+ * Advice的容器，Advice-动作，是针对pointCut切点的具体动作。
  * @author Rod Johnson
  * @author Juergen Hoeller
  */
