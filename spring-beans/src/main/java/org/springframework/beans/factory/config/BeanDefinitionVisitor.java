@@ -84,7 +84,7 @@ public class BeanDefinitionVisitor {
 		visitFactoryMethodName(beanDefinition);
 		visitScope(beanDefinition);
 		if (beanDefinition.hasPropertyValues()) {
-			//======>以替换易变的属性列表进行跟踪
+			//======>以替换易变的属性列表进行跟踪（占位符处理）
 			visitPropertyValues(beanDefinition.getPropertyValues());
 		}
 		if (beanDefinition.hasConstructorArgumentValues()) {
@@ -310,7 +310,7 @@ public class BeanDefinitionVisitor {
 			throw new IllegalStateException("No StringValueResolver specified - pass a resolver " +
 					"object into the constructor or override the 'resolveStringValue' method");
 		}
-		// 将占位符转换为具体的值
+		// 将占位符转换为具体的值：PropertyPlaceholderConfigurer$PlaceholderResolvingStringValueResolver
 		String resolvedValue = this.valueResolver.resolveStringValue(strVal);
 		// Return original String if not modified.
 		return (strVal.equals(resolvedValue) ? strVal : resolvedValue);

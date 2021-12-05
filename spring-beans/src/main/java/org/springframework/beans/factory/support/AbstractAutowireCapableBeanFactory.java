@@ -1337,7 +1337,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 			else {
 				/*
-				 * roboslyq-->Bean创建入口
+				 * roboslyq-->Bean创建入口(普通情况默认为SimpleInstantiationStrategy)
 				 */
 				beanInstance = getInstantiationStrategy().instantiate(mbd, beanName, parent);
 			}
@@ -1397,6 +1397,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	/**
 	 * Populate the bean instance in the given BeanWrapper with the property values
 	 * from the bean definition.
+	 * 使用属性值填充给定BeanRapper中的bean实例,即赋值，处理依赖注入，占位符等
 	 * @param beanName the name of the bean
 	 * @param mbd the bean definition for the bean
 	 * @param bw the BeanWrapper with bean instance
@@ -1490,7 +1491,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		if (pvs != null) {
 			/**
-			 * roboslyq-->给属性赋值
+			 * roboslyq-->给属性赋值(点位符处理)
 			 */
 			applyPropertyValues(beanName, mbd, bw, pvs);
 		}
@@ -1759,7 +1760,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				Object convertedValue = resolvedValue;
 				boolean convertible = bw.isWritableProperty(propertyName) &&
 						!PropertyAccessorUtils.isNestedOrIndexedProperty(propertyName);
-				if (convertible) {
+				if (convertible) {// 占位符处理
 					convertedValue = convertForProperty(resolvedValue, propertyName, bw, converter);
 				}
 				// Possibly store converted value in merged bean definition,
@@ -1807,7 +1808,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	private Object convertForProperty(
 			@Nullable Object value, String propertyName, BeanWrapper bw, TypeConverter converter) {
 
-		if (converter instanceof BeanWrapperImpl) {
+		if (converter instanceof BeanWrapperImpl) {// 默认进入此处，占位符处理
 			return ((BeanWrapperImpl) converter).convertForProperty(value, propertyName);
 		}
 		else {

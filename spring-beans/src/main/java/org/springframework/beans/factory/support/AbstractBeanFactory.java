@@ -276,7 +276,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		Object bean;
 		// Eagerly check singleton cache for manually registered singletons.
 		//急切地检查单例缓存中手动注册的单例。
-		// Spring在创建bean的时候，是不能bean创建完成就会将创建bean的ObjectFactory提早曝光。
+		//  Spring在创建bean的时候，是不能bean创建完成就会将创建bean的ObjectFactory提早曝光。
 		//  尝试从缓存中获取或者singletonFactories中的objectFactory获取
 		// （先从缓存中获取，因为在容器初始化的时候或者其他地方调用过getBean，已经完成了初始化）
 		Object sharedInstance = getSingleton(beanName);

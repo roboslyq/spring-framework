@@ -239,9 +239,16 @@ public class PropertyPlaceholderConfigurer extends PlaceholderConfigurerSupport 
 			this.resolver = new PropertyPlaceholderConfigurerResolver(props);
 		}
 
+		/**
+		 * 占位符处理
+		 * @param strVal the original String value (never {@code null})
+		 * @return
+		 * @throws BeansException
+		 */
 		@Override
 		@Nullable
 		public String resolveStringValue(String strVal) throws BeansException {
+			// helper = PropertyPlaceholderHelper
 			String resolved = this.helper.replacePlaceholders(strVal, this.resolver);
 			if (trimValues) {
 				resolved = resolved.trim();

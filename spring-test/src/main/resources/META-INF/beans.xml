@@ -6,5 +6,7 @@
 	<bean id="user" class="com.roboslyq.learn.bean.User">
 		<property name="name" value="${name}"/>
 	</bean>
+	<bean id="user1" class="com.roboslyq.learn.bean.UserAnnotation">
+	</bean>
 
 </beans>

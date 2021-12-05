@@ -947,6 +947,49 @@ protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 	}
 ```
 
+#### 示例：占位符解析
+
+例如占符的处理：
+
+> **12-resolvePlaceholder:265, PropertyPlaceholderConfigurer$PropertyPlaceholderConfigurerResolver **(org.springframework.beans.factory.config)
+> parseStringValue:154, PropertyPlaceholderHelper (org.springframework.util)
+> replacePlaceholders:124, PropertyPlaceholderHelper (org.springframework.util)
+> **11-resolveStringValue:245, PropertyPlaceholderConfigurer$PlaceholderResolvingStringValueResolver** (org.springframework.beans.factory.config)
+> resolveStringValue:314, BeanDefinitionVisitor (org.springframework.beans.factory.config)
+> **10-resolveValue:231, BeanDefinitionVisitor** (org.springframework.beans.factory.config)
+> **9-visitPropertyValues:159, BeanDefinitionVisitor** (org.springframework.beans.factory.config)
+> **8-visitBeanDefinition:88, BeanDefinitionVisitor (org.springframework.beans.factory.config)**
+> 7-**doProcessProperties:226, PlaceholderConfigurerSupport (org.springframework.beans.factory.config)**
+> **6-processProperties:226, PropertyPlaceholderConfigurer (org.springframework.beans.factory.config)**
+> 5-postProcessBeanFactory:88, **PropertyResourceConfigurer** (org.springframework.beans.factory.config)
+> 4-**invokeBeanFactoryPostProcessors:401, PostProcessorRegistrationDelegate (org.springframework.context.support)**
+> invokeBeanFactoryPostProcessors:245, PostProcessorRegistrationDelegate (org.springframework.context.support)
+> 3-**invokeBeanFactoryPostProcessors:757, AbstractApplicationContext (org.springframework.context.support)**
+> 2-**refresh:521, AbstractApplicationContext (org.springframework.context.support)**
+> 1-main:37, BeansPlaceHolderDemo (com.roboslyq.learn.bean)
+
+其中最后一步的resolvePlaceHolder源码
+
+```java
+	@Nullable
+	protected String resolvePlaceholder(String placeholder, Properties props, int systemPropertiesMode) {
+		String propVal = null;
+		if (systemPropertiesMode == SYSTEM_PROPERTIES_MODE_OVERRIDE) {
+			propVal = resolveSystemProperty(placeholder);// 系统环境变量，System.setProperty(k,v)
+		}
+		if (propVal == null) {
+            // 配置指定的properties文件，无法与enviroment结合
+			propVal = resolvePlaceholder(placeholder, props);
+		}
+		if (propVal == null && systemPropertiesMode == SYSTEM_PROPERTIES_MODE_FALLBACK) {
+			propVal = resolveSystemProperty(placeholder);
+		}
+		return propVal;
+	}
+```
+
+
+
 ## 3.5 注册BeanPostProcessor
 
 > 通过代理PostProcessorRegistrationDelegate#registerBeanPostProcessors(beanFactory);

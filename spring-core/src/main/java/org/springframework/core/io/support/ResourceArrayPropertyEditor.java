@@ -183,7 +183,7 @@ public class ResourceArrayPropertyEditor extends PropertyEditorSupport {
 	protected String resolvePath(String path) {
 		if (this.propertyResolver == null) {
 			this.propertyResolver = new StandardEnvironment();
-		}
+		}// 解析路径中的占位符
 		return (this.ignoreUnresolvablePlaceholders ? this.propertyResolver.resolvePlaceholders(path) :
 				this.propertyResolver.resolveRequiredPlaceholders(path));
 	}

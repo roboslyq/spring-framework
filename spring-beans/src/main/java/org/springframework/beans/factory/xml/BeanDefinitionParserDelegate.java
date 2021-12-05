@@ -1378,11 +1378,12 @@ public class BeanDefinitionParserDelegate {
 			return null;
 		}
 		/**
-		 * roboslyq-->获取springScheule扩展点的nameSpaceHanler：例如AOP扩展点为AopNamespaceHandler。具体相关实现类如下：
-		 * config–>ConfigBeanDefinitionParser
-		 * aspectj-autoproxy–>AspectJAutoProxyBeanDefinitionParser
-		 * scoped-proxy–>ScopedProxyBeanDefinitionDecorator
-		 * spring-configured–>SpringConfiguredBeanDefinitionParser
+		 * roboslyq-->获取springScheule扩展点的nameSpaceHanler：
+		 *例如AOP扩展点为AopNamespaceHandler。具体相关实现类如下：
+		 * 		config–>ConfigBeanDefinitionParser
+		 * 		aspectj-autoproxy–>AspectJAutoProxyBeanDefinitionParser
+		 * 		scoped-proxy–>ScopedProxyBeanDefinitionDecorator
+		 * 		spring-configured–>SpringConfiguredBeanDefinitionParser
 		 */
 		NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);
 		if (handler == null) {

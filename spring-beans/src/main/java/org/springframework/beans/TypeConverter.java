@@ -24,7 +24,8 @@ import org.springframework.lang.Nullable;
 /**
  * Interface that defines type conversion methods. Typically (but not necessarily)
  * implemented in conjunction with the {@link PropertyEditorRegistry} interface.
- *
+ * 类型转换器，最常见的实现{@link PropertyEditorRegistry}。因为Property属性配置基本为String类型，需要根据实际情况
+ * 转换为不同的具体的类型，比如日期，整数，其它对象等
  * <p><b>Note:</b> Since TypeConverter implementations are typically based on
  * {@link java.beans.PropertyEditor PropertyEditors} which aren't thread-safe,
  * TypeConverters themselves are <em>not</em> to be considered as thread-safe either.

@@ -600,7 +600,7 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 	protected Object convertForProperty(
 			String propertyName, @Nullable Object oldValue, @Nullable Object newValue, TypeDescriptor td)
 			throws TypeMismatchException {
-
+// 类型转换，包括占位符处理
 		return convertIfNecessary(propertyName, oldValue, newValue, td.getType(), td);
 	}
 

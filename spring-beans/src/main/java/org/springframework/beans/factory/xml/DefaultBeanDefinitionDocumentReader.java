@@ -100,9 +100,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		this.readerContext = readerContext;
 		logger.debug("Loading bean definitions");
 		Element root = doc.getDocumentElement();
-		/**
-		 * roboslyq --> BeanDefinition注册到IOC中
-		 */
+		// roboslyq --> BeanDefinition注册到IOC中
 		doRegisterBeanDefinitions(root);
 	}
 
@@ -147,7 +145,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		this.delegate = createDelegate(getReaderContext(), root, parent);
 		//此处正常情况为true
 		if (this.delegate.isDefaultNamespace(root)) {
-			//profile处理
+			//在根元素中，可以设置profile属性，此处就是处理Profile属性
 			String profileSpec = root.getAttribute(PROFILE_ATTRIBUTE);
 			if (StringUtils.hasText(profileSpec)) {
 				String[] specifiedProfiles = StringUtils.tokenizeToStringArray(
@@ -201,14 +199,14 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 				//解析Document的Dom根节点
 				if (node instanceof Element) {
 					Element ele = (Element) node;
-					/**
+					/*
 					 * 	使用了SPring的命名空间，则使用Spring的规则解析元素节点
 					 * 	一共四个:import,bean,beans,alias
 					 */
 					if (delegate.isDefaultNamespace(ele)) {
 						parseDefaultElement(ele, delegate);
 					}
-					/**
+					/*
 					 * ####十分关键重点######
 					 * roboslyq -----> 扩展点元素解析(aop:config等),故Spring AOP/Dubbo 自定义标签等入口在此处实现
 					 * 				   主要是通过接口NamespaceHandler和BeanDefinitionParser这两个接口实现扩展。
@@ -259,6 +257,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	/**
 	 * Parse an "import" element and load the bean definitions
 	 * from the given resource into the bean factory.
+	 * 解析“import”标签，并且加载其中对应的资源的Bean Definitiions。
 	 */
 	protected void importBeanDefinitionResource(Element ele) {
 		String location = ele.getAttribute(RESOURCE_ATTRIBUTE);
@@ -268,6 +267,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		}
 
 		// Resolve system properties: e.g. "${user.dir}"
+		// 调用PropertyPlaceholderHelper来处理路径中的点位符
 		location = getReaderContext().getEnvironment().resolveRequiredPlaceholders(location);
 
 		Set<Resource> actualResources = new LinkedHashSet<>(4);
@@ -283,8 +283,9 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		}
 
 		// Absolute or relative?
-		if (absoluteLocation) {
+		if (absoluteLocation) {// 绝对路径
 			try {
+				// 加载Bean定义：如果import的资源中还有import,会循环递归调用
 				int importCount = getReaderContext().getReader().loadBeanDefinitions(location, actualResources);
 				if (logger.isDebugEnabled()) {
 					logger.debug("Imported " + importCount + " bean definitions from URL location [" + location + "]");
@@ -297,6 +298,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		}
 		else {
 			// No URL -> considering resource location as relative to the current file.
+			// 相对路径
 			try {
 				int importCount;
 				Resource relativeResource = getReaderContext().getResource().createRelative(location);
@@ -358,10 +360,10 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 */
 	protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
 		/**
-		 * roboslyq--> bean解析的核心流程，得到一个BeanDefinition。
+		 * roboslyq--> bean解析的核心流程，得到一个BeanDefinitionHolder(是BeanDefinition的包装，里面包含具体的BeanDefinition。
 		 * 即加载流程
 		 *  委托BeanDefinition类的parseBeanDefinitionElement方法进行元素解析,返回Beandefinition
-		 * 类型的实例bdHolder 经过这个方法之后,  bdHolder实例已经包含了我们配置文件中的各种属性了,例如 : class,name,id,alias
+		 *  类型的实例bdHolder 经过这个方法之后,  bdHolder实例已经包含了我们配置文件中的各种属性了,例如 : class,name,id,alias
 		 */
 		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
 		if (bdHolder != null) {

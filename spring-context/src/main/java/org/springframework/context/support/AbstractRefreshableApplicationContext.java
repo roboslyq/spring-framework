@@ -136,14 +136,13 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 			//roboslyq-->创建Bean工厂,直接new 一个 DefaultListableBeanFactory类进行干活
 			//spring注册及加载bean就靠它。其实这里还是一个基本的容器
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
-			//设置Bean工厂序列化ID
+			//设置Bean工厂序列化ID(在SrpingBoot和SpringCloud的场景下经常使用，因为他们有父子容器关系，可能通过ID来标识)
 			beanFactory.setSerializationId(getId());
 			//可对Bean工厂进行定制，一个扩展点
 			customizeBeanFactory(beanFactory);
-			/*
-			 * 	roboslyq-->初始化XmlBeanDefinitionReader用来读取xml，并加载解析。装载BeanDefinition核心入口。
-			 * 	在AbstractXmlApplicationContext中有具体实现
-			 */
+
+			//roboslyq-->初始化XmlBeanDefinitionReader用来读取xml，并加载解析。装载BeanDefinition核心入口。
+			// 在AbstractXmlApplicationContext中有具体实现
 			loadBeanDefinitions(beanFactory);
 			//设置为全局变量，关联新建BeanFactory到Spring应用上下文AbstractRefreshableApplicationContext持有DefaultListableBeanFactory引用
 			synchronized (this.beanFactoryMonitor) {

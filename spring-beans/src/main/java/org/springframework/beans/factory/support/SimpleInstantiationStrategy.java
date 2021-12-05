@@ -60,10 +60,12 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 	@Override
 	public Object instantiate(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner) {
 		// Don't override the class with CGLIB if no overrides.
-		//没有实现覆盖的方法必须用CGLIB代理，因为JDK动态代理必须要实现接口
+		// 当前的Bean是不是有方法重载(即lookup-method，replaced-method元素标签)，如果有则使用CGLIB来构建，如果没有则使用普通的构造函数来构造。
+		// 默认无，所以通常会进入此分支
 		if (!bd.hasMethodOverrides()) {
 			Constructor<?> constructorToUse;
 			synchronized (bd.constructorArgumentLock) {
+				// 获取构造函数
 				constructorToUse = (Constructor<?>) bd.resolvedConstructorOrFactoryMethod;
 				if (constructorToUse == null) {
 					final Class<?> clazz = bd.getBeanClass();
@@ -85,13 +87,12 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 					}
 				}
 			}
+			// 通过构造函数创建实例
 			return BeanUtils.instantiateClass(constructorToUse);
 		}
 		else {
 			// Must generate CGLIB subclass.
-			/**
-			 * roboslyq-->使用Cglib创建具体Bean实例
-			 */
+			// roboslyq-->如果有方法重载，则使用使用Cglib创建具体Bean实例
 			return instantiateWithMethodInjection(bd, beanName, owner);
 		}
 	}
