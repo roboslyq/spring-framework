@@ -16,21 +16,8 @@
 
 package org.springframework.context.support;
 
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.BeanFactory;
@@ -39,29 +26,8 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.support.ResourceEditorRegistrar;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.EmbeddedValueResolverAware;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.context.HierarchicalMessageSource;
-import org.springframework.context.LifecycleProcessor;
-import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceAware;
-import org.springframework.context.MessageSourceResolvable;
-import org.springframework.context.NoSuchMessageException;
-import org.springframework.context.PayloadApplicationEvent;
-import org.springframework.context.ResourceLoaderAware;
-import org.springframework.context.event.ApplicationEventMulticaster;
-import org.springframework.context.event.ContextClosedEvent;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.ContextStartedEvent;
-import org.springframework.context.event.ContextStoppedEvent;
-import org.springframework.context.event.SimpleApplicationEventMulticaster;
+import org.springframework.context.*;
+import org.springframework.context.event.*;
 import org.springframework.context.expression.StandardBeanExpressionResolver;
 import org.springframework.context.weaving.LoadTimeWeaverAware;
 import org.springframework.context.weaving.LoadTimeWeaverAwareProcessor;
@@ -81,7 +47,10 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
-import javax.swing.*;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Abstract implementation of the {@link org.springframework.context.ApplicationContext}
@@ -230,6 +199,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @param parent the parent context
 	 */
 	public AbstractApplicationContext(@Nullable ApplicationContext parent) {
+		// this()会初始化资源解析器为PathMatchingResourcePatternResolver
 		this();
 		setParent(parent);
 	}
@@ -515,126 +485,68 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
-	 * roboslyq -- > 容器启动类
+	 * roboslyq -- > 应用上下文Context启动(刷新)
+	 * 	1、refresh()这个方法名称不能完全涵盖它所有的功能，所以有一点点不太合理
+	 * 	2、虽然是应用上下文Context的生命周期，但应用上下是继承BeanFactory的，拟主要描述的是BeanFactory
+	 *
 	 * @throws BeansException
 	 * @throws IllegalStateException
 	 */
 	@Override
 	public void refresh() throws BeansException, IllegalStateException {
+		// 加锁，防止多次重复启动，因此Spring 框架不知道我们是在什么样的环境下使用，也不知道我们会怎么去启动它。所以需要加锁，所以在任何环境下只启动一次。
 		synchronized (this.startupShutdownMonitor) {
 			// Prepare this context for refreshing.
-			/* roboslyq--> 容器启动第一步：---BeanFactory准备阶段---准备阶段：刷新前的预处理---(创建BeanFactory容器前环境准备)-->
-			 *  (1)启动前准备操作（在父类AbstractRefreshableApplicationContext中实现）
-			 *  (2)记录spring容器上下文的启动(刷新)时间和标记
-			 *  (3)将容器激活状态active设为true，初始化一些容器启动必要的资源
-			 *  (4)创建了Environment对象，即Spring体系的环境变量
-			 */
+			// 阶段一：准备阶段-应用上下文Context刷新前准备
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
-			/*
-			 * roboslyq-->容器启动第二步（十分重要核心！！！） ---BeanFactory创建阶段---(创建BeanFactory，并将资源文件转换为BeanDefinition存入容器中)-->
-			 * （1）创建建Bean工厂，使用具体的子类去获取Bean工厂类，如果有则先销毁再创建。
-			 * （2）完成Bean的定位，加载及注册整个过程，最终得到BeanDefinition
-			 *  (3)英文单词解析
-			 *  	obtain:获取，获得
-			 *  	fresh:新的，新鲜的
-			 *  	BeanFactory:Bean工厂
-			 *  	obtainFreshBeanFactory:获取一个新的Bean工厂
-			 *  默认的beanFactory类型为：DefaultListableBeanFactory
- 			 */
+			// 阶段二：BeanFactory创建阶段(完成两个主要功能：创建DefaultListableBeanFactory实例和将配置解析为BeanDefinition)
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
-			//配置工厂的标准上下文特征
-			/*	roboslyq-->容器启动第三步：---BeanFactory准备阶段---BeanFactory的预准备工作（BeanFactory进行一些设置）
-			 * ---(BeanFactory创建后，在创建具体Bean之前设置一些环境相关参数-->
-			 * (1)容器启动第二步仅完成xml等资源文件到BeanDefinition的转换，还未开始初始化具体的SpringBean
-			 * (2)在完成Bean资源文件加载及注册之后，为了可以使用使用IOC，进行Bean工厂初始化。
-			 * (3)类装载器Classloader,PostProcessor等处理
-			 */
+			//阶段三：BeanFactory准备阶段(设置BeanFacotry的一些相关属性)
 			 prepareBeanFactory(beanFactory);
 
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
-				//roboslyq-->在BeanFactory完成初始化后进行一些操作，即在beanFactory初始化之后提供一个修改BeanFactory的机会
-				//BeanFactory定义后，提供一个修改BeanFactory的入口。
-
-				/*	roboslyq-->容器启动第四步：---BeanFactory后置处理阶段--BeanFactory准备工作完成后进行的后置处理工作；
-				 *  ---(BeanFactory创建后，通过注入BeanPostProcessor，提供一个修改后续BeanFactory处理BeanDefinition的默认行为的机会)-->
-				 *	(1)模板抽象方法,当前未做处理。子类通过重写这个方法来在BeanFactory创建并预准备完成以后做进一步的设置
-				 *	(2)	在第二步完成Bean容器(BeanFacotory)初始化后，此时BeanFacotry均是默认参数。
-				 *		此入口提供目的是BeanDefinition装载后，可以再次修改BeanFactory的一些属性
-				 *	(3)默认是空，没有实现，可以自定义扩展。具体扩展可以继承ClassPathXmlApplicationContext类
-				 *  	并重写postProcessBeanFactory即可。
+				/* 阶段四：BeanFactory后置处理阶段
+				 *	(1)模板抽象方法(继承的方式),当前未做处理可以自定义扩展。子类通过重写这个方法来在BeanFactory创建并预准备完成以后做进一步的设置
+				 *	(2)在第二步完成Bean容器(BeanFactory)初始化后，此时BeanFactory均是默认参数。此入口提供目的是BeanDefinition装载后，可以再次修改BeanFactory的一些属性。
 				 */
 				postProcessBeanFactory(beanFactory);
-//--------------------------------------------以上方法是处理BeanFactory相关---------------------------------------------------------------------
-				// Invoke factory processors registered as beans in the context.
-				/*
-				 * 占位符处理扩展
-				 * roboslyq-->容器启动第五步 ---BeanFactory后置处理阶段:调用BeanFactory本身的后置处理器---（提供一个修改BeanDefinition的入口）-->
-				 *   (1)此功能与postProcessBeanFactory()方法有异曲同工之妙，需要实现BeanFactoryPostProcess的postProcessBeanFactory方法类似。
-				 *   可以实现和postProcessBeanFactory()。
-				 *   (2)例如PropertyResourceConfigurer,此类实现Bean相关配置中的<b>占位符<b/>处理。
-				 *     就在这里调用PropertyResourceConfigurer相应实现完成。
-				 *     BeanFactoryPostProcessor：BeanFactory的后置处理器。在BeanFactory标准初始化之后执行的；
-				 * 	 (3)相关接口定义：PropertyResourceConfigurer，BeanFactoryPostProcessor及其子接口BeanDefinitionRegistryPostProcessor等
-				 *	 (4) 如果底层实现是AnnotationConfigApplicationContext，则会调用相关Processor进行@ComponentScan相关注解处理
-				 */
 
+				// Invoke factory processors registered as beans in the context.
+				// 阶段五：调用BeanFactory的后置处理器BeanFactoryPostPorcessor
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
-				// 注册相关的实BeanPostProcessor，在AbstractBeanFactory中有一个BeanPostProcessor容器
-				// private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>()
-				// 这样在例化Bean的后置处理器，这样在Bean实例时，后置处理器就可以生效了。
-				/*
-				 * robosly-->容器启动第六步：注册BeanPostProcessor（Bean的后置处理器）
-				 * --（注册用于拦截Bean创建的BeanPostProcessor）-->
-				 * 	注册用于拦截Bean创建的BeanPostProcessor
-				 * 	例如：AOP具体织和在这个入口完成，具体原因如下：
-				 * 	(1) AOP在解析过程中会生成如下对象：
-				 * 		被代理的目标对象
-				 * 		定义的切面
-				 * 		InternalAutoProxyCreator:用来生成代理对象的后置处理器，它实现了BeanPostProcessor，类型是AspectJAwareAdvisorAutoProxyCreator
-				 * 		AspectJPointcutAdvisor#0:定义的通知
-				 * 		AspectJPointcutAdvisor#1:定义的通知
-				 * 		updateUserMethod:切入点表达式
-				 *  （2）其中InternalAutoProxyCreator实现了BeanPostProcessor，所以会进入此方法处理
-				 */
+				// 阶段六：注册bean后置处理器BeanPostProcessor(其实BeanPostProcessor能力有前有后，因此命名不太规范^_^)
+				// 以便有能力拦截bean的创建行为(十分重要的扩展，很多功能是基于此实现例如AOP等)
 				registerBeanPostProcessors(beanFactory);
 
 				// Initialize message source for this context.
-				//roboslyq-->初始化内建Bean： MessageSource（国际化资源处理，消息绑定，消息解析）；
+				// 阶段七(1)：初始化内建Bean-MessageSource（国际化资源处理）；
 				initMessageSource();
 
 				// Initialize event multicaster for this context.
-				// roboslyq-->初始化内建Bean： 应用事件广播器(观察者模式得典型应用)。
-				// 我们知道观察者模式由主题Subject和Observer组成。广播器相当于主题Subject，其包含多个监听器。
-				// 当主题发生变化时会通知所有得监听器，此时只是完成广播初始化，还未绑定具体广播的监听器。
-				// 在下面的registerListeners()方法中完成监听器与广播绑定
+				// 阶段七(2):初始化内建Bean-初始化事件广播器
 				initApplicationEventMulticaster();
 
 				// Initialize other special beans in specific context subclasses.
-				//特定的上下文中初始化特别的beans,默认空实现。由子类自己实现重写，在容器刷新的时候可以自定义逻辑；
+				//阶段八：应用上下文刷新阶段-特定的上下文中初始化特别的beans,默认空实现。由子类自己实现重写，在容器刷新的时候可以自定义逻辑；
 				onRefresh();
 
 				// Check for listener beans and register them.
-				//roboslyq-->注册监听器（给容器中将所有项目里面的ApplicationListener注册进来）
-				//注册监听器，与广播器是同时存在的。在广播器章节，spring只是初始化的广播器，
-				// 但是并没有为广播器绑定Listener, Spring在此方法中进行了绑定。
+				//阶段九：注册事件监听器（给容器中将所有项目里面的ApplicationListener注册进来）
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.
-				/*
-				 * roboslyq-->初始化所有剩下的单实例bean，即将属性为no-lazy的BeanDefinition进行初始化,
-				 * 最终得到Spring中可以使用的Bean（AOP织入也是在此阶段完成）。
-				 */
+				//阶段十：BeanFactory初始化完成
 				finishBeanFactoryInitialization(beanFactory);
 
 				// Last step: publish corresponding event.
-				//容器结束启动,表明已经完成BeanFactory的初始化创建工作及IOC容器就创建；
+				//阶段十一：上下文Context结束启动,表明已经完成BeanFactory的初始化创建工作及IOC容器就创建；
 				finishRefresh();
 			}
 
@@ -657,6 +569,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			finally {
 				// Reset common introspection caches in Spring's core, since we
 				// might not ever need metadata for singleton beans anymore...
+				// 清除Bean创建过程中的缓存信息，因为Bean创建完成后不再需要这个缓存信息
 				resetCommonCaches();
 			}
 		}
@@ -665,7 +578,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	/**
 	 * Prepare this context for refreshing, setting its startup date and
 	 * active flag as well as performing any initialization of property sources.
-	 * 容器启动前的准备阶段，设置启动日期和启动标识并且完成property资源初始化
+	 * 容器启动前的准备阶段，设置启动日期和启动标识并且完成property资源初始化。
+	 * 容器启动第一步：---BeanFactory准备阶段---准备阶段：刷新前的预处理---(创建BeanFactory容器前环境准备)-->
+	 *  (1)启动前准备操作（在父类AbstractRefreshableApplicationContext中实现）
+	 *  (2)记录spring容器上下文的启动(刷新)时间和标记
+	 *  (3)将容器激活状态active设为true，初始化一些容器启动必要的资源
+	 *  (4)创建了Environment对象，即Spring体系的环境变量
+	 *
 	 */
 	protected void prepareRefresh() {
 		//准备工作1：设置容器的启动时间戳
@@ -681,12 +600,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// Validate that all properties marked as required are resolvable
 		// see ConfigurablePropertyResolver#setRequiredProperties
-		//验证是否系统环境中有RequiredProperties参数值,默认空实现，一个扩展点
-		//准备工作4：此处会getEnvironment,如果没有初始化，则新初始化一个。如果已经初始化则直接获取。通常WebContext已经在上面的initPropertySources()方法完成初始化。
+		// 验证是否系统环境中有RequiredProperties参数值,默认空实现，一个扩展点
+		// 准备工作4：此处会getEnvironment,如果没有初始化，则新初始化一个。
+		// 如果已经初始化则直接获取。通常WebContext已经在上面的initPropertySources()方法完成初始化。
+		// 所以此处有一个关键点，可以先提完全独立的创建自已的Enviroment，然后设置进来可以实现相应的扩展。spring boot就是这样实现外部外配置的。
 		getEnvironment().validateRequiredProperties();
 
 		// Allow for the collection of early ApplicationEvents,
 		// to be published once the multicaster is available...
+		// 初始化早期事件
 		this.earlyApplicationEvents = new LinkedHashSet<>();
 	}
 
@@ -700,6 +622,16 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
+	 *
+	 * roboslyq-->容器启动第二步（十分重要核心！！！） ---BeanFactory创建阶段---(创建BeanFactory，并将资源文件转换为BeanDefinition存入容器中)-->
+	 * （1）创建建Bean工厂，使用具体的子类去获取Bean工厂类，如果有则先销毁再创建。
+	 * （2）完成Bean的定位，加载及注册整个过程，最终得到BeanDefinition
+	 *  (3)英文单词解析
+	 *  	obtain:获取，获得
+	 *  	fresh:新的，新鲜的
+	 *  	BeanFactory:Bean工厂
+	 *  	obtainFreshBeanFactory:获取一个新的Bean工厂
+	 *  默认的beanFactory类型为：DefaultListableBeanFactory
 	 * Tell the subclass to refresh the internal bean factory.
 	 * @return the fresh BeanFactory instance
 	 * @see #refreshBeanFactory()
@@ -727,6 +659,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * such as the context's ClassLoader and post-processors.
 	 * 配置factory的标准上下文相关属性，例如类加载器，post-processors,SPEL处理器，属性Property编辑器
 	 * BeanPostProcessor等
+	 * roboslyq-->容器启动第三步：---BeanFactory准备阶段---BeanFactory的预准备工作（BeanFactory进行一些设置）
+	 * ---(BeanFactory创建后，在创建具体Bean之前设置一些环境相关参数-->
+	 * (1)容器启动第二步仅完成xml等资源文件到BeanDefinition的转换，还未开始初始化具体的SpringBean
+	 * (2)在完成Bean资源文件加载及注册之后，为了可以使用使用IOC，进行Bean工厂初始化。
+	 * (3)类装载器Classloader,PostProcessor等处理
 	 * @param beanFactory the BeanFactory to configure
 	 */
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
@@ -797,14 +734,20 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	/**
 	 * Instantiate and invoke all registered BeanFactoryPostProcessor beans,
-	 * 实例化并调用所有的已经注入的BeanFactoryPostProcessor实现。
 	 * respecting explicit order if given.
-	 * 并且可以明确的指定其顺序
 	 * <p>Must be called before singleton instantiation.
-	 * 必须在单例Bean实例化之前
+	 *实例化并调用所有的已经注入的BeanFactoryPostProcessor实现。 并且可以明确的指定其顺序,必须在单例Bean实例化之前
+	 *   (1)此功能与postProcessBeanFactory()方法有异曲同工之妙，需要实现BeanFactoryPostProcess的postProcessBeanFactory方法类似。
+	 *   可以实现和postProcessBeanFactory()。
+	 *   (2)例如PropertyResourceConfigurer,此类实现Bean相关配置中的<b>占位符<b/>处理。
+	 *     就在这里调用PropertyResourceConfigurer相应实现完成。
+	 *     BeanFactoryPostProcessor：BeanFactory的后置处理器。在BeanFactory标准初始化之后执行的；
+	 *   (3) 相关接口定义：PropertyResourceConfigurer，BeanFactoryPostProcessor及其子接口BeanDefinitionRegistryPostProcessor等
+	 *   (4) 如果底层实现是AnnotationConfigApplicationContext，则会调用相关Processor进行@ComponentScan相关注解处理
+
 	 */
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
-		/**
+		/* 通过代理的方式实现：PostProcessorRegistrationDelegate
 		 * 1、getBeanFactoryPostProcessors()返回手动注册的BeanFactoryPostProcessor集合
 		 *    手动注册指调用set方法把自己写的BeanFactoryPostProcessor类set进去，就可以用。
 		 *    不需要加注解或者是在xml中配置就可以执行
@@ -825,6 +768,17 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * Instantiate and invoke all registered BeanPostProcessor beans,
 	 * respecting explicit order if given.
 	 * <p>Must be called before any instantiation of application beans.
+	 * robosly-->容器启动第六步：注册BeanPostProcessor（Bean的后置处理器）注册用于拦截Bean创建的BeanPostProcessor）-->
+	 * 	注册用于拦截Bean创建的BeanPostProcessor
+	 * 	例如：AOP具体织和在这个入口完成，具体原因如下：
+	 * 	(1) AOP在解析过程中会生成如下对象：
+	 * 		被代理的目标对象
+	 * 		定义的切面
+	 * 		InternalAutoProxyCreator:用来生成代理对象的后置处理器，它实现了BeanPostProcessor，类型是AspectJAwareAdvisorAutoProxyCreator
+	 * 		AspectJPointcutAdvisor#0:定义的通知
+	 * 		AspectJPointcutAdvisor#1:定义的通知
+	 * 		updateUserMethod:切入点表达式
+	 *  （2）其中InternalAutoProxyCreator实现了BeanPostProcessor，所以会进入此方法处理
 	 */
 	protected void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFactory) {
 		PostProcessorRegistrationDelegate.registerBeanPostProcessors(beanFactory, this);
@@ -852,6 +806,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			}
 		}
 		else {
+			// 默认是空，走此分支
 			// Use empty MessageSource to be able to accept getMessage calls.
 			DelegatingMessageSource dms = new DelegatingMessageSource();
 			dms.setParentMessageSource(getInternalParentMessageSource());
@@ -867,6 +822,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	/**
 	 * Initialize the ApplicationEventMulticaster.
 	 * Uses SimpleApplicationEventMulticaster if none defined in the context.
+	 * roboslyq-->初始化内建Bean： 应用事件广播器(观察者模式得典型应用)。
+	 * 我们知道观察者模式由主题Subject和Observer组成。广播器相当于主题Subject，其包含多个监听器。
+	 * 当主题发生变化时会通知所有得监听器，此时只是完成广播初始化，还未绑定具体广播的监听器。
+	 * 在下面的registerListeners()方法中完成监听器与广播绑定
 	 * @see org.springframework.context.event.SimpleApplicationEventMulticaster
 	 */
 	protected void initApplicationEventMulticaster() {
@@ -878,7 +837,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				logger.debug("Using ApplicationEventMulticaster [" + this.applicationEventMulticaster + "]");
 			}
 		}
-		else {
+		else {// 默认是空，走此分支
 			this.applicationEventMulticaster = new SimpleApplicationEventMulticaster(beanFactory);
 			beanFactory.registerSingleton(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, this.applicationEventMulticaster);
 			if (logger.isDebugEnabled()) {
@@ -932,6 +891,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
+	 * 注册监听器，与广播器是同时存在的。在广播器章节，spring只是初始化的广播器，
+	 * 但是并没有为广播器绑定Listener, Spring在此方法中进行了绑定。
 	 * Add beans that implement ApplicationListener as listeners.
 	 * Doesn't affect other listeners, which can be added without being beans.
 	 */
@@ -965,12 +926,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	/**
 	 * Finish the initialization of this context's bean factory,
 	 * initializing all remaining singleton beans.
+	 * 结束上下文context的BeanFactory初始化，并且开始初始化所有属性no-lazy属性为false的BeanDefinition
+	 * 最终得到Spring中可以使用的Bean（AOP织入也是在此阶段完成
 	 */
 	protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
+
 		// Initialize conversion service for this context.
-		/*
-		 * conversionService转换服务
-		 */
+		// 为Context应用上下文添加conversion服务(类型转换)
 		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) &&
 				beanFactory.isTypeMatch(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class)) {
 			beanFactory.setConversionService(
@@ -980,20 +942,24 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Register a default embedded value resolver if no bean post-processor
 		// (such as a PropertyPlaceholderConfigurer bean) registered any before:
 		// at this point, primarily for resolution in annotation attribute values.
+		// 当前应用上下文Context如果没有点位符解析的Bean存在，则添加一个默认的占位符处理。
 		if (!beanFactory.hasEmbeddedValueResolver()) {
 			beanFactory.addEmbeddedValueResolver(strVal -> getEnvironment().resolvePlaceholders(strVal));
 		}
 
 		// Initialize LoadTimeWeaverAware beans early to allow for registering their transformers early.
+		// 提前初始化LoadTimeWeaverAware相关的Bean，因为在所有的Bean初始化时需要使用这些Bean，因此提前初始化。
 		String[] weaverAwareNames = beanFactory.getBeanNamesForType(LoadTimeWeaverAware.class, false, false);
 		for (String weaverAwareName : weaverAwareNames) {
 			getBean(weaverAwareName);
 		}
 
 		// Stop using the temporary ClassLoader for type matching.
+		// 清空临时类加载器
 		beanFactory.setTempClassLoader(null);
 
 		// Allow for caching all bean definition metadata, not expecting further changes.
+		// 启动完成后，冻结所有的Bean定义配置，不允许修改。但只是加一个标识，不是真正的冻结。
 		beanFactory.freezeConfiguration();
 
 		// Instantiate all remaining (non-lazy-init) singletons.

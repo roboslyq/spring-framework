@@ -218,6 +218,7 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 	public int loadBeanDefinitions(String location, @Nullable Set<Resource> actualResources) throws BeanDefinitionStoreException {
 		/**
 		 * roboslyq-->resourceLoader = org.springframework.context.support.ClassPathXmlApplicationContext
+		 * 在AbstractXmlApplicationContext#loadBeanDefinitions(DefaultListableBeanFactory beanFactory)设置
 		 */
 		ResourceLoader resourceLoader = getResourceLoader();
 		if (resourceLoader == null) {

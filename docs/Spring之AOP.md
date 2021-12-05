@@ -30,7 +30,7 @@
 
 # 一、XML配置方式
 
-## 1、配置ProxyFactoryBean
+## 1.1、配置ProxyFactoryBean
 
 ```xml
 <bean name="myController" class="org.springframework.aop.framework.ProxyFactoryBean">  
@@ -44,7 +44,7 @@
 </bean>  
 ```
 
-## 2、配置BeanNameAutoProxyCreator 
+## 1.2、配置BeanNameAutoProxyCreator 
 
 ```xml
 <bean id="userService" class="com.aop.service.UserService"/>  
@@ -67,7 +67,7 @@
 >
 >   **public** Object postProcessBeforeInstantiation(Class beanClass, String beanName) 
 
-## 3、配置AopNamespaceHandler
+## 1.3、配置AopNamespaceHandler
 
 ```xml
  <bean id="fooService" class="DefaultFooService"/>  
@@ -125,7 +125,7 @@ public class AopNamespaceHandler extends NamespaceHandlerSupport {
 }
 ```
 
-## 4、运行
+## 1.4、运行
 
 TODO
 
@@ -272,7 +272,7 @@ public class AopDemoMain {
 
 # 三、设计模式
 
-## 代理模式
+## 3.1、代理模式
 
 - Java 动态代理
   - JDK 动态代理
@@ -280,7 +280,7 @@ public class AopDemoMain {
 - 静态代理 
   - 常用 OOP 继承和组合相结合
 
-## 拦截器模式
+## 3.1、拦截器模式
 
 在代理模式下，实现拦截器。在目标方法执行前后进行相关操作。
 
@@ -289,7 +289,7 @@ public class AopDemoMain {
   - 后置拦截（After）
   - 异常拦截（Exception）
 
-## 判断模式
+## 3.3、判断模式
 
 - 判断来源
   - 类型（Class）
@@ -302,14 +302,14 @@ public class AopDemoMain {
 
 # 四、基本概念
 
-## 核心特性
+## 4.1、核心特性
 
 - 纯 Java 实现、无编译时特殊处理、不修改和控制 ClassLoader。与AspectJ编译时增强不一样。
 - 仅支持方法级别的 Join Points
 - 非完整 AOP 实现框架
 - Spring IoC 容器整合•AspectJ 注解驱动整合（非竞争关系）
 
-## 基本概念
+## 4.2、基本概念
 
 **二、AOP核心概念**
 
@@ -389,9 +389,9 @@ public class AopDemoMain {
 
   org.springframework.aop.aspectj.AspectJAfterThrowingAdvice
 
-**6、目标对象**
+**6、目标对象**(TargetSource)
 
-代理的目标对象
+代理的目标对象,也就是目标类
 
 **7、织入（weave）**
 
