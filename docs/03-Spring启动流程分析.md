@@ -988,7 +988,7 @@ protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 	}
 ```
 
-
+从默认情况我们可以看出，占位符没有与spring中的Enviroment关联起来。
 
 ## 3.5 注册BeanPostProcessor
 
