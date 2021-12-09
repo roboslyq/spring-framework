@@ -1491,7 +1491,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		if (pvs != null) {
 			/**
-			 * roboslyq-->给属性赋值(点位符处理)
+			 * roboslyq-->给属性赋值(占位符处理)
 			 */
 			applyPropertyValues(beanName, mbd, bw, pvs);
 		}
