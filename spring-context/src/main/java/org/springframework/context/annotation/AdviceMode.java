@@ -19,7 +19,7 @@ package org.springframework.context.annotation;
 /**
  * Enumeration used to determine whether JDK proxy-based or AspectJ weaving-based advice
  * should be applied.
- *
+ * 枚举通知类型：JDK proxy或者AspectJ
  * @author Chris Beams
  * @since 3.1
  * @see org.springframework.scheduling.annotation.EnableAsync#mode()
