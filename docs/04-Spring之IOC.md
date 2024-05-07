@@ -1,5 +1,287 @@
 #  Spring之IOC
 
+1. The IoC Container （IoC容器）... 10
+
+1.1. Introduction to the Spring IoC Container and Beans（Spring IoC容器和bean简介）... 10
+
+1.2. Container Overview (容器概览) 12
+
+1.2.1. Configuration Metadata (配置元数据) 14
+
+1.2.2. Instantiating a Container (实例化一个容器) 17
+
+1.2.2.1. Composing XML-based Configuration Metadata(组合基于XML的配置元数据) 20
+
+1.2.2.2. The Groovy Bean Definition DSL（Groovy Bean定义DSL）... 22
+
+1.2.3. Using the Container(使用容器) 23
+
+1.3. Bean Overview（Bean概览）... 26
+
+1.3.1. Naming Beans（Bean命名）... 30
+
+1.3.1.1. Aliasing a Bean outside the Bean Definition(在Bean定义外指定Bean别名) 32
+
+1.3.2. Instantiating Bean(实例化bean) 34
+
+1.3.2.1.Instantiation with a Constructor (通过构造函数进行实例化) 36
+
+1.3.2.2. Instantiation with a Static Factory Method (通过静态工厂方法进行实例化) 38
+
+1.3.2.3. Instantiation by Using an Instance Factory Method (使用实例工厂方法进行实例化) 39
+
+1.3.2.4. Determining a Bean’s Runtime Type(确定Bean的运行时类型) 43
+
+1.4. Dependencies(依赖) 44
+
+1.4.1. Dependency Injection(依赖注入) 44
+
+1.4.1.1. Constructor-based Dependency Injection(基于构造函数的依赖注入) 45
+
+1.4.1.2.Setter-based Dependency Injection(基于Setter的依赖注入) 51
+
+1.4.1.3.Dependency Resolution Process(依赖解析过程) 54
+
+1.4.1.4. Examples of Dependency Injection(依赖注入示例) 58
+
+1.4.2. Dependencies and Configuration in Detail(依赖与配置详细介绍) 63
+
+1.4.2.1. Straight Values (Primitives, Strings, and so on)(直接值（原始类型、字符串等）) 63
+
+1.4.2.2. References to Other Beans (Collaborators) (引用其它bean(协作者)) 67
+
+1.4.2.3. Inner Beans(内部bean) 69
+
+1.4.2.4. Collections(集合) 70
+
+1.4.2.5. Null and Empty String Values（Null和空字符串值）... 76
+
+1.4.2.6. XML Shortcut with the p-namespace（p-namespace的XML快捷方式）... 77
+
+1.4.2.7. XML Shortcut with the c-namespace（c-namespace的XML快捷方式）... 80
+
+1.4.2.8. Compound Property Names(复合属性名) 82
+
+1.4.3. Using depends-on(使用depends-on) 83
+
+1.4.4. Lazy-initialized Beans(延迟初始化Bean) 84
+
+1.4.5. Autowiring Collaborators(自动装配协作者) 86
+
+1.4.5.1. Limitations and Disadvantages of Autowiring(自动装配的局限性和缺点) 88
+
+1.4.5.2. Excluding a Bean from Autowiring(在自动装配中排除bean) 90
+
+1.4.6. Method Injection(方法注入) 92
+
+1.4.6.1. Lookup Method Injection(查找方法注入) 95
+
+1.4.6.2. Arbitrary Method Replacement(任意方法替换) 100
+
+1.5. Bean Scopes（Bean作用域）... 104
+
+1.5.1. The Singleton Scope(单例作用域) 106
+
+1.5.2. The Prototype Scope（Prototype作用域）... 108
+
+1.5.3. Singleton Beans with Prototype-bean Dependencies（单例和原型Bean的依赖）... 110
+
+1.5.4. Request, Session, Application, and WebSocket Scopes（Request, Session, Application, and WebSocket作用域）    111
+
+1.5.4.1. Initial Web Configuration(初始化Web配置) 111
+
+1.5.4.2. Request scope(请求作用域) 113
+
+1.5.4.3. Session Scope（会话作用域）... 115
+
+1.5.4.4. Application Scope（应用作用域）... 116
+
+1.5.4.5. Scoped Beans as Dependencies(具有作用域的bean作为依赖项) 117
+
+1.5.5. Custom Scopes （自定义作用域）... 124
+
+1.5.5.1. Creating a Custom Scope（创建自定义作用域）... 124
+
+1.5.5.2. Using a Custom Scope （使用自定义作用域）... 127
+
+1.6. Customizing the Nature of a Bean (自定义bean的性质) 130
+
+1.6.1. Lifecycle Callbacks(生命周期回调) 130
+
+1.6.1.1. Initialization Callbacks(初始化回调) 132
+
+1.6.1.2. Destruction Callbacks (销毁回调) 134
+
+1.6.1.3. Default Initialization and Destroy Methods(默认初始化和销毁方法) 136
+
+1.6.1.4. Combining Lifecycle Mechanisms(合并生命周期机制) 140
+
+1.6.1.5. Startup and Shutdown Callbacks(启动和停止回调) 142
+
+1.6.1.6. Shutting Down the Spring IoC Container Gracefully in Non-Web Applications(在非web应用程序中优雅地关闭Spring IoC容器) 146
+
+1.6.2. ApplicationContextAware and BeanNameAware (ApplicationContextAware 和BeanNameAware) 148
+
+1.6.3. Other Aware Interfaces(其它Aware接口) 151
+
+1.7. Bean Definition Inheritance（Bean定义继承）... 156
+
+1.8. Container Extension Points(容器扩展点) 159
+
+1.8.1. Customizing Beans by Using a BeanPostProcessor (使用BeanPostProcessor自定义Bean) 159
+
+1.8.1.1. Example: Hello World, BeanPostProcessor-style. 165
+
+1.8.1.2. Example: The AutowiredAnnotationBeanPostProcessor 168
+
+1.8.2. Customizing Configuration Metadata with a BeanFactoryPostProcessor (通过BeanFactoryPostProcessor自定义配置元数据) 168
+
+1.8.2.1. Example: The Class Name Substitution PropertySourcesPlaceholderConfigurer (示例：类名替换PropertySourcesPlaceholderConfigurer) 171
+
+1.8.2.2. Example: The PropertyOverrideConfigurer 174
+
+1.8.3. Customizing Instantiation Logic with a FactoryBean (通过FactoryBean自定义实例化逻辑) 176
+
+1.9. Annotation-based Container Configuration (基于注解的容器配置) 178
+
+1.9.1. @Required. 181
+
+1.9.2. Using @Autowired (使用@Autowired) 183
+
+1.9.3. Fine-tuning Annotation-based Autowiring with @Primary(通过@Primary细调基于注解的自动装配) 196
+
+1.9.4. Fine-tuning Annotation-based Autowiring with Qualifiers(通过限定符细调基于注解的自动装配) 199
+
+1.9.5. Using Generics as Autowiring Qualifiers(采用泛型作为自动装配限定符) 214
+
+1.9.6. Using CustomAutowireConfigurer(使用CustomAutowireConfigurer) 217
+
+1.9.7. Injection with @Resource(通过@Resource注入) 218
+
+1.9.8. Using @Value(使用 @Value) 222
+
+1.9.9. Using @PostConstruct and @PreDestroy (使用@PostConstruct和@PreDestroy) 227
+
+1.10. Classpath Scanning and Managed Components （Classpath扫描与被管组件）... 229
+
+1.10.1. @Component and Further Stereotype Annotations （@Component及更多构造型注解）    230
+
+1.10.2. Using Meta-annotations and Composed Annotations (使用元注解和组合注解) 232
+
+1.10.3. Automatically Detecting Classes and Registering Bean Definitions(类自动检测和Bean定义注册) 235
+
+1.10.4. Using Filters to Customize Scanning(使用过滤器自定义扫描) 239
+
+1.10.5. Defining Bean Metadata within Components(在组件内定义Bean元数据) 242
+
+1.10.6. Naming Autodetected Components(命名自动检测组件) 250
+
+1.10.7. Providing a Scope for Autodetected Components (为自动检测组件提供作用域) 253
+
+1.10.8. Providing Qualifier Metadata with Annotations(为注解提供限定符元数据) 256
+
+1.10.9. Generating an Index of Candidate Components (生成候选组件的索引) 258
+
+1.11. Using JSR 330 Standard Annotations(使用JSR 330标准注解) 261
+
+1.11.1. Dependency Injection with @Inject and @Named(采用@Inject和 @Named的依赖入) 262
+
+1.11.2. @Named and @ManagedBean: Standard Equivalents to the @Component Annotation （@Named和 @ManagedBean：等效于@Component注解的标准）... 266
+
+1.11.3. Limitations of JSR-330 Standard Annotations （JSR-330标准注解的局限性）... 269
+
+1.12. Java-based Container Configuration(基于Java的容器配置) 271
+
+1.12.1. Basic Concepts: @Bean and @Configuration (基本概念：@Bean和@Configuration) 272
+
+1.12.2. Instantiating the Spring Container by Using AnnotationConfigApplicationContext (采用AnnotationConfigApplicationContext初始化Spring容器) 275
+
+1.12.2.1. Simple Construction(简单构造) 276
+
+1.12.2.2. Building the Container Programmatically by Using register(Class<?>…)  (使用register(Class<?>…)以编程方式构建容器) 278
+
+1.12.2.3. Enabling Component Scanning with scan(String…) (通过scan(String…)启用组件扫描) 279
+
+1.12.2.4. Support for Web Applications with AnnotationConfigWebApplicationContext (通过AnnotationConfigWebApplicationContext支持WEB应用) 281
+
+1.12.3. Using the @Bean Annotation(使用@Bean注解) 283
+
+1.12.3.1. Declaring a Bean(声明一个Bean) 283
+
+1.12.3.2. Bean Dependencies（Bean依赖）... 286
+
+1.12.3.3. Receiving Lifecycle Callbacks(接收生命周期回调) 287
+
+1.12.3.4. Specifying Bean Scope(指定Bean作用域) 292
+
+1.12.3.5. Customizing Bean Naming(自定义Bean命名) 295
+
+1.12.3.6. Bean Aliasing (Bean别名) 296
+
+1.12.3.7. Bean Description (Bean描述) 297
+
+1.12.4. Using the @Configuration annotation(使用@Configuration注解) 298
+
+1.12.4.1. Injecting Inter-bean Dependencies(注入bean间依赖) 298
+
+1.12.4.2. Lookup Method Injection(查找方法注入) 299
+
+1.12.4.3. Further Information About How Java-based Configuration Works Internally(关于基于Java的配置如何在内部工作的更多信息) 302
+
+1.12.5. Composing Java-based Configurations（撰写基于Java的配置）... 305
+
+1.12.5.1. Using the @Import Annotation（使用@Import注解）... 305
+
+1.12.5.2. Conditionally Include @Configuration Classes or @Bean Methods(有条件地包含@Configuration类或@Bean方法) 319
+
+1.12.5.3. Combining Java and XML Configuration(结合Java和XML配置) 321
+
+1.13. Environment Abstraction(环境抽象化) 328
+
+1.13.1. Bean Definition Profiles (Bean定义概要文件) 329
+
+1.13.1.1. Using @Profile(使用@Profile) 332
+
+1.13.1.2. XML Bean Definition Profiles (XML Bean定义概要文件) 338
+
+1.13.1.3. Activating a Profile(激活概要文件) 341
+
+1.13.1.4. Default Profile(默认概要文件) 343
+
+1.13.2. PropertySource Abstraction(PropertySource抽象) 344
+
+1.13.3. Using @PropertySource(使用@PropertySource) 348
+
+1.13.4. Placeholder Resolution in Statements(语句中占位符解析) 351
+
+1.14. Registering a LoadTimeWeaver(注册LoadTimeWeaver) 351
+
+1.15. Additional Capabilities of the ApplicationContext（ApplicationContext的其它能力）... 353
+
+1.15.1. Internationalization using MessageSource(使用MessageSource实现国际化) 354
+
+1.15.2. Standard and Custom Events(标准和自定义事件) 362
+
+1.15.2.1. Annotation-based Event Listeners(基于注解的事件侦听器) 371
+
+1.15.2.2. Asynchronous Listeners(异步侦听器) 376
+
+1.15.2.3. Ordering Listeners(侦听器排序) 377
+
+1.15.2.4. Generic Events(泛型事件) 377
+
+1.15.3. Convenient Access to Low-level Resources(方便地访问底层资源) 379
+
+1.15.4. Application Startup Tracking(应用程序启动跟踪) 381
+
+1.15.5. Convenient ApplicationContext Instantiation for Web Applications(方便的Web应用程序的ApplicationContext实例化) 384
+
+1.15.6. Deploying a Spring ApplicationContext as a Java EE RAR File(将Spring ApplicationContext部署为Java EE RAR文件) 386
+
+1.16. The BeanFactory (BeanFactory) 388
+
+1.16.1. BeanFactory or ApplicationContext? (BeanFactory还是ApplicationContext?) 389
+
 ![Spring IOC](04-Spring%E4%B9%8BIOC/Spring%20IOC.png)
 
 ## 1.1. Introduction to the Spring IoC Container and Beans
@@ -1683,7 +1965,199 @@ public class CachingMovieLister {
 
 ## 1.14. Registering a LoadTimeWeaver
 
+AOP——面向切面编程,通过为目标类织入切面的方式,实现对目标类功能的增强。按切面被织如到目标类中的时间划分,主要有以下几种:
+
+- 1.运行期织入
+  这是最常见的,比如在运行期通过为目标类生成动态代理的方式实现AOP就属于运行期织入,这也是Spring AOP中的默认实现,并且提供了两种创建动态代理的方式:JDK自带的针对接口的动态代理和使用CGLib动态创建子类的方式创建动态代理。
+- 2.编译期织入
+  使用特殊的编译器在编译期将切面织入目标类,这种比较少见,因为需要特殊的编译器的支持-AspectJ就是基于编译器实现。
+- 3.类加载期织入
+  通过字节码编辑技术在类加载期将切面织入目标类中,这是本篇介绍的重点。它的核心思想是:在目标类的class文件被JVM加载前,通过自定义类加载器或者类文件转换器将横切逻辑织入到目标类的class文件中,然后将修改后class文件交给JVM加载。这种织入方式可以简称为LTW(LoadTimeWeaving)。
+
 ## 1.15. Additional Capabilities of the ApplicationContext
+
+> ApplicationContext相比于BeanFactory，额外扩展了许多能力
+
+- Access to messages in i18n-style, through the `MessageSource` interface.
+  - 通过MessageSource接口实现国际化
+- Access to resources, such as URLs and files, through the `ResourceLoader` interface.
+  - 资源访问ResoureLoader
+- Event publication, namely to beans that implement the `ApplicationListener` interface, through the use of the `ApplicationEventPublisher` interface.
+  - 事件机制
+- Loading of multiple (hierarchical) contexts, letting each be focused on one particular layer, such as the web layer of an application, through the `HierarchicalBeanFactory` interface.
+  - 可以实现父子容器
+
+### 1.15.1. Internationalization using `MessageSource`
+
+### 1.15.2. Standard and Custom Events
+
+| Event                        | Explanation                                                  |
+| :--------------------------- | :----------------------------------------------------------- |
+| `ContextRefreshedEvent`      | Published when the `ApplicationContext` is initialized or refreshed (for example, by using the `refresh()` method on the `ConfigurableApplicationContext` interface). Here, “initialized” means that all beans are loaded, post-processor beans are detected and activated, singletons are pre-instantiated, and the `ApplicationContext` object is ready for use. As long as the context has not been closed, a refresh can be triggered multiple times, provided that the chosen `ApplicationContext` actually supports such “hot” refreshes. For example, `XmlWebApplicationContext` supports hot refreshes, but `GenericApplicationContext` does not. |
+| `ContextStartedEvent`        | Published when the `ApplicationContext` is started by using the `start()` method on the `ConfigurableApplicationContext` interface. Here, “started” means that all `Lifecycle` beans receive an explicit start signal. Typically, this signal is used to restart beans after an explicit stop, but it may also be used to start components that have not been configured for autostart (for example, components that have not already started on initialization). |
+| `ContextStoppedEvent`        | Published when the `ApplicationContext` is stopped by using the `stop()` method on the `ConfigurableApplicationContext` interface. Here, “stopped” means that all `Lifecycle` beans receive an explicit stop signal. A stopped context may be restarted through a `start()` call. |
+| `ContextClosedEvent`         | Published when the `ApplicationContext` is being closed by using the `close()` method on the `ConfigurableApplicationContext` interface or via a JVM shutdown hook. Here, "closed" means that all singleton beans will be destroyed. Once the context is closed, it reaches its end of life and cannot be refreshed or restarted. |
+| `RequestHandledEvent`        | A web-specific event telling all beans that an HTTP request has been serviced. This event is published after the request is complete. This event is only applicable to web applications that use Spring’s `DispatcherServlet`. |
+| `ServletRequestHandledEvent` | A subclass of `RequestHandledEvent` that adds Servlet-specific context information. |
+
+#### extends Spring’s `ApplicationEvent`
+
+- 定义事件
+
+```java
+public class BlockedListEvent extends ApplicationEvent {
+
+    private final String address;
+    private final String content;
+
+    public BlockedListEvent(Object source, String address, String content) {
+        super(source);
+        this.address = address;
+        this.content = content;
+    }
+
+    // accessor and other methods...
+}
+```
+
+- 定义发布器:通过注入方式
+
+```java
+public class EmailService implements ApplicationEventPublisherAware {
+
+    private List<String> blockedList;
+    private ApplicationEventPublisher publisher;
+
+    public void setBlockedList(List<String> blockedList) {
+        this.blockedList = blockedList;
+    }
+
+    public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+        this.publisher = publisher;
+    }
+
+    public void sendEmail(String address, String content) {
+        if (blockedList.contains(address)) {
+            publisher.publishEvent(new BlockedListEvent(this, address, content));
+            return;
+        }
+        // send email...
+    }
+}
+```
+
+- 定义监听者
+
+```java
+public class BlockedListNotifier implements ApplicationListener<BlockedListEvent> {
+
+    private String notificationAddress;
+
+    public void setNotificationAddress(String notificationAddress) {
+        this.notificationAddress = notificationAddress;
+    }
+
+    public void onApplicationEvent(BlockedListEvent event) {
+        // notify appropriate parties via notificationAddress...
+    }
+}
+```
+
+#### Annotation-based Event Listeners(注解驱动)
+
+- 普通监听
+
+```java
+public class BlockedListNotifier {
+
+    private String notificationAddress;
+
+    public void setNotificationAddress(String notificationAddress) {
+        this.notificationAddress = notificationAddress;
+    }
+
+    @EventListener
+    public void processBlockedListEvent(BlockedListEvent event) {
+        // notify appropriate parties via notificationAddress...
+    }
+}
+```
+
+- 监听多个事件
+
+```java
+@EventListener({ContextStartedEvent.class, ContextRefreshedEvent.class})
+public void handleContextStart() {
+    // ...
+}
+```
+
+- 表达式条件监听
+
+```java
+@EventListener(condition = "#blEvent.content == 'my-event'")
+public void processBlockedListEvent(BlockedListEvent blEvent) {
+    // notify appropriate parties via notificationAddress...
+}
+```
+
+#### Asynchronous Listeners(异步监听)
+
+```java
+@EventListener
+@Async
+public void processBlockedListEvent(BlockedListEvent event) {
+    // BlockedListEvent is processed in a separate thread
+}
+```
+
+#### Ordering Listeners(给监听者排序)
+
+```java
+@EventListener
+@Order(42)
+public void processBlockedListEvent(BlockedListEvent event) {
+    // notify appropriate parties via notificationAddress...
+}
+```
+
+#### Generic Events（泛型监听）
+
+```java
+@EventListener
+public void onPersonCreated(EntityCreatedEvent<Person> event) {
+    // ...
+}
+```
+
+### 1.15.3. Convenient Access to Low-level Resources(方便访问底层资源)
+
+- Spring Framework的Resource体系，比JDK `java.net.URL`基础资源体系丰富很多。
+- 一个 application context 是一个资源加载器 `ResourceLoader`，可以加载多个资源对象`Resource`。
+- Resource对应的底层资源几乎支持任何资源类型
+  - classpath
+  - filesystem location
+  - 任何标准的URL
+
+### 1.15.4. Application Startup Tracking
+
+### 1.15.5. Convenient ApplicationContext Instantiation for Web Applications
+
+### 1.15.6. Deploying a Spring `ApplicationContext` as a Java EE RAR File
 
 ## 1.16. The BeanFactory
 
+ApplicationContext继承BeanFacotry体系，我们平时应该使用ApplicationContext来实现我们自已的功能。
+
+### 1.16.1. `BeanFactory` or `ApplicationContext`?
+
+ApplicationContext在BeanFactory基础之上，提供了更多的功能实现：
+
+| Feature                                                      |                                    | `BeanFactory` | `ApplicationContext` |
+| :----------------------------------------------------------- | ---------------------------------- | :------------ | :------------------- |
+| Bean instantiation/wiring                                    | Bean 的实例化/串联                 | Yes           | Yes                  |
+| Integrated lifecycle management                              | Bean的生命周期                     | No            | Yes                  |
+| Automatic `BeanPostProcessor` registration                   | 自动注入 `BeanPostProcessor`       | No            | Yes                  |
+| Automatic `BeanFactoryPostProcessor` registration            | 自动注入`BeanFactoryPostProcessor` | No            | Yes                  |
+| Convenient `MessageSource` access (for internationalization) | 国际化(i18n)                       | No            | Yes                  |
+| Built-in `ApplicationEvent` publication mechanism            | 事件发布                           | No            | Yes                  |
